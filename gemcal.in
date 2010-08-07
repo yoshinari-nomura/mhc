@@ -1,0 +1,736 @@
+#!@@MHC_RUBY_PATH@@ -Ke
+
+
+### gemcal -- Ruby/Gtk based calendar.
+##
+## Author:  Yoshinari Nomura <nom@quickhack.net>
+##
+## Created: 1999/09/01
+## Revised: $Date: 2006/12/18 09:31:54 $
+##
+
+# $DEBUG = 1
+
+LIB = File .expand_path(File .dirname(File .symlink?($0) &&
+				      File .readlink($0) || $0))
+$LOAD_PATH .unshift(LIB + '/ruby-ext/lib')
+
+require 'gtk2'
+
+require 'mhc-kconv'
+require 'mhc-signal'
+require 'mhc-gtk'
+require 'mhc-date'
+require 'mhc-schedule'
+
+################################################################
+# Immediate
+
+class VDateListInput < Gtk::HBox
+  def initialize(sch,  title = 'Input Date List')
+    super()
+
+    @sch = sch
+    frm = Gtk::Frame .new(title)
+    hbx = Gtk::HBox .new(false, 0) .set_border_width(10)
+
+    @lst = Gtk::ListStore.new(String)
+    @lsv = Gtk::TreeView.new(@lst).set_headers_visible(false) \
+		.set_rules_hint(true)
+    @lsv.append_column(Gtk::TreeViewColumn.new("Date",
+                                               Gtk::CellRendererText.new,
+                                               :text => 0) \
+                       .set_max_width(56))
+    @lsv.set_width_request(150)
+
+    # @lst = Gtk::CList .new(['Click to Remove'])
+    # @lst .set_selection_mode(Gtk::SELECTION_SINGLE)
+    # @lst .signal_connect('click_column'){|w, c|
+    #  return if c != 0
+    #  @lst .each_selection{|r|
+    #	date_str = @lst .get_text(r, 0)
+    #	exc = true if date_str =~ /!/
+    #	date_str .gsub!('[ !-]', '')
+    #	if exc
+    #	  @sch .del_exception(MhcDate .new(date_str))
+    #	else
+    #	  @sch .del_day(MhcDate .new(date_str))
+    #	end
+    # }
+    #  update
+    #}
+    swin = Gtk::ScrolledWindow .new(nil, nil)
+    swin .set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_ALWAYS)
+    swin .add(@lsv)
+
+    @cal = GtkCalendar .new(MhcDate .new, [['prev',  'prev month'],
+			                ['next',  'next month'],
+			               ['today', 'this month']],
+			    true, true, false)
+
+    hbx .pack_start(swin, false, false, 0)
+    # hbx .pack_start(@lsv, true,  true,  0)
+    hbx .pack_start(@cal, false, false, 0)
+    frm .add(hbx)
+
+    vbx = Gtk::VBox .new(false, 0) .pack_start(frm, false, false, 0)
+    pack_start(vbx, false, false, 0)
+
+    @cal .signal_connect('next-btn-clicked') {@cal .next_month; update}
+    @cal .signal_connect('prev-btn-clicked') {@cal .prev_month; update}
+    @cal .signal_connect('today-btn-clicked'){@cal .this_month; update}
+    @cal .signal_connect('day-btn-clicked'){|date|
+      if !(@sch .occur_on?(date))
+	@sch .add_day(date)
+      else
+	@sch .del_day(date)
+      end
+      update
+    }
+  end
+
+  def set_schedule(sch)
+    @sch = sch
+    update
+  end
+
+#   def delete_lst(ymd_str)
+#     for i in 0 .. @lst .rows - 1
+#       s = @lst .get_text(i, 0) .gsub('[ -]', '')
+#       if s == ymd_str
+# 	@lst .remove_row(i)
+#       end
+#     end
+#   end
+
+  def set_date(date)
+    @cal .set_date(date)
+    update
+  end
+
+  def cal
+    return @cal
+  end
+
+  def update
+    #@lst .freeze
+    @lst .clear
+    @sch .day .each{|day|
+      iter = @lst.append
+      iter[0] = ' ' + day.to_s1('-')
+    }
+    @sch .exception .each{|day|
+      iter = @lst.append
+      iter[0] = '!' + day.to_s1('-')
+    }
+    @lst .set_sort_column_id(0)
+
+    @cal .date .m_each_day{|date|
+      if @sch .occur_on?(date)
+	@cal .d(date .d) .set_style('busy')
+      else
+	case (date .w)
+	when 0
+	  @cal .d(date .d) .set_style('holiday')
+	when 6
+	  @cal .d(date .d) .set_style('saturday')
+	else
+	  @cal .d(date .d) .set_style('weekday')
+	end
+      end
+    }
+  end
+end
+
+################################################################
+# Indirect
+
+class VCondInput < Gtk::HBox
+  LABEL = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',  nil,
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',  nil,
+     nil,   nil,   nil,   nil,   nil,   nil,   nil,
+    '1st', '2nd', '3rd', '4th', '5th', 'Last',  nil,
+    'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
+     nil,   nil,   nil,   nil,   nil,   nil,   nil
+  ] + (1..31) .to_a
+
+  def initialize(title, &p)
+    super(false, 0)
+    frm = Gtk::Frame .new(title)
+    vbx = Gtk::VBox .new(false, 0)
+    frm .add(vbx)
+
+    @tbl = GtkToggleTable .new(11, 7, LABEL, &p)
+    vbx .pack_start(@tbl, false, false, 0)
+    pack_start(frm, false, false, 0)
+  end
+
+  def set_schedule(sch)
+    @tbl .each_button{|btn, lbl|
+      if sch .cond .include?(lbl .capitalize)
+	btn .set_active(true)
+      else
+	btn .set_active(false)
+      end
+    }
+  end
+
+  def dump
+    return @tbl .dump
+  end
+end
+
+################################################################
+# Immediate
+class VDateEditor < Gtk::VBox
+  def initialize(sch = MhcScheduleItem .new)
+    super(false, 0)
+
+    t = Time .now
+
+    @sch = sch
+    @cond_box = VCondInput .new('Indirect Dates'){|b|
+      if b .active?
+	@sch .add_cond(b .child .text)
+      else
+	@sch .del_cond(b .child .text)
+      end
+      @date_box .update
+    }
+    @cond_box .border_width = 10
+    @date_box = VDateListInput .new(@sch, 'Immediate Dates')
+    @time_box = GtkTimeRangeEdit .new(MhcTime .new, MhcTime .new){|b, e|
+      @sch .set_time(b, e)
+    }
+    @dur_box  = GtkDateRangeEdit .new(MhcDate .new, MhcDate .new .y_succ!){|b, e|
+      @sch .set_duration(b, e)
+      @date_box .update
+    }
+    @alm_box = GtkAlarmEntry .new {|sec|
+      # print "sec:(#{sec}) #{@sch .alarm} -> "
+      @sch .set_alarm(sec)
+      # print "#{@sch .alarm}\n"
+    }
+    hbx = Gtk::HBox .new(false, 0)
+    vbx = Gtk::VBox .new(false, 0)
+
+    vbx .pack_start(@date_box, false, false, 0)
+    vbx .pack_start(@time_box, false, false, 5)
+    vbx .pack_start(@dur_box,  false, false, 0)
+    vbx .pack_start(@alm_box,  false, false, 10)
+    hbx .pack_start(@cond_box, false, false, 10)
+    hbx .pack_start(vbx,       false, false, 10)
+    pack_start(hbx, false, false, 10)
+
+  end
+
+  def set_schedule(sch)
+    @sch = sch
+    @alm_box  .set_alarm(sch .alarm)
+    @cond_box .set_schedule(sch)
+    @date_box .set_schedule(sch)
+    @time_box .set_value(sch .time_b, sch .time_e)
+    @dur_box  .set_value(sch .duration_b, sch .duration_e)
+  end
+
+  def cond; @cond_box; end
+  def day;  @date_box; end
+  def time; @time_box; end
+  def dur;  @dur_box;  end
+  def alm;  @alm_box;  end
+end
+
+################################################################
+class MhcScheduleEdit < GtkToplevel
+  BUTTONS = [
+    ['save', 'save to DB'], 
+    ['delete', 'delete this article'],
+    ['close', 'close']
+  ]
+
+  def initialize(db, sch)
+    super()
+    # set_usize(640, 480)
+    # set_size_request(640, 480)
+    set_title('Mhc::ScheduleEdit')
+    vbx = Gtk::VBox .new
+
+    @sch = sch
+    @db = db
+    ################################################################
+    hbx = Gtk::HBox .new(false, 0)
+
+    @dur_box  = GtkDateRangeEdit .new(MhcDate .new, MhcDate .new .y_succ!){|b, e|
+      @sch .set_duration(b, e)
+      @date_box .update
+    }
+    @subj_ent = GtkEntry .new("Subject:  ") .set_border_width(3)
+    @cat_ent  = GtkEntry .new("Category: ") .set_border_width(3)
+
+    @subj_ent .signal_connect('changed'){
+      @sch .set_subject(Kconv::tojis(@subj_ent .dump))
+    }
+    @subj_ent .signal_connect('activate'){
+      @sch .set_subject(Kconv::tojis(@subj_ent .dump))
+      update_desc_box
+    }
+    @cat_ent .signal_connect('changed'){
+      @sch .set_category(Kconv::tojis(@cat_ent .dump))
+    }
+    @cat_ent .signal_connect('activate'){
+      @sch .set_category(Kconv::tojis(@cat_ent .dump))
+      update_desc_box
+    }
+
+    ################################################################
+    note0_lbl = Gtk::Label .new("Description")
+    @desc_box = GtkFileViewer .new(true) ## editable
+    ################################################################
+    note1_lbl = Gtk::Label .new('Occurences')
+    @date_box = VDateEditor .new(@sch)
+    ################################################################
+    btn_bar = GtkButtonBar .new(BUTTONS)
+
+    btn_bar .signal_connect('delete-btn-clicked'){
+      if !(@sch .path)
+	GtkConfirm .new("No file in DB. (no need to delete from DB)\n")
+      else
+	msg = ''
+	msg = "This article has multiple occurences."  if @sch .occur_multiple?
+	GtkConfirm .new("#{msg} Delete it?\n", 2){|ans|
+	  if ans
+	    @db .del_sch(@sch)
+	    close
+	  end
+	}
+      end
+    }
+    btn_bar .signal_connect('close-btn-clicked'){
+      if modified_any?
+	GtkConfirm .new("Article is modified, close without save ?\n", 2){|ans|
+	  close if ans
+	}
+      else
+	close
+      end
+    }
+    btn_bar .signal_connect('save-btn-clicked'){
+      if modified_any?
+	if @sch .error?
+	  msg = @sch .error_message
+	  GtkConfirm .new("#{msg} (Nothing was done).\n")
+	else
+	  update_desc_box
+
+	  header, body = conv_description(Kconv::tojis(@desc_box .dump))
+	  @sch .set_non_xsc_header(header .to_s)
+	  @sch .set_description(body .to_s)
+
+	  @desc_box .set_modified(false, 'saved')
+	  @db .add_sch(@sch)
+	  update_desc_box
+	  close
+	  ## xxx: rescue GtkConfirm .new("#{$!}\n(#{$@}).\n")
+	end
+      else
+	GtkConfirm .new("Not modified (Nothing was done).\n")
+      end
+    }
+    ################################################################
+    @note = Gtk::Notebook .new .append_page(@desc_box, note0_lbl) \
+                               .append_page(@date_box, note1_lbl)
+
+    vbx .pack_start(@subj_ent, false, false,   0)
+    vbx .pack_start(@cat_ent,  false, false,   0)
+    vbx .pack_start(@note,     true,  true,    3)
+    vbx .pack_start(btn_bar,   false, false,   0)
+    add(vbx)
+
+    #@note .signal_connect('switch_page'){|w, a, p|
+    #update_desc_box if p == 0 && @sch .modified?
+    #}
+    @sch .set_modified(false, 'init_editor')
+    open(sch)
+  end
+
+  def close
+    @sch = nil
+    set_modified(false, 'closed')
+    hide_all
+  end
+
+  def open(sch)
+    p = proc {
+      @sch = sch
+      @subj_ent .set_text(@sch .subject)
+      @cat_ent  .set_text(@sch .category_as_string)
+      @desc_box .replace_text(@sch .non_xsc_header + "\n" + 
+			      @sch .description .to_s)
+      @date_box .set_schedule(@sch)
+      @note .set_page(0)
+
+      set_modified(false, 'schedule_editor::open')
+      show_all if !visible?
+      self .window .raise
+    }
+    if modified_any?
+      GtkConfirm .new('Open new schedule without saveing ?', 2){|ans|
+	p .call if ans
+      }
+    else
+      p .call
+    end
+    return self
+  end
+
+  #def dump; @sch .dump  ;end
+
+  private
+  def update_desc_box
+  end
+
+  def set_modified(bool, msg)
+    @sch .set_modified(bool, msg)       if @sch
+    @desc_box .set_modified(bool, msg)  if @desc_box
+  end
+
+  def modified_any?
+    return (@sch && @sch .modified?) || (@desc_box && @desc_box .modified?)
+  end
+
+  def conv_description(string)
+    part1_is_header = true
+
+    part1, part2 = string .split("\n\n", 2)
+
+    if !(part1 =~ /^[ \t]+/ or part1 =~ /^[A-Za-z0-9_-]+:/)
+      part1_is_header = false
+    end
+
+    part1 .split("\n") .each{|line|
+      if !(string =~ /^[ \t]+/ or string =~ /^[A-Za-z0-9_-]+:/)
+	part1_is_header = false
+      end
+    }
+
+    if part1_is_header
+      header, body = part1, part2
+    else
+      header, body = nil, string
+    end
+
+    return header, body
+  end
+end
+
+################################################################
+##
+## MhcDayBook
+##
+class MhcDayBook
+  class Visual < GtkToplevel
+    BUTTONS = [['month', 'open month'],
+      ['open', 'open schedule editor'],
+      ['prev', 'prev day'],  ['next',  'next day'],
+      ['today', 'goto today'], ['close', 'close']]
+
+    def initialize(date, x = nil, y = nil)
+      @vbx = GtkDayBook .new(date, BUTTONS)
+      super()
+      add(@vbx)
+      set_title('Mhc::DayBook')
+      # set_usize(217, 145)
+      set_size_request(233, 177)
+      set_uposition(x, y) if x && y
+    end
+    def append(*arg)           ; @vbx .append(*arg)           ; end
+    def set_tip(*arg)          ; @vbx .set_tip(*arg)          ; end
+    def append_tip(*arg)       ; @vbx .append_tip(*arg)       ; end
+    def set_date(date)         ; @vbx .set_date(date)         ; end
+    def date                   ; @vbx .date                   ; end
+    def set_style(*arg)        ; @vbx .set_style(*arg)        ; end
+    def signal_connect(sig, &p)
+      if sig == 'delete_event'
+	super
+      else
+	@vbx .signal_connect(sig, &p)
+      end
+    end
+  end
+
+  def initialize(date, db, x = nil, y = nil)
+    @sch_edit = nil
+    @date     = date
+    @db       = db
+    @vdl      = Visual .new(@date, x, y)
+    @path     = []
+    @alarm    = Alarm .new
+
+    @db_sd = @db .signal_connect('updated'){scan}
+    @al_sd = @alarm .signal_connect('day-changed'){scan(MhcDate .new)}
+
+    @vdl .signal_connect('destroy'){destroy_handler}
+    @vdl .signal_connect('delete_event'){@vdl .hide; true}
+    @vdl .signal_connect('month-btn-clicked'){MhcCalendar .new(@date, @db)}
+    @vdl .signal_connect('next-btn-clicked') {scan(@date .succ!)}
+    @vdl .signal_connect('prev-btn-clicked') {scan(@date .dec!)}
+    @vdl .signal_connect('today-btn-clicked'){scan(MhcDate.new)}
+    @vdl .signal_connect('open-btn-clicked') {open_sch_edit}
+    @vdl .signal_connect('close-btn-clicked'){@vdl .hide}
+    @vdl .signal_connect("day-lst-clicked")  {|w, r|
+      if @path[r] .nil?
+	GtkConfirm .new("Can not edit ``#{w .get_text(r, 1)}''.\n")
+      else
+	open_sch_edit(@path[r])
+      end
+    }
+    scan
+    @vdl .show
+  end
+
+  def destroy_handler
+    print "#{self} destroyed\n" if $DEBUG
+    @vdl = nil
+    @db .signal_disconnect(@db_sd)
+    @alarm .signal_disconnect(@al_sd)
+  end
+
+  def open_sch_edit(path = nil)
+    print "MhcDayBook open_sch_edit: #{path .inspect}\n" if $DEBUG
+
+    if path && !File .exists?(path)
+      ## do nothing.
+    else
+      sch = MhcScheduleItem .new(path)
+      sch .add_day(@date) if path .nil?
+
+      if (@sch_edit .nil? || @sch_edit .destroyed?)
+	@sch_edit = MhcScheduleEdit .new(@db, sch)
+      else
+	@sch_edit .open(sch)
+      end
+    end
+  end
+
+  def scan(date = @date)
+    print "MhcDayBook::scan #{date .to_js}\n" if $DEBUG
+    @date = date
+    @vdl .set_date(@date)
+    @path = []
+
+    @db .search1(@date, @category) .each{|x|
+      @vdl .set_style('holiday') if x .in_category?('Holiday')
+      @vdl .append(x .subject, x .time_b .to_s)
+      @path << x .path
+    }
+    @vdl .show
+    @vdl .window .raise
+  end
+end
+
+################################################################
+##
+## MhcCalendar Class
+##
+class MhcCalendar
+  class Visual < GtkToplevel
+    BUTTONS = [['prev',  'prev month'], ['next',  'next month'],
+               ['prev_year', 'prev year'], ['next_year', 'next year'],
+               ['prev2', 'prev month'], ['next2', 'next month'],
+               ['today', 'this month'],	['close', 'close']]
+    def initialize(date, x = nil, y = nil)
+      @vbx = GtkCalendar .new(date, BUTTONS)
+      super()
+      set_title(date .ym_js)
+      add(@vbx)
+      # set_usize(217, 0)
+      set_size_request(233, 177)
+      set_uposition(x, y) if x && y
+    end
+    def date                     ; @vbx .date                       ; end
+    def d(*arg)                  ; @vbx .d(*arg)                    ; end
+    def set_date(date); set_title(date .ym_js); @vbx .set_date(date) ; end
+    def signal_connect(sig, &p) ; @vbx .signal_connect(sig, &p)     ; end
+  end
+
+  def initialize(date, db, day_book = nil, x = nil, y = nil)
+    @date     = date .m_first_day
+    @db       = db
+    @day_book = day_book
+    @vml      = Visual .new(@date, x, y) 
+    @sch_edit = nil
+    @path     = {}
+    @alarm    = Alarm .new
+    @db_sd    = @db .signal_connect('updated'){scan}
+    @al_sd    = @alarm .signal_connect('day-changed'){this_month}
+
+    @vml .signal_connect('destroy')          {destroy_handler}
+    @vml .signal_connect('next-btn-clicked') {move_month(1)}
+    @vml .signal_connect('prev-btn-clicked') {move_month(-1)}
+    @vml .signal_connect('next_year-btn-clicked') {move_month(12)}
+    @vml .signal_connect('prev_year-btn-clicked') {move_month(-12)}
+    @vml .signal_connect('next2-btn-clicked'){move_month2(1)}
+    @vml .signal_connect('prev2-btn-clicked'){move_month2(-1)}
+    @vml .signal_connect('close-btn-clicked'){@vml .destroy}
+    @vml .signal_connect('today-btn-clicked'){this_month}
+    @vml .signal_connect("day-btn-clicked")  {|date| open_daybook(date)}
+    @vml .signal_connect("day-lst-clicked")  {|w,d,r|
+      if @path[d][r] .nil?
+	GtkConfirm .new("Can not edit ``#{w .get_text(r, 1)}''.\n")
+      else
+	open_sch_edit(@path[d][r])
+      end
+    }
+    scan
+    @vml .show
+  end
+
+  def move_month(n) ;  scan(@date .m_succ(n)) ; end
+  def move_month2(n);  MhcCalendar .new(@date .m_succ(n), @db) ; end
+  def this_month    ;  scan(MhcDate .new)        ; end
+
+  def destroy_handler
+    print "#{self} destroyed\n" if $DEBUG
+    @vml = nil
+    @db .signal_disconnect(@db_sd)
+    @alarm .signal_disconnect(@al_sd)
+  end
+
+  def open_sch_edit(path = nil)
+    print "MhcCalendar open_sch_edit: #{path .inspect}\n" if $DEBUG
+
+    if path && !File .exists?(path)
+      ## do nothing.
+    else
+      sch = MhcScheduleItem .new(path)
+      sch .add_day(@date) if path .nil?
+
+      if (@sch_edit .nil? || @sch_edit .destroyed?)
+	@sch_edit = MhcScheduleEdit .new(@db, sch)
+      else
+	@sch_edit .open(sch)
+      end
+    end
+  end
+
+  def open_daybook(date)
+    if @day_book
+      @day_book .scan(date)
+    else
+      @day_book = MhcDayBook .new(date, @db)
+    end
+  end
+
+  def scan(date = @date)
+    print "MhcCalendar::scan #{date .to_js}\n" if $DEBUG
+    @date = date
+    @vml .set_date(@date)
+    @db .m_search(@date) .each{|date, item| # xxx
+      dd = date .d
+      @path[dd] = []
+
+      first = true
+      item .each{|x|
+	@vml .d(dd) .append(x .subject, x .time_b .to_s)
+	s = (x .time_b .to_s + " " + x .subject) # .gsub("\s", "\x07")
+        @vml .d(dd) .append_tip("\n" + MhcKconv::todisp(s))
+	@path[dd] << x .path
+
+	if x .in_category?('Holiday')
+	  @vml .d(dd) .set_style('holiday')
+	  first = true
+	end
+	if first
+	  @vml .d(dd) .set_style('busy')
+	  first = false
+	end
+      }
+    }
+  end
+end
+
+################################################################
+## Main
+################################################################
+
+repository, file = nil, nil
+while ARGV[0]
+  argv = ARGV .shift
+
+  case argv
+  when /^-g(eometry)?$/
+    geom = ARGV .shift
+    if geom && geom =~ /\+(\d+)\+(\d+)$/
+      x, y = $1 .to_i, $2 .to_i      
+    end
+  when /^-r(epository)?$/
+    repository  = File .expand_path(ARGV .shift)
+
+  when /^-f(ile)?$/
+    file = File .expand_path(ARGV .shift)
+
+  when /-d(aybook)?$/
+    geom = ARGV .shift
+    if geom && geom =~ /\+(\d+)\+(\d+)$/
+      dx, dy = $1 .to_i, $2 .to_i
+    end
+  end
+end
+
+if repository
+  if file
+    db = MhcScheduleDB .new(repository, file)
+  else
+    db = MhcScheduleDB .new(repository)
+  end
+else
+  db = MhcScheduleDB .new
+end
+
+d = MhcDate .new
+if dx
+  daybook = MhcDayBook .new(d, db, dx, dy)
+end
+MhcCalendar .new(d, db, daybook, x, y)
+
+alarm = MhcAlarm .new(db)
+alarm .signal_connect('time-arrived'){|date, sch|
+  GtkConfirm .new("#{date .to_js} #{sch .time_b} " +
+		  "#{MhcKconv::todisp(sch .subject)}\n")
+}
+alarm .check
+Gtk .main
+
+### Copyright Notice:
+
+## Copyright (C) 1999, 2000 Yoshinari Nomura. All rights reserved.
+## Copyright (C) 2000 MHC developing team. All rights reserved.
+
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions
+## are met:
+## 
+## 1. Redistributions of source code must retain the above copyright
+##    notice, this list of conditions and the following disclaimer.
+## 2. Redistributions in binary form must reproduce the above copyright
+##    notice, this list of conditions and the following disclaimer in the
+##    documentation and/or other materials provided with the distribution.
+## 3. Neither the name of the team nor the names of its contributors
+##    may be used to endorse or promote products derived from this software
+##    without specific prior written permission.
+## 
+## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
+## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+## FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
+## THE TEAM OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+## INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+## (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+## SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+## HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+## STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+## ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+## OF THE POSSIBILITY OF SUCH DAMAGE.
+
+### gemcal ends here

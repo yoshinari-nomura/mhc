@@ -1,0 +1,98 @@
+
+       MHC -- Message Harmonized Calendaring system.
+
+                        Yoshinari Nomura
+
+Created: 1999-09-01
+Revised: 2010-08-07
+
+
+** カレントバージョンを利用する際の注意
+
+・ emacs 19.x には対応していません。
+
+・ TODO の仕様は、今後変更される可能性がありますので、
+     データの互換性がなくなるかもしれません。
+
+・ X-SC-Next: で 1ファイルに複数のアーティクルが書ける機能も
+   仕様変更される予定です。
+
+・ C-cC-c 時のコンフリクトチェックがまだありません。
+
+・ C-cC-c 時のチェックが甘いです。
+    + X-SC-Subject がない
+    + X-SC-Day: X-SC-Cond: の両方に何もない
+    + X-SC-Duration: に間違った範囲を指定する
+   等、一度もスケジュールに現れないような場合に、迷子になります。
+
+** はじめに:
+
+MHC は、ほとんどの予定を電子メールで受け取るような人のためにデザインさ
+れました。MHC を使うと、簡単に電子メールから予定の情報を取り込むことが
+できます。
+
+MHC は以下のような特長をもっています:
+
++ 取り扱いやすいシンプルなデータ構造
++ UNIX と Windows のマルチプラットホームサポート
++ 予定の柔軟な記述
++ 分かりやすく、強力な予定の記述法。
+  各予定は、以下のような情報を保持することができます:
+
+    日付, サブジェクト, 開始/終了時間 (なくてもいい)
+    アラーム,
+    複数のカテゴリ,
+    繰り返しのルール,
+    繰り返しの期間,
+    繰り返しから例外的に外したい日付
+    繰り返しに、例外的に加えたい日付
+    覚書き、予定発生の元になったメール。
+
++ コマンドライン, emacs, GUI, Web といった複数のユーザインターフェース
+  MHC は現在、以下のようなインターフェースを提供しています:
+
+    + Mew や Wanderlust と協調して動く Elisp パッケージ  (mhc.el)
+    + Ruby/Gtk で記述された GUI カレンダー (gemcal)
+    + CGI ベースの Web インターフェース    (web-mhc)
+	(パッケージには含まれてません。http://mhc.hauN.org/web-mhc/ 参照)
+    + コマンドラインでの予定一覧表示ツール (mscan)
+
+MHC は、予定の情報を MH と同じ形式で保存します。そのため、上記以外のツー
+ルからでも、メールと似た操作をすることができます。自分独自のスクリプトを
+書くことも簡単です。
+
+** 動作環境:
+
+MHC は、以下のようなコマンドを利用しています。
+
+gemcal        -- Ruby + ruby-gtk
+mhc-sync      -- Ruby + ssh
+palm2mhc      -- Ruby + pilot-link のライブラリ
+mhc2palm      -- Ruby + pilot-link のライブラリ
+today         -- Ruby
+mhc.el        -- Mew/Wanderlust/Gnus/cmail が動く環境
+
+上記のいずれも UNIX と Windows9x で動くようにしているつもりです。
+
+** インストール:
+
+キュメント類がまだ整備されていません。
+
+emacs 関係は、emacs/ の下で、Makefile を編集して、
+make を叩くとコンパイルできます。
+
+その他の ruby 関係は、トップディレクトリから、
+
+  ruby configure.rb 
+  ruby make.rb
+  ruby make.rb install
+
+と叩いて下さい。pilot-link ライブラリがシステムに入っていない場合は、
+
+  ruby configure.rb --disable-palm
+
+として下さい。この場合、mhc2palm palm2mhc は使えません。
+
+** さらなる情報:
+
+  http://www.quickhack.net/mhc/

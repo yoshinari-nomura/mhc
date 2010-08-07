@@ -1,0 +1,398 @@
+################################################################
+README.ja
+################################################################
+
+Created: 1999-04-07
+Revised: 2002-12-01
+
+mhc の使いかた
+
+0. はじめに
+
+    mhc は、仕事や、遊びの予定がメールで入ってくる人のための、「メール
+    から直にスケジュール登録ができないか ?」 という要求を満たすための
+    ものです。
+
+    mhc は、Mew や Wanderlust, Gnus に寄生するマイナーモードです。
+
+1. インストール
+
+    # perl script の mscan は ver 0.23 から必要なくなりました。
+
+    1. *.el をロードパスの通ったところに置きます。
+
+    2. スケジュールを入れるフォルダを作成します。
+
+      例えば mkdir -p ~/Mail/schedule としたとします。
+      Mew 等からはこの場所が +schedule というフォルダに見えるとします。
+
+    3. .emacs に以下のように記述します。
+
+      Mew (1.94以降) のユーザ:
+       (autoload 'mhc-mew-setup "mhc-mew")
+       (add-hook 'mew-init-hook 'mhc-mew-setup)
+
+      Wanderlust (2.2.10以降) のユーザ:
+       (autoload 'mhc-wl-setup "mhc-wl")
+       (add-hook 'wl-init-hook 'mhc-wl-setup)
+
+      Gnus のユーザ:
+       (autoload 'mhc-gnus-setup "mhc-gnus")
+       (add-hook 'gnus-startup-hook 'mhc-gnus-setup)
+
+      を加えます。また、ディレクトリ構成に設定に応じて、必要であれば、
+
+      (setq mhc-base-folder "+schedule")
+      (setq mhc-mail-path   (expand-file-name "/home/hoge/Mail"))
+
+      のように、ベースとなるフォルダとメールディレクトリを設定します。
+      mhc は mhc-base-folder 以下をスケジュールの保存に使います。
+
+4. 必要なら sample として付属している、日本の祝日を記述した
+
+       DOT.schedule.sample をコピーします。
+
+       cp somewhere/DOT.schedule.sample ~/.schedule
+
+    5. 念のために emacs を立ち上げなおします。
+
+2. 使い方
+
+    mew から、メールを読みながら、以下のような記事に遭遇したとします。
+    行こうと思っているので、忘れないようにスケジュールにつけたいとしま
+    す。
+
+    -----------------------------------------------------------------------
+                        WIDE-July'94 研究会プログラム
+                        ----------------------------
+ 
+     1. 日時：          1994年 7月 9日(土)      10:00 - 17:00
+     2. 場所：          早稲田大学 大久保キャンパス 55号館N棟 1F 大会議室
+     3. プログラム：
+ 
+        10:00 - 10:40   トンネリングを含んだネットワークにおける
+                                経路制御について (30)
+        :
+    -----------------------------------------------------------------------
+
+    C-c. | を入力してみてください。この記事でいいかどうか聞かれた後、
+    日付を推測してくれます。その際、本文の日付部分が反転します。
+    間違っていたら C-n か C-p で反転部分を移動します。
+    minibuffer には対応する日付けが入力された状態になります。
+
+    そのまま minibuffer に日付けを入力することもできます。
+    日付けの入力の仕方は、「3. 日付入力の方法」 を参照してください。
+
+    最後に、見出しを入力した所でドラフトが用意されます。
+    ドラフトでそのまま C-cC-c で登録されます。
+
+    今月の予定を見てみましょう。C-c. . を入力してください。さっき入力し
+    たスケジュールが入っているはずです。そこまでポイントをもっていって、
+    . や SPC を押すと詳しい内容が表示されるでしょう。
+
+    この状態から、
+
+    C-c. .  今月の予定を見る
+    C-c. n  次の月の予定を見る  
+    C-c. p  前の月の予定を見る
+    C-c. g  好きな月にジャンプ
+    C-c. s  その月をスキャンしなおす
+
+    で、各種移動を行うことができます。
+
+    当然、メールからではなく、直にスケジュールを入力したいこともあるで
+    しょう。今月の 15日に歯医者に行くのを入力するときは、
+
+    C-c. . で今月の予定表フォルダに行って、15日のところにポインタをあわ
+    せます。
+
+    C-c. e を入力します。時間を入力します。X-SC-Subject に見出しを付け
+    て、あとは、好きなことを書いてください。
+
+    C-c C-c で登録されました。
+
+    一度入力したものに対して、修正を加えたい場合があります。その時は、
+    C-c. e のかわりに、C-c. m を入力してください。あとは、C-c C-c で修正
+    されます。
+
+    キー操作をまとめると、以下のようになります
+
+    C-c. .  今月の予定を見る
+    C-c. n  次の月の予定を見る  
+    C-c. p  前の月の予定を見る
+    C-c. g  好きな月にジャンプ
+
+    C-c. s  その月をスキャンしなおす
+    C-c. f  今日にカーソルを合わせる (今月の予定を表示中のみに有効)
+    C-c. R  mhc をリセットして、初期化する
+
+    C-c. |  表示中のメールをスケジュールに登録
+    C-c. d  カーソル行のスケジュールを消去する
+    C-c. m  カーソル行のスケジュールに変更を加える
+    C-c. e  スケジュールの新規入力
+    C-c. c  カテゴリーの指定 (後述)
+
+    C-c. P  スケジュールの PostScript データを作成する
+
+    C-c. t  3ヶ月カレンダーの表示をトグルする
+    C-c. ?  Emacs 標準の Calender like な3ヶ月カレンダーを表示する
+        (mhc-calendar-mode といいます。この mode の説明は xxxxx
+        とりあえず、M-x describe-mode して調べてください ^^;)
+
+    C-c.T   ONLINE/OFFLINE の状態を切り替える
+    C-c.S   他の mhc データと同期する
+            Ruby Script の mhc-sync または cvs が利用できる
+
+
+    C-c.p C-c.n  は prefix arg で、何ヶ月進む/戻るを指定できます。
+    C-c.s は prefix arg で、Private カテゴリのサブジェクトを別な文字列
+         に変えることができます。
+
+    上述のキー操作の 'C-c.' の部分は mhc-prefix-key という変数で指定する
+    ことができます。もし、'C-c.' で今月の予定が見たい、'C-ce' でスケジュー
+    ルの新規入力がしたいという様に prefix を 'C-c' にしたいときは、~
+    /.emacs に以下の行を書いてください。
+
+    (setq mhc-prefix-key "\C-c")
+
+3. 日付入力の方法
+
+   draft-buffer から X-SC-* を直に編集:
+
+        X-SC-Day:
+        X-SC-Time:
+        X-SC-Duration:
+        X-SC-Cond:
+        X-SC-Alarm:
+
+        X-SC-Day: には、19990409 のように、日付をスペースで区切って、
+        複数入力することができるようになっています。
+
+                X-SC-Day: 19990409 19990413   …  1999年4月9日と 13日
+
+        X-SC-Time: には 12:00-13:00 や 19:00 のように時間を入力します。
+        祝日のように時間が指定できないイベントは、空白にしておくことも
+        できます。
+
+        X-SC-Duration: には、19990409-19990430 のように、
+        期間を入力できるようになっています。
+        終わりか始めのどちらかを省略してもかまいません。
+        (例: 19991121-)
+        ただしこれで指定した期間は、
+        X-SC-Day: X-SC-Cond: で指定した条件をより限定するために使われ
+        るので、X-SC-Duration: だけではイベントを記述できません。
+        空白にしておくと特に Duration では制限を設けないことを意味します。
+
+        X-SC-Cond: は、以下のキーワードを記述することができます。
+ 
+           00-31                        月の内の日を表す数字
+           1st 2nd 3rd 4th 5th Last     週を表す序数
+           Sun Mon ... Sat              曜日を表す
+           Jan Feb ... Dec              月を表す
+
+           X-SC-Cond: Tue Fri           毎週火曜と金曜
+           X-SC-Cond: 31 Aug            毎年 8月 31日
+           X-SC-Cond: 1st 3rd Fri       第1,3 金曜日
+
+           X-SC-Cond: Fri
+           X-SC-Day:  !19990409         毎週金曜日。ただし 4/9 は除く
+    
+           X-SC-Cond: Fri 13            13日の金曜日ではなくて、
+                                        毎月13日と毎週金曜日
+
+   minibuffer から: 
+
+        Date: (yyyy/mm/dd):  の場所では、
+
+        1999/4/5 のように入力できます。スペースで区切って、複数を入力
+        することができます。yyyy や mm を省略した場合は、
+        先頭の日付に関しては、現在の 年と月が仮定されます。
+        2番目以降は、1つ前の日付の年と月が仮定されます。
+        `-' で区切って連続する何日かを指定することも可能です。
+
+        minibuffer からは、
+        繰り返しの条件等を入力できません。
+        とりあえず開始時間を適当に入れて、draft-buffer で編集して下さい。
+
+    .schedule に記述
+
+        祝日や記念日のように、おそらく変更がないようなイベントは、
+        ~/.schedule に入力しておくこともできます。
+
+           X-SC-Cond: Sep 19
+           X-SC-Subject: 結婚記念日
+
+        sample として、DOT.schedule.sample を付けています。
+
+4. スケジュール情報の保存場所
+
+        通常のスケジュールの情報は、+schedule/yyyy/mm に保存されるよう
+        になっています。(例えば +schedule/1999/04)
+
+        しかし、月にまたがるような繰り返しのスケジュールを 
+        +schedule/yyyy/mm に入れてしまうと、他の月をスキャンしたときに
+        見えなくなってしまうので、月をまたがるようなスケジュールは、
+        +schedule/intersect というフォルダに全部入れることになっていま
+        す。したがって、
+
+        yyyy年 mm月のスケジュールは、 
+
+          ~/.schedule
+          +schedule/yyyy/mm
+          +schedule/intersect
+
+        の 3箇所から検索します。
+
+        +schedule/yyyy/mm と +schedule/intersect のどっちに入れ
+        るかは、C-cC-c したときに X-SC-Date: や X-SC-Cond: をパー
+        ズして決定してやるようになっています。
+
+5. スケジュールの消去
+
+        C-c. d でスケジュールの消去をすると、現在のところ、
+        +schedule/trash に移動するようになっています。
+        繰り返しのスケジュールの場合、'y' 'y' と答えると、
+        全部がいっぺんに見えなくなってし
+        まうので、気を付けてください。
+
+        1回分だけ消したい場合は、'y' 'n' と答えましょう。
+        C-c. m して、X-SC-Day: に外したい日に該当する
+        !yyyymmdd を追加した状態になります。
+
+6. X-SC-Category:
+
+        X-SC-Category: には、空白で区切ったキーワードを入力することが
+        できます。ユーザが自由に設定できます。大文字小文字の区別はあり
+        ません。
+
+        現在は、DOT.schedule.sample の中で Holiday というカテゴリ名を
+        使っています。
+
+        C-c.c で、mhc が表示する項目をカテゴリによって限定することができます。
+
+        Private や Leisure というカテゴリを設定している人は、
+
+        (setq mhc-default-category "!(private || leasure)")
+
+        と書いておくと、普段は private と leasure についての表示を 
+        Summary に出しません。仕事に生きる人は、
+
+        (setq mhc-default-category "work")
+
+        としておくとよいでしょう。:-)
+
+        Private というカテゴリは C-uC-c.s のときに特別な意味を発揮します。
+        Private というカテゴリのスケジュールがあるバッファで
+        C-uC-c.s してみましょう。他人に見せたくないサブジェクト
+        が違う文字列に変わったはずです。
+
+7. X-SC-Alarm:
+
+        mhc.el 自体は Alarm によって何かを知らせてくれたりは (まだ) し
+        ませんが、付属の gemcal という GUI が画面にメッセージを表示し
+        てくれます。X-SC-Alarm: は現在はそのために役に立っています。
+        また mhc2palm で Palm に転送する際にはこの情報が重要になること
+        もあるでしょう。
+
+        X-SC-Alarm: は 1-99 までの数 + minute, hour, day で指定するこ
+        とができます。
+
+        X-SC-Alarm: 10 minute   -- 10分前
+        X-SC-Alarm: 3  hour     -- 3時間前
+        X-SC-Alarm: 3  day      -- 3日前
+
+8. その他のカスタマイズ可能な変数など
+
+    mhc-summary-language
+	mhc の表示言語を選択します。'english, 'japanese があります。
+
+    mhc-default-category
+        サマリバッファに表示するスケジュールのカテゴリを文字列で
+        指定します。デフォルトは nil で全てのカテゴリの
+        スケジュールをを表示します。
+        ! && || () を使った条件式を書くことができます。
+        書式の例は、6. X-SC-Category: を参照。
+
+    mhc-start-day-of-week
+	週の始まりの曜日を指定します。0 で日曜日開始、1 で月曜日開始を
+	意味します。
+
+    mhc-use-wide-scope
+	前月/先月の表示方法を決定します。
+	nil で表示しません。
+	'week は月初、月末の週を一週間分必ず表示します。
+	'wide は 'week の機能に加えて、月初、月末の週が月の区切りでも
+	その前後の表示をします
+    	
+    mhc-use-week-separator
+        サマリバッファで、週の区切りに '------------------' を
+        入れるかどうかです。nil で入れません。0..6 で
+        日..土 の後に入ります。デフォルトは 6
+
+    mhc-summary-use-cw
+        Calendar week number を表示します
+
+    mhc-schedule-file
+        祝日等を記述した ~/.schedle を変更します。
+
+    mhc-insert-calendar
+        サマリバッファに縦に入る3ヶ月カレンダを表示するかどうかです。
+        nil 以外で表示。C-c.t でトグルできます。
+
+    mhc-mode-hook
+    mhc-draft-mode-hook
+        それぞれのモードの hook です。
+
+    mhc-summary-string-conflict
+        スケジュールが競合したときにサマリのサブジェクトの前に表示する [C] 
+        という文字を変更します。
+
+    mhc-summary-string-secret
+        C-uC-c.s で Private なスケジュールを隠したときに代りに表示する文字
+        列を指定します。デフォルトは [SECRET]
+
+    mhc-symbol-face-alist
+        mhc をロードしたときにセットアップされるサマリバッファ上の face
+        (色やフォント) を指定する連想リストです。連想リストの各要素は、
+
+        (FACE-SYMBOL . (PARENT FG BG UNDERLINED FONT STIPPLE))
+
+        のような形をしています。FACE-SYMBOL には以下の種類があります。
+        それぞれのデフォルト値と共に示します。
+
+        (mhc-calendar-face-saturday . (nil "blue"        nil))
+        (mhc-calendar-face-sunday   . (nil "red"         nil))
+        (mhc-summary-face-saturday  . (nil "blue"        nil))
+        (mhc-summary-face-sunday    . (nil "red"         nil))
+        (mhc-summary-face-today     . (nil "black"       "chocolate"))
+        (mhc-summary-face-separator . (nil "gray"        nil))
+        (mhc-summary-face-time      . (nil "yellowgreen" nil))
+        (mhc-summary-face-location  . (nil "black"       "paleturquoise"))
+        (mhc-summary-face-conflict  . (nil "white"       "purple"))
+        (mhc-summary-face-secret    . (nil "gray"        nil))
+        (mhc-minibuf-face-candidate . (nil nil           "yellow"))
+        (mhc-category-face-holiday  . (nil "red"         nil))))
+
+        mhc-symbol-face-alist で全てのシンボルを定義する必要はありません。
+        定義がないシンボルについては、mhc-symbol-face-alist-internal 
+        によって安全に定義されます。
+
+    mhc-category-face-alist
+        サマリバッファ上のサブジェクトを X-SC-Category: の値によって
+        色を変えるための連想リストです。連想リストの各要素は、
+
+       (CATEGORY-STRING . (PARENT FG BG UNDERLINED FONT STIPPLE))
+
+        のような形をしています。ちなみに、僕の mhc-category-face-alist
+        は以下のようになっています。
+
+        (setq mhc-category-face-alist
+         '(
+           ("Work"      . (bold "black"  nil))      ;; お仕事一般
+           ("Lecture"   . (nil  "black"  "gray"))   ;; 講議
+           ("Seminar"   . (nil  "black"  "orange")) ;; ゼミ
+           ("Party"     . (nil  "brown"  "pink"))   ;; 宴会
+           ("Private"   . (nil  "tan"    nil))))    ;; プライベート
+
+   まだあるかもしれません。みつけた方は御一報を。
+

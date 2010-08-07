@@ -1,0 +1,183 @@
+#!@@MHC_RUBY_PATH@@ -Ke
+# -*- ruby -*-
+
+### palm2mhc -- copy articles from palm to new mhc repository.
+##
+## Author:  Yoshinari Nomura <nom@quickhack.net>
+##
+## Created: 1999/10/08
+## Revised: $Date: 2005/09/08 02:56:14 $
+##
+
+$DEBUG = false
+
+require 'mhc-kconv'
+require 'mhc-palm'
+require 'mhc-date'
+require 'mhc-schedule'
+
+def yes_no(message = '')
+  STDOUT .print message + '? '
+  STDOUT .flush
+  ans = STDIN .gets
+  return (ans =~ /^ye?s?$/i)
+end
+
+def usage
+  print "
+palm2mhc -- Add palm articles to a mhc repository.
+
+  usage: palm2mhc [-a | -u] [-n] [-i] [-d dev] [-r dir]
+
+    -a     : Add all articles of a palm to a mhc repository.
+    -u     : Add modified articles of a palm to a mhc repository.
+    -n     : Do nothing effectives to mhc. Useful for checking.
+    -i     : Interactive. Confirm before install to a mhc repository.
+    -d dev : Set the device file connected to the palm.
+             default value is #{$flag_device}
+    -r dir : Set repository directory of mhc.
+             if not exists, palm2mhc makes the directory.
+             default value is #{$flag_dir}
+"
+  exit 1
+end
+
+##
+## option check.
+##
+
+$flag_interactive = false
+$flag_update  = false
+$flag_append  = false
+$flag_noharm  = false
+$flag_dir     = MhcScheduleDB::DEF_BASEDIR
+$flag_device  = '/dev/pilot'
+
+while ARGV .length > 0
+  case ARGV[0]
+  when '-i'
+    $flag_interactive = true
+  when '-n'
+    $flag_noharm  = true
+  when '-u'
+    $flag_update  = true
+  when '-a'
+    $flag_append  = true
+  when '-d'
+    ARGV .shift
+    $flag_device = ARGV[0] 
+  when '-r'
+    ARGV .shift
+    $flag_dir = ARGV[0]
+  else
+    usage()
+  end
+  ARGV .shift
+end
+
+if $flag_device != "net:" && !File .exist?($flag_device)
+  STDERR .print "Can not open #{$flag_device}.\n"
+  exit 1
+end
+
+usage() if !($flag_update || $flag_append) || ($flag_update && $flag_append)
+
+##
+## Open palm & copy to new mhc repository.
+##
+
+psock = Pilot .new($flag_device)
+STDERR .print "Press Sync Button\n"
+
+if psock .listen
+  pdb = PilotApptDB .new(psock, "DatebookDB")
+else
+  STDERR .print "Can not open #{$flag_device}.\n"
+  exit 1
+end
+
+STDERR .print "Connected..\n"
+mdb = MhcScheduleDB .new($flag_dir)
+
+pdb .each_record{|rec|
+  if $flag_append || ($flag_update && rec .attribute_dirty?)
+    x = rec .to_xsc
+
+    if x
+      print "***************************************************************\n"
+      print MhcKconv::todisp(x .dump)
+      print "***************************************************************\n"
+
+      if !$flag_noharm
+	if $flag_interactive
+	  if yes_no("Do you install this artice to mhc ")
+	    mdb .add_sch(x)
+	    print "Installed.\n"
+	  else
+	    print "Ignored.\n"
+	  end
+	else
+	  mdb .add_sch(x)
+	end
+      end
+    end
+  end
+}
+
+##
+## close palm & exit
+##
+
+if $flag_noharm
+  ## do nothing
+else
+  if !$flag_interactive or yes_no("Do you clear dirty flag of the palm ")
+    # commit
+    if ! File .method_defined?("fsync")
+      system("sync")
+      system("sync")
+    end
+    # done.
+    pdb .reset_sync_flags  ## remove all dirty flag in palm.
+    print "Dirty flag cleared.\n"
+  else
+    print "Dirty flag not cleared.\n"
+  end
+end
+
+pdb .close
+psock .close
+exit 0
+
+### Copyright Notice:
+
+## Copyright (C) 1999, 2000 Yoshinari Nomura. All rights reserved.
+## Copyright (C) 2000 MHC developing team. All rights reserved.
+
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions
+## are met:
+## 
+## 1. Redistributions of source code must retain the above copyright
+##    notice, this list of conditions and the following disclaimer.
+## 2. Redistributions in binary form must reproduce the above copyright
+##    notice, this list of conditions and the following disclaimer in the
+##    documentation and/or other materials provided with the distribution.
+## 3. Neither the name of the team nor the names of its contributors
+##    may be used to endorse or promote products derived from this software
+##    without specific prior written permission.
+## 
+## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
+## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+## FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
+## THE TEAM OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+## INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+## (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+## SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+## HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+## STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+## ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+## OF THE POSSIBILITY OF SUCH DAMAGE.
+
+### palm2mhc ends here

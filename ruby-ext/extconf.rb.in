@@ -1,0 +1,47 @@
+#!@@MHC_RUBY_PATH@@ -Ke
+# -*- ruby -*-
+
+require 'mkmf'
+
+################################################################
+# crate make file.
+
+$CFLAGS  = "@@MHC_CFLAGS@@"
+$CFLAGS += " -DNEW_NAMING " if '@@MHC_RUBY_VERSION@@' >= '010300'
+$LDFLAGS = "@@MHC_LDFLAGS@@"
+
+if '@@MHC_DISABLE_PALM@@' == ''
+#  CONFIG["LDSHARED"] = "LD_RUN_PATH=@@MHC_PILOT_LINK_LIB@@ " +
+#    CONFIG["LDSHARED"]
+
+  have_library('socket')
+  have_library('pisock')
+  create_makefile("mhc_pilib")
+else
+  print "creating make.rb\n"
+  mfile = open("make.rb", "w")
+  mfile .print <<EOMK
+#!@@MHC_RUBY_PATH@@ -Ke
+#------------------------------------------------------
+
+$LOAD_PATH .unshift('@@MHC_TOPDIR@@')
+
+require 'mhc-make'
+include MhcMake
+
+INSTALL_FILES = [
+  'lib/mhc-date.rb:0644:@@MHC_LIBDIR@@',
+  'lib/mhc-gtk.rb:0644:@@MHC_LIBDIR@@',
+  'lib/mhc-kconv.rb:0644:@@MHC_LIBDIR@@',
+  'lib/mhc-kconv.rb:0644:@@MHC_LIBDIR@@',
+  'lib/mhc-palm.rb:0644:@@MHC_LIBDIR@@',
+  'lib/mhc-schedule.rb:0644:@@MHC_LIBDIR@@',
+  'lib/mhc-signal.rb:0644:@@MHC_LIBDIR@@'
+]  ## Makefile does.
+
+doit()
+#------------------------------------------------------
+EOMK
+  mfile .close
+  File .chmod(0755, 'make.rb')
+end

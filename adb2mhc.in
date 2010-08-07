@@ -1,0 +1,345 @@
+#!@@MHC_RUBY_PATH@@ -Ke
+# -*- ruby -*-
+
+## adb2mhc -- Convert ADB DB of HP200LX into MHC format.
+##
+## Author:  Yoshinari Nomura <nom@quickhack.net>
+##
+## Created: 1999/11/12
+## Revised: $Date: 2003/02/24 13:20:45 $
+##
+
+require 'mhc-date'
+require 'mhc-schedule'
+require 'kconv'
+
+class Appt
+  WEEK   = %w(Mon Tue Wed Thu Fri Sat Sun)
+  MONTH  = %w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
+  ORDER  = %w(1st 2nd 3rd 4th last)
+  REPEAT = %w(none daily weekly monthly yearly custom)
+
+  def appt?; !todo?                      ; end
+  def todo?; @appt_or_todo_flag & 16 != 0; end
+
+  ################################################################
+  def initialize(raw_record)
+
+    record_length,		# 0 2 record length.
+    category_offset,		# 2 2 offset to category data in this record.
+    location_offset,		# 4 2 offset to location data in this record.
+    repeat_offset,		# 6 2 offset to repeat data in this record.
+    @linked_note_number,	# 8 2 linked note record no.
+    previous_record_number,	#10 2 always -1 (or 65535) ?
+    next_record_number,		#12 2 always -1 (or 65535) ?
+    appt_or_todo_flag,		#14 1 appointment or todo data.
+    start_date,			#15 3 packed 3 bytes (year-1900,month-1,day-1)
+    difference,			#18 8 used differently appoint from todo.
+    repeat_status,		#26 1 1:none, 2:daily, 4:monthly ...
+                                #27 * include description, category, location,
+                                #             repeatinfo.
+    trailer    = raw_record .unpack("vvvvvvvCa3a8Ca*")
+
+    @repeat_status      = bit_to_string(repeat_status, REPEAT)
+    @appt_or_todo_flag  = appt_or_todo_flag
+    @start_date         = bit_to_date(start_date)
+    @description, ##
+    @category,    ##
+    @location,    ##
+    repeat_info = trailer .unpack(format("A%d A%d A%d a%d",
+					 category_offset - 27,
+					 location_offset - category_offset,
+					 repeat_offset - location_offset,
+					 record_length - repeat_offset))
+
+    # AppointOrTodoFlag is used like bellow
+    #
+    # Bit    Appointment   ToDo
+    # 
+    # 0(LSB) Alarm         Don't care
+    # 1      MonthView     Completed
+    # 2      WeekView      Carry forward
+    # 3
+    # 4      This-record-is-TODO.
+    # 5      This-record-is-Appointment.
+    #
+    if todo?
+      ## The record is todo.
+      @todo_priority ,  ##
+      @todo_due_days,   ##
+      complete_date = difference .unpack("A2va3x")
+
+      @todo_completed     = (@appt_or_todo_flag & 2 != 0)
+      @todo_complete_date = bit_to_date(complete_date)
+    else
+      ## The record is appointment
+
+      start_time,         #18 2 minute of the start time. hour is minute/60.
+      consecutive,        #20 2 no of consecutive days.
+      end_time,           #22 2 minute of the end time. hour is minute/60.
+                          #24 2 lead time in minute.
+      appt_lead_time   = difference .unpack("vvvv")
+
+      @appt_lead_time   = @appt_or_todo_flag & 1 != 0 ? appt_lead_time : nil
+      @appt_start_time  = bit_to_time(start_time)
+      @appt_consecutive = consecutive + 1
+      @appt_end_time    = bit_to_time(end_time)
+    end
+
+    ################################################################
+    ## unpack repeat info.
+
+    if @repeat_status == 'none'
+      return self
+    end
+
+    repeat_freqency,   ##
+    repeat_param1,     ##
+    repeat_param2,     ##
+    repeat_month,      ##
+    repeat_start_date, ##
+    repeat_end_date,   ##
+    repeat_delete_count, ##
+    repeat_delete_dates = repeat_info .unpack("cCCva3a3ca*")
+
+    if @repeat_status != 'custom'
+      @repeat_freqency = repeat_freqency
+    end
+
+    if repeat_param1 & 0x80 != 0
+      ## repeat by order and week.
+      @repeat_day  = bit_to_tag(repeat_param1, WEEK)
+      @repeat_week = bit_to_tag(repeat_param2, ORDER)
+    else
+      ## repeat by day number.
+      @repeat_day  = repeat_param1
+      ## param2 is abandoned.
+    end
+
+    @repeat_month      = bit_to_tag(repeat_month, MONTH)
+    @repeat_start_date = bit_to_date(repeat_start_date)
+    @repeat_end_date   = bit_to_date(repeat_end_date)
+
+    if repeat_delete_count > 0
+      len = repeat_delete_dates .length 
+      ary= repeat_delete_dates .unpack("a3x" * (len / 4))
+      @repeat_delete_dates  = ary .collect{|a| bit_to_date(a)}
+    end
+  end
+
+  def dump
+    print "linked_note_number    #{@linked_note_number}  \n" ## Integer
+    print "appt_or_todo_flag     #{@appt_or_todo_flag}   \n" ## Bitfield
+    print "description           #{@description}         \n" ## String
+    print "category              #{@category}            \n" ## String
+    print "location              #{@location}            \n" ## String
+    print "start_date            #{@start_date}          \n" ## MhcDate
+    print "appt_consecutive      #{@appt_consecutive}    \n" ## Integer
+    print "appt_start_time       #{@appt_start_time}     \n" ## MhcTime
+    print "appt_end_time         #{@appt_end_time}       \n" ## MhcTime
+    print "appt_lead_time        #{@appt_lead_time}      \n" ## Integer
+    print "repeat_status         #{@repeat_status}       \n" ## String one of 'none', 'weekly' ...
+    print "repeat_freqency       #{@repeat_freqency}     \n" ## Integer
+    print "repeat_start_date     #{@repeat_start_date}   \n" ## MhcDate
+    print "repeat_end_date       #{@repeat_end_date}     \n" ## MhcDate
+    print "repeat_month          #{@repeat_month}        \n" ## Array of String 'Jan', 'Feb' ...
+    print "repeat_week           #{@repeat_week}         \n" ## Array of String 'Sun', 'Mon' ...
+    print "repeat_day            #{@repeat_day}          \n" ## Integer
+    print "repeat_delete_dates   #{@repeat_delete_dates} \n" ## Integer
+    print "todo_complete_date    #{@todo_complete_date}  \n" ## MhcDate
+    print "todo_due_days         #{@todo_due_days}       \n" ## Integer
+    print "todo_priority         #{@todo_priority}       \n" ## String
+    print "\n\n"
+  end    
+
+  def to_mhc
+    if todo?
+      STDERR .print "Warn: Todo records are not supported... ignored.\n"
+      return nil
+    end
+    if (@repeat_status && @repeat_status != 'daily') and
+	(@repeat_freqency && @repeat_freqency > 1)
+      STDERR .print "Warn: Records such as freqency > 1  are not supported... ignored.\n"
+      return nil
+    end
+
+    if @description =~ /\|/
+      STDERR .print "Warn: Cron job is not supported... ignored.\n"
+      return nil
+    end
+
+    ## X-SC-Subject:   @description
+    ## X-SC-Category:  @category
+    ## X-SC-Location:  @location
+    ## X-SC-Day:       !@repeat_delete_date  +
+    ##                 @start_date if @repeat_status = 'none'
+    ## X-SC-Time:      @appt_start_time - @appt_end_time or ''
+    ## X-SC-Cond:      @repeat_month @repeat_week @repeat_day
+    ## X-SC-Duration:  @repeat_start_date - @repeat_end_date or '' 
+
+    x_sc_subject  = Kconv::tojis(@description)
+    x_sc_category = Kconv::tojis(@category)
+    x_sc_alarm    = @appt_lead_time ? @appt_lead_time .to_s + ' minute' : ''
+    x_sc_time     = @appt_start_time ? [@appt_start_time, @appt_end_time] .join('-') : ''
+
+    x_sc_day = ''
+    if @repeat_status == 'daily' && @repeat_freqency
+      i = @repeat_start_date
+      while (i <= @repeat_end_date)
+	x_sc_day += "#{i} "
+	i = i .succ(@repeat_freqency)
+      end
+    elsif @repeat_status == 'none'
+      x_sc_day  = @start_date .to_s
+    end
+
+    x_sc_day     += ' ' + (@repeat_delete_dates ? @repeat_delete_dates .collect{|date| '!' + date .to_s} .join(' ') : '')
+    x_sc_cond     = ((@repeat_month || []) + (@repeat_week || []) + (@repeat_day || [])) .join(' ')
+    x_sc_duration = (@repeat_start_date || @repeat_end_date) ? "#{@repeat_start_date}-#{@repeat_end_date}" : ''
+
+    header = [
+      "X-SC-Subject: "  + x_sc_subject,
+      "X-SC-Category: " + x_sc_category,
+      "X-SC-Day: "      + x_sc_day,
+      "X-SC-Time: "     + x_sc_time,
+      "X-SC-Cond: "     + x_sc_cond,
+      "X-SC-Alarm: "    + x_sc_alarm,
+      "X-SC-Duration: " + x_sc_duration ] .join("\n") + "\n"
+
+    MhcScheduleItem .new(header, false)
+  end
+
+  ################################################################
+  ## private
+  private
+
+  def bit_to_tag(bit, tag)
+    ret, i = [], 1
+    tag .each{|str|
+      if bit & i != 0      
+	ret << str 
+      end
+      i <<= 1
+    }
+    return ret
+  end
+
+  def bit_to_string(bit, tag)
+    ret, i = [], 1
+    tag .each{|str|
+      return str if bit & i != 0
+      i <<= 1
+    }
+    return nil
+  end
+
+  def bit_to_time(bit)
+    if bit == 65535
+      return nil
+    else
+      return MhcTime .new(bit / 60, bit % 60)
+    end
+  end
+
+  def bit_to_date(bit)
+    y, m, d = bit .unpack("CCC")
+    return MhcDate .new(y + 1900, m + 1, d + 1)
+  end
+end
+
+def usage(do_exit = true)
+  STDERR .print "usage: adb2mhc [options] adb_files...
+  Convert ADB DB of HP200LX into MHC format.
+  --help               show this message.
+  --mhc-dir            set repository dir of MHC.
+                       it is good idea to set empty dir.
+                       default: ~/Mail/schedule\n"
+  exit if do_exit
+end
+
+################################################################
+## main
+
+while ARGV[0] =~ /^-/
+  case (ARGV[0])
+  when /^--mhc-dir=(.+)/
+    mhc_dir = $1
+    ARGV .shift
+  else
+    usage()
+  end
+end
+
+mhc_db = MhcScheduleDB .new(mhc_dir || File .expand_path("~/Mail/schedule"))
+
+adb_file = File .open(ARGV[0])
+db_type  = adb_file .read(4) .chop
+
+if db_type !=  'hcD'
+  STDERR .print "Error: Unknown file type #{db_type}... aborted.\n"
+  exit
+end
+
+while (header = adb_file .read(6))
+  type, status, length, no = header .unpack("CCvv")
+
+  exit if length <= 6
+
+  if ((field = adb_file .read(length - 6)) .length != length - 6)
+    STDERR .print "Error: ADB file format error... aborted.\n"
+    exit
+  end
+
+  next if status & 0x01 != 0 # This field is obsolete.
+  ## print "#{type}, #{status}, #{length}, #{no}\n"
+
+  case type
+  when 9
+    STDERR .print "Warn: Attached note records are not supported... ignored.\n"
+    ## Note reocrd. 
+    next
+  when 11
+    appt_item = Appt .new(field)
+    mhc_sch = appt_item .to_mhc
+    if mhc_sch
+      print "----------------------------------------------\n"
+      print mhc_sch .dump
+      mhc_db .add_sch(mhc_sch)
+    end
+  else
+    next
+  end
+end
+
+### Copyright Notice:
+
+## Copyright (C) 1999, 2000 Yoshinari Nomura. All rights reserved.
+## Copyright (C) 2000 MHC developing team. All rights reserved.
+
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions
+## are met:
+## 
+## 1. Redistributions of source code must retain the above copyright
+##    notice, this list of conditions and the following disclaimer.
+## 2. Redistributions in binary form must reproduce the above copyright
+##    notice, this list of conditions and the following disclaimer in the
+##    documentation and/or other materials provided with the distribution.
+## 3. Neither the name of the team nor the names of its contributors
+##    may be used to endorse or promote products derived from this software
+##    without specific prior written permission.
+## 
+## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
+## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+## FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
+## THE TEAM OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+## INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+## (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+## SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+## HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+## STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+## ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+## OF THE POSSIBILITY OF SUCH DAMAGE.
+
+### adb2mhc ends here

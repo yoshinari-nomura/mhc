@@ -1,0 +1,44 @@
+#!@@MHC_RUBY_PATH@@ -Ke
+# -*- ruby -*-
+
+$LOAD_PATH .unshift('@@MHC_TOPDIR@@')
+
+opt = ''
+opt += ' --with-lispdir=@@MHC_LISPDIR@@' if '@@MHC_LISPDIR@@' != ''
+opt += ' --with-packagedir=@@MHC_XEMACS_PACKAGE_DIR@@' if '@@MHC_XEMACS_PACKAGE_DIR@@' != ''
+opt += ' --with-addpath=@@MHC_EMACS_ADD_PATH@@' if '@@MHC_EMACS_ADD_PATH@@' != ''
+opt += ' --with-mew' if '@@MHC_WITH_MEW@@' != ''
+opt += ' --with-wl' if '@@MHC_WITH_WL@@' != ''
+opt += ' --with-gnus' if '@@MHC_WITH_GNUS@@' != ''
+opt += ' --with-cmail' if '@@MHC_WITH_CMAIL@@' != ''
+OPT = opt
+
+require 'mhc-make'
+include MhcMake
+
+EMACS  = '@@MHC_EMACS_PATH@@'
+XEMACS = '@@MHC_XEMACS_PATH@@'
+OPTION = '-batch -q -no-site-file -l MHC-MK'
+
+ENV['PWD'] = Dir .pwd() if /cygwin|mingw32/ =~ RUBY_PLATFORM
+
+def default
+  make_system("#{EMACS} #{OPTION} -f make-mhc-compile", OPT)
+end
+
+def package
+  make_system("#{XEMACS} #{OPTION} -f make-mhc-compile-package", OPT)
+end
+
+def clean
+  Dir .glob("*.elc auto-autoloads.el custom-load.el make.rb") .each{|file|
+    print "removing: " + file + "\n"
+    File .delete(file)
+  }
+end
+
+def install
+  make_system("#{EMACS} #{OPTION} -f make-mhc-install", OPT)
+end
+
+doit()
