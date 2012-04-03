@@ -1111,6 +1111,8 @@ class MhcScheduleDB
   DEF_BASEDIR = HOME + '/Mail/schedule'
   DEF_RCFILE  = HOME + '/.schedule'
 
+  ALL = 'all'
+
   def initialize(basedir = DEF_BASEDIR, *rcfiles)
     @db        = {}
     @mtime     = {}
@@ -1232,7 +1234,7 @@ class MhcScheduleDB
 
   def search1(d, category = nil, do_update = true)
     mon, wek, ord, day, date = d .m_s, d .w_s, d .o_s, d .d_s, d
-    all, last = 'all', 'Last'
+    last = 'Last'
     ret = []
     category_ary, category_is_invert = nil, false
 
@@ -1246,9 +1248,9 @@ class MhcScheduleDB
       category_ary = category .split .collect{|x| x .capitalize}
     end
 
-    search_key = [date, mon+ord+wek, mon+all+wek, all+ord+wek,
-                  all+all+wek, mon+day, all+day]
-    search_key << mon+last+wek << all+last+wek if d .o_last?
+    search_key = [date, mon+ord+wek, mon+ALL+wek, ALL+ord+wek,
+                  ALL+ALL+wek, mon+day, ALL+day, mon+ALL, ALL+ALL]
+    search_key << mon+last+wek << ALL+last+wek if d .o_last?
     
     update(d) if do_update
     to_slots(d) .each{|slot|
@@ -1278,8 +1280,8 @@ class MhcScheduleDB
     day .each{|ymd|
       _regist(slot, ymd, o)
     }
-    mon = ['all'] if (mon .empty?)
-    ord = ['all'] if (ord .empty?)
+    mon = [ALL] if (mon .empty?)
+    ord = [ALL] if (ord .empty?)
     
     mon .each{|mon|
       ord .each{|ord|
@@ -1290,6 +1292,9 @@ class MhcScheduleDB
       num .each{|num|
 	_regist(slot, mon + format("%02d", num .to_i), o)
       }
+      if (num.empty? && wek.empty? && (day.empty? || mon != ALL))
+        _regist(slot, mon + ALL, o)
+      end
     }
   end
   
