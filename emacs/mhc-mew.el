@@ -373,16 +373,16 @@
   (re-search-forward "^$" nil t)
   (forward-line)
   (let* ((charset (or (mew-charset-guess-region (point) (point-max))
-		      mew-us-ascii))
-	 (cte (or (mew-charset-to-cte charset) mew-b64))
-	 (switch mew-prog-mime-encode-text-switch)
-	 beg opt file)
+                      mew-us-ascii))
+         (cte (or (mew-charset-to-cte charset) mew-b64))
+         (switch mew-prog-mime-encode-text-switch)
+         beg opt file)
     (mhc-header-narrowing
       (mhc-header-put-value "Content-Type"
-			    (concat "Text/Plain; charset=" charset))
+                            (concat "Text/Plain; charset=" charset))
       (mhc-header-put-value "Content-Transfer-Encoding" cte))
     (if (mew-case-equal cte mew-7bit)
-	()
+        ()
       (goto-char (point-min))
       (re-search-forward "^$" nil t)
       (forward-line)
@@ -390,27 +390,27 @@
       (mew-cs-encode-region beg (point-max) (mew-charset-to-cs charset))
       (cond
        ((and (mew-case-equal cte mew-b64) (fboundp 'base64-encode-region))
-	(goto-char beg)
-	(while (search-forward "\n" nil t) (replace-match "\r\n"))
-	(base64-encode-region beg (point-max))
-	(goto-char (point-max))
-	(insert "\n"))
+        (goto-char beg)
+        (while (search-forward "\n" nil t) (replace-match "\r\n"))
+        (base64-encode-region beg (point-max))
+        (goto-char (point-max))
+        (insert "\n"))
        ((mew-which-exec mew-prog-mime-encode)
-	(setq opt (mew-prog-mime-encode-get-opt cte switch))
-	(if (null opt)
-	    (mew-encode-error (concat "Unknown CTE: " cte))
-	  (setq file (mew-make-temp-name))
-	  (mew-frwlet
-	   mew-cs-dummy mew-cs-text-for-write
-	   ;; NEVER use call-process-region for privacy reasons
-	   (write-region beg (point-max) file nil 'no-msg))
-	  (delete-region beg (point-max)))
-	(mew-piolet
-	 mew-cs-text-for-read mew-cs-dummy
-	 (apply (function call-process) mew-prog-mime-encode
-		file t nil opt))
-	(if (file-exists-p file)
-	    (delete-file file)))
+        (setq opt (mew-prog-mime-encode-get-opt cte switch))
+        (if (null opt)
+            (mew-encode-error (concat "Unknown CTE: " cte))
+          (setq file (mew-make-temp-name))
+          (mew-frwlet
+              mew-cs-dummy mew-cs-text-for-write
+            ;; NEVER use call-process-region for privacy reasons
+            (write-region beg (point-max) file nil 'no-msg))
+          (delete-region beg (point-max)))
+        (mew-piolet
+            mew-cs-text-for-read mew-cs-dummy
+          (apply (function call-process) mew-prog-mime-encode
+                 file t nil opt))
+        (if (file-exists-p file)
+            (delete-file file)))
        (t (mew-encode-error (concat mew-prog-mime-encode " doesn't exist")))))))
 
 
