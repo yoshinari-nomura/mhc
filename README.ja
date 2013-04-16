@@ -83,7 +83,7 @@ make を叩くとコンパイルできます。
 
 その他の ruby 関係は、トップディレクトリから、
 
-  ruby configure.rb 
+  ruby configure.rb
   ruby make.rb
   ruby make.rb install
 

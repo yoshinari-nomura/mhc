@@ -33,12 +33,12 @@ class Pilot
     return self
   end
 
-  def close 
+  def close
     PiLib .closeSock(@sd)
     return self
   end
 
-  ## Add an entry into the HotSync log on the Pilot. 
+  ## Add an entry into the HotSync log on the Pilot.
   ## \n is OK, as usual. You may invoke this command once or more before
   ## calling EndOfSync (sockClose), but it is not required.
   def add_synclog(string)
@@ -46,7 +46,7 @@ class Pilot
     return self
   end
 
-  ## reset lastSyncPC in the UserInfo to 0 
+  ## reset lastSyncPC in the UserInfo to 0
   def reset_lastsync_pc
     PiLib .dlp_ResetLastSyncPC(@sd)
     return self
@@ -100,7 +100,7 @@ class PilotDB
   end
 
   def write_record(rec)
-    
+
     rec_array = rec .to_a
     new_id = PiLib .dlp_WriteRecord(@sd, @db, rec_array)
     return new_id
@@ -261,7 +261,7 @@ class PilotFile
     return @recClass .new(*ary)
   end
 end
-    
+
 ################################################################
 ##
 ## classes for Memo
@@ -275,7 +275,7 @@ end
 
 class PilotMemoRecord < PilotRecord
   undef set_data
-  
+
   def set_memo_data(string)
     @memo_data = string
     return self
@@ -469,7 +469,7 @@ class PilotApptRecord < PilotRecord
 
   ## repeatType -> Weekly
   ##
-  ## x-sc-day は空 && 
+  ## x-sc-day は空 &&
   ## x-sc-cond は wek だけ(複数可)
   ##
   ## Sun Mon Tue
@@ -486,12 +486,12 @@ class PilotApptRecord < PilotRecord
     if weeks .is_a?(Array) && weeks .length == 7
       weeks .each{|bool|
 	if !(bool == true || bool == false)
-	  raise "Type error: weeks must be bool[7]" 
+	  raise "Type error: weeks must be bool[7]"
 	end
 	w << bool
       }
     else
-      raise "Type error: weeks must be bool[7]" 
+      raise "Type error: weeks must be bool[7]"
     end
 
     @repeatType      = 2
@@ -499,7 +499,7 @@ class PilotApptRecord < PilotRecord
     @repeatWeekstart = 0
     return self
   end
-    
+
   ## repatType -> Monthly
   ##
   ## x-sc-day は空 &&
@@ -603,7 +603,7 @@ class PilotApptRecord < PilotRecord
       if @repeatFrequency > 1
 	STDERR .print "#{@beg} : #{Kconv::tojis(@description)} "
 	STDERR .print "unsupported. ignored..\n"
-	return nil 
+	return nil
       end
 
       if !forever?
@@ -683,7 +683,7 @@ class PilotApptRecord < PilotRecord
 
     return header, body, datebk3_icon
   end
-    
+
   ## Time クラスインスタンスの 時間部分だけを置き換える
   def replace_time(time, hour, min)
     return Time .local(*time .to_a .indexes(5, 4, 3) + [hour, min])
@@ -694,7 +694,7 @@ class PilotApptRecord < PilotRecord
     return Time .local(y, m, d, *time .to_a .indexes(2, 1))
   end
 
-  ## 
+  ##
   def set_frequency(freq)
     raise "Type error: freq must be Integer\n"  if !freq .is_a?(Integer)
     @repeatFrequency = freq
@@ -721,9 +721,9 @@ class PilotApptRecord < PilotRecord
 
   def unpack
     if @data != ''
-      @event, @beg, @fin, @alarm, @advance, @advanceUnits, 
-	@repeatType, @repeatForever, @repeatEnd, @repeatFrequency, 
-	@repeatDay,  @repeatDays, @repeatWeekstart, @exceptions, 
+      @event, @beg, @fin, @alarm, @advance, @advanceUnits,
+	@repeatType, @repeatForever, @repeatEnd, @repeatFrequency,
+	@repeatDay,  @repeatDays, @repeatWeekstart, @exceptions,
 	@exception,  @description, @note = PiLib .unpack_Appointment(@data)
 
     else
@@ -751,7 +751,7 @@ class PilotApptRecord < PilotRecord
   def pack
     ary = [@event, @beg, @fin, @alarm, @advance,
       @advanceUnits, @repeatType, @repeatForever,
-      @repeatEnd, @repeatFrequency, 
+      @repeatEnd, @repeatFrequency,
       @repeatDay,  @repeatDays, @repeatWeekstart,
       @exceptions, @exception,  @description, @note]
     @data = PiLib .pack_Appointment(ary)
@@ -767,7 +767,7 @@ class Time
   def to_xsctime
     return format("%02d:%02d", hour, min)
   end
-end    
+end
 
 ################################################################
 ##
@@ -779,7 +779,7 @@ class PilotAddressDB < PilotDB
 
     app_info = self .get_app_info
 
-    @catRenamed, @catName, @catID, @catLastUniqueID, 
+    @catRenamed, @catName, @catID, @catLastUniqueID,
       # [22]       [22]          [8]
       @labels, @labelsRenamed, @phoneLabels,
       @country, @sortByCompany = *PiLib .unpack_AddressAppInfo(app_info)
@@ -787,7 +787,7 @@ class PilotAddressDB < PilotDB
     ## @labels[22], @labelsRenamed[22]
     ##
 
-    ## @phoneLabels[0..7] = 
+    ## @phoneLabels[0..7] =
     ##      [会社, 自宅, Fax, その他, E-mail, 代表, ポケベル, 携帯]
 
     @recClass = PilotAddRecord
@@ -837,7 +837,7 @@ end
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -846,7 +846,7 @@ end
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

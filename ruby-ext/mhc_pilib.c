@@ -76,7 +76,7 @@ static VALUE rpi_sock_close(VALUE obj, VALUE rb_sd)
   return Qnil;
 }
 
-/* Add an entry into the HotSync log on the Pilot. 
+/* Add an entry into the HotSync log on the Pilot.
    \n is OK, as usual. You may invoke this command once or more before
    calling EndOfSync (sockClose), but it is not required. */
 static VALUE rdlp_AddSyncLogEntry(VALUE obj, VALUE sd, VALUE str)
@@ -209,7 +209,7 @@ static VALUE rdlp_ReadRecordByIndex(VALUE obj, VALUE sd, VALUE db, VALUE i)
   if (!buffer) return Qnil;
 
   ary = ary_new();
-  len = dlp_ReadRecordByIndex(FIX2INT(sd), FIX2INT(db), FIX2INT(i), 
+  len = dlp_ReadRecordByIndex(FIX2INT(sd), FIX2INT(db), FIX2INT(i),
 			      buffer, &id, &attr, &category);
 
   if (len <= 0) {
@@ -244,7 +244,7 @@ static VALUE rdlp_ReadRecordById(VALUE obj, VALUE sd, VALUE db, VALUE vid)
   if (!buffer) return Qnil;
 
   ary = ary_new();
-  len = dlp_ReadRecordById(FIX2INT(sd), FIX2INT(db), id, 
+  len = dlp_ReadRecordById(FIX2INT(sd), FIX2INT(db), id,
 			   buffer, &index, &attr, &category);
 
   if (len <= 0) {
@@ -303,7 +303,7 @@ static VALUE rdlp_WriteRecord(VALUE obj, VALUE sd, VALUE db, VALUE ary)
   ret = dlp_WriteRecord(FIX2INT(sd), FIX2INT(db), attr,
 			id, category, buffer->data, len, &new_id);
   pi_buffer_free(buffer);
-  
+
   if (ret < 0){
     dprintf(("%s\n", dlp_strerror(ret)));
     return Qnil;
@@ -465,7 +465,7 @@ static VALUE rpack_Address(VALUE x, VALUE ary1)
   ar_get1(ary, "i", add.showPhone);
   ar_get2(ary, "s", add.entry, 19);
 
-  if (pack_Address(&add, buffer, address_v1) < 0) 
+  if (pack_Address(&add, buffer, address_v1) < 0)
     ret = Qnil;
   else
     ret = str_new(buffer->data, buffer->used);
@@ -541,7 +541,7 @@ static VALUE runpack_AddressAppInfo(VALUE o, VALUE raw_str)
   ar_set1(ary, "b", ai.sortByCompany);
 
   return ary;
-}  
+}
 
 /****************************************************************/
 /********************* dump DB file *****************************/
@@ -681,7 +681,7 @@ void Init_mhc_pilib()
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 ** 1. Redistributions of source code must retain the above copyright
 **    notice, this list of conditions and the following disclaimer.
 ** 2. Redistributions in binary form must reproduce the above copyright
@@ -690,7 +690,7 @@ void Init_mhc_pilib()
 ** 3. Neither the name of the team nor the names of its contributors
 **    may be used to endorse or promote products derived from this software
 **    without specific prior written permission.
-** 
+**
 ** THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

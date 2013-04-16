@@ -29,7 +29,7 @@
 ;;    (mhc-guess/gather-candidate mhc-guess-time-regexp-list now)
 ;;
 ;;    の 2つの関数で、
-;;  
+;;
 ;;    ([found-date found-date-end found-point-begin found-point-end nil] ...)
 ;;    ([found-time found-time-end found-point-begin found-point-end nil] ...)
 ;;
@@ -266,7 +266,7 @@ You can specify following symbols as a list.
  	      (cons `(,regex mhc-guess/make-location-from-string 0)
  		    mhc-guess-location-regexp-list)))
     (setq mhc-guess/location-regexp-list mhc-guess-location-regexp-list)))
-  
+
 (defun mhc-guess-location (&optional hint1)
   (mhc-guess/guess mhc-guess/location-regexp-list hint1))
 
@@ -276,8 +276,8 @@ You can specify following symbols as a list.
 			  mhc-guess-keyword-score-alist
 			  hint1
 			  now)))
-    (sort score-list 
-	  (function (lambda (a b) 
+    (sort score-list
+	  (function (lambda (a b)
 		      (if (= (mhc-guess-get-score a) (mhc-guess-get-score b))
 			  (< (- (mhc-guess-get-end b) (mhc-guess-get-begin b))
 			     (- (mhc-guess-get-end a) (mhc-guess-get-begin a)))
@@ -316,7 +316,7 @@ You can specify following symbols as a list.
  	(setq  p pos-list
  	       param-list nil)
  	(while p
- 	  (setq param-list 
+ 	  (setq param-list
  		(cons
  		 (if (and (car p) (match-beginning (car p)))
  		     (buffer-substring (match-beginning (car p))
@@ -326,8 +326,8 @@ You can specify following symbols as a list.
  	  (setq p (cdr p)))
  	(setq duration (apply 'funcall convfunc now (nreverse param-list)))
 	(if (car duration)
-	    (setq lst 
-		  (cons 
+	    (setq lst
+		  (cons
 		   (mhc-guess/new (car duration)
 				  (cdr duration)
 				  (match-beginning 0)
@@ -343,7 +343,7 @@ You can specify following symbols as a list.
 
 (defun mhc-guess/make-date-from-yyyymmdd (now yy-str mm-str dd-str)
   (let (date)
-    (if (setq date (mhc-date-new 
+    (if (setq date (mhc-date-new
 		    (mhc-guess/string-to-int yy-str)
 		    (mhc-guess/string-to-int mm-str)
 		    (mhc-guess/string-to-int dd-str)
@@ -372,14 +372,14 @@ You can specify following symbols as a list.
  	(dd (if dd-str (mhc-guess/string-to-int dd-str) 0))
  	(year-offset 0)
  	date)
-    (cond 
+    (cond
      ((string= mm-str "来")
       (setq mm (mhc-date-mm (mhc-date-mm++ now))))
      ((string= mm-str "今")
       (setq mm (mhc-date-mm now)))
      ((= mm 0)
       (setq mm (mhc-date-mm now))))
-    (if (not 
+    (if (not
 	 (setq date
 	       (mhc-date-new (mhc-date-yy now) mm dd t))) ;; noerror is t
  	()
@@ -423,7 +423,7 @@ You can specify following symbols as a list.
 	   (mhc-guess/make-date-from-mmdd now mm-str dd-str)))))
 
 (defun mhc-guess/make-date-from-relative-day (now rel-word)
-  (cond 
+  (cond
    ((null rel-word)
     nil)
    ((or (string= rel-word "今日") (string= rel-word "本日"))
@@ -439,7 +439,7 @@ You can specify following symbols as a list.
 (defun mhc-guess/make-date-from-english-relative-day (now rel-word)
   (unless mhc-guess-ignore-english-date
     (let ((rel (downcase rel-word)))
-      (cond 
+      (cond
        ((null rel)
 	nil)
        ((string= rel "today")
@@ -499,7 +499,7 @@ You can specify following symbols as a list.
 ;; make time from string.
 ;;
 
-(defun mhc-guess/make-time-from-hhmm 
+(defun mhc-guess/make-time-from-hhmm
   (now hh-str mm-str hh-str2 mm-str2 &optional relative)
   (let ((start (mhc-guess/make-time-from-hhmm2 hh-str mm-str))
 	(end   (mhc-guess/make-time-from-hhmm2 hh-str2 mm-str2 relative)))
@@ -521,7 +521,7 @@ You can specify following symbols as a list.
       (setq xHH (mhc-guess/string-to-int hh-str))
       (if (and (not relative) (< xHH 8)) ;; 8 depends on my life style.
 	  (setq xHH (+ xHH 12)))
-      (setq xMM 
+      (setq xMM
 	    (cond
 	     ((not mm-str)	     0)
 	   ((string= mm-str "半")    30)
@@ -556,7 +556,7 @@ You can specify following symbols as a list.
 	(if (mhc-guess/search-in-boundary
 	     regexp
 	     (mhc-guess-get-begin candidate)
-	     boundary 
+	     boundary
 	     sameline)
 	    (setq total-score (+ total-score score)))
 	(setq slist (cdr slist)))
@@ -597,7 +597,7 @@ You can specify following symbols as a list.
 
 (defun mhc-guess/string-to-int (str)
   (let ((chr "") (ret "") (data (match-data))
-	(z2h-alist 
+	(z2h-alist
 	 '(("０" . "0") ("１" . "1") ("２" . "2") ("３" . "3") ("４" . "4")
 	   ("５" . "5") ("６" . "6") ("７" . "7") ("８" . "8") ("９" . "9")
 	   ("／" . "/") ("：" . ":"))))
@@ -617,7 +617,7 @@ You can specify following symbols as a list.
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -626,7 +626,7 @@ You can specify following symbols as a list.
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

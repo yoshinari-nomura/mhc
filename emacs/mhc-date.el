@@ -10,7 +10,7 @@
 ;;; Commentary:
 ;;;
 
-;; 
+;;
 ;; mhc-date format is simple. It expresses a date by
 ;; days from 1970/1/1
 ;;
@@ -197,10 +197,10 @@
   `(string-to-int
     (substring ,str (match-beginning ,pos) (match-end ,pos))))
 
-;; according to our current time zone, 
+;; according to our current time zone,
 ;; convert timezone string into offset minutes
 ;;
-;;   for example, if current time zone is in Japan, 
+;;   for example, if current time zone is in Japan,
 ;;   convert "GMT" or "+0000" into 540.
 (defun mhc-date/string-to-timezone-offset (timezone)
   (let ((tz (or (cdr (assoc timezone
@@ -219,8 +219,8 @@
  	(progn
  	  (setq min (* (+ (* 60 (mhc-date/substring-to-int tz 2))
  			  (mhc-date/substring-to-int tz 3))
- 		       (if (string= "+" 
- 				    (substring tz 
+ 		       (if (string= "+"
+ 				    (substring tz
  					       (match-beginning 1)
  					       (match-end 1)))
  			   1 -1))
@@ -297,7 +297,7 @@
 ;; new from string. 19990101
 (defsubst mhc-date-new-from-string (str &optional noerror)
   (let (ret (match (match-data)))
-    (if (string-match 
+    (if (string-match
 	 "^\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)$" str)
 	(setq ret (mhc-date-new (mhc-date/substring-to-int str 1)
 				(mhc-date/substring-to-int str 2)
@@ -307,13 +307,13 @@
     (if (or noerror ret)
 	ret
       (error "mhc-date-new-from-string: format error (%s)" str))))
-    
-;; new from string. [[yyyy/]mm]/dd 
+
+;; new from string. [[yyyy/]mm]/dd
 (defsubst mhc-date-new-from-string2 (str &optional base-date noerror)
   (mhc-date-let (or base-date (mhc-date-now))
     (let ((match (match-data)) fail ret)
       (cond
-       ((string-match 
+       ((string-match
 	 "^\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)$" str)
 	(setq yy (mhc-date/substring-to-int str 1)
 	      mm (mhc-date/substring-to-int str 2)
@@ -338,7 +338,7 @@
 ;; regexp for rfc822 Date: field.
 (defconst mhc-date/rfc822-date-regex
   ;; assuming  ``Tue,  9 May 2000 12:15:12 -0700 (PDT)''
-  (concat 
+  (concat
    "\\([0-9]+\\)[ \t]+"                                   ;; day
    "\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|"              ;;
    "Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\)[ \t]+"           ;; month
@@ -409,7 +409,7 @@
 	   (days (mhc-date/iso-week-days yday ww))
 	   (d))
       (if (< days 0)
-	  (setq days (mhc-date/iso-week-days 
+	  (setq days (mhc-date/iso-week-days
 		      (+ yday 365 (if (mhc-date/leap-year-p (1- yy)) 1 0)) ww))
 	(setq d (mhc-date/iso-week-days
 		 (- yday 365 (if (mhc-date/leap-year-p yy) 1 0)) ww))
@@ -503,7 +503,7 @@
 
 ;; check if the date is in the last week of a month.
 (defsubst mhc-date-oo-last-p (date)
-  (< (- (mhc-date/last-day-of-month 
+  (< (- (mhc-date/last-day-of-month
 	 (mhc-date-yy date)
 	 (mhc-date-mm date)) 7) (mhc-date-dd date)))
 
@@ -529,11 +529,11 @@
 
 (defun mhc-date-digit-to-mm-string (mm &optional long)
   (if long
-      (aref 
+      (aref
        '[nil "January" "February" "March"     "April"   "May"      "June"
 	     "July"    "August"   "September" "October" "November" "December"]
        mm)
-    (aref 
+    (aref
      [nil "Jan" "Feb" "Mar" "Apr" "May" "Jun"
 	  "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
      mm)))
@@ -603,7 +603,7 @@
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -612,7 +612,7 @@
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

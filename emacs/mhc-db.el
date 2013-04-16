@@ -48,7 +48,7 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
 	(while (<= day to)
 	  (setq new (mhc-day-new day year month day-of-month day-of-week))
 	  (mhc-day-set-schedules new (delq nil
-					   (mapcar (lambda (sexp) 
+					   (mapcar (lambda (sexp)
 						     (and sexp
 							  (funcall sexp)))
 						   sexp-list)))
@@ -277,7 +277,7 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -286,7 +286,7 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

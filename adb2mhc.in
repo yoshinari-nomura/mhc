@@ -55,7 +55,7 @@ class Appt
     # AppointOrTodoFlag is used like bellow
     #
     # Bit    Appointment   ToDo
-    # 
+    #
     # 0(LSB) Alarm         Don't care
     # 1      MonthView     Completed
     # 2      WeekView      Carry forward
@@ -121,7 +121,7 @@ class Appt
     @repeat_end_date   = bit_to_date(repeat_end_date)
 
     if repeat_delete_count > 0
-      len = repeat_delete_dates .length 
+      len = repeat_delete_dates .length
       ary= repeat_delete_dates .unpack("a3x" * (len / 4))
       @repeat_delete_dates  = ary .collect{|a| bit_to_date(a)}
     end
@@ -150,7 +150,7 @@ class Appt
     print "todo_due_days         #{@todo_due_days}       \n" ## Integer
     print "todo_priority         #{@todo_priority}       \n" ## String
     print "\n\n"
-  end    
+  end
 
   def to_mhc
     if todo?
@@ -175,7 +175,7 @@ class Appt
     ##                 @start_date if @repeat_status = 'none'
     ## X-SC-Time:      @appt_start_time - @appt_end_time or ''
     ## X-SC-Cond:      @repeat_month @repeat_week @repeat_day
-    ## X-SC-Duration:  @repeat_start_date - @repeat_end_date or '' 
+    ## X-SC-Duration:  @repeat_start_date - @repeat_end_date or ''
 
     x_sc_subject  = Kconv::tojis(@description)
     x_sc_category = Kconv::tojis(@category)
@@ -216,8 +216,8 @@ class Appt
   def bit_to_tag(bit, tag)
     ret, i = [], 1
     tag .each{|str|
-      if bit & i != 0      
-	ret << str 
+      if bit & i != 0
+	ret << str
       end
       i <<= 1
     }
@@ -296,7 +296,7 @@ while (header = adb_file .read(6))
   case type
   when 9
     STDERR .print "Warn: Attached note records are not supported... ignored.\n"
-    ## Note reocrd. 
+    ## Note reocrd.
     next
   when 11
     appt_item = Appt .new(field)
@@ -319,7 +319,7 @@ end
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -328,7 +328,7 @@ end
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

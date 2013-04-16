@@ -248,7 +248,7 @@ which are replaced by the given information:
   :type 'string)
 
 (defcustom mhc-todo-string-heading
-      (if (eq mhc-summary-language 'japanese) 
+      (if (eq mhc-summary-language 'japanese)
 	  "TODO(s) at %04d年%02d月%02d日"
 	"TODO(s) at %04d/%02d/%02d")
   "*String which is displayed as heading of TODO.
@@ -370,7 +370,7 @@ which are replaced by the given information:
             (list "recurrence") 'mhc-summary-face-recurrence))
     (?p (if mhc-tmp-priority
 	    (format "[%d]" mhc-tmp-priority))
-	'face (cond 
+	'face (cond
 	       ((null mhc-tmp-priority) nil)
 	       ((>= mhc-tmp-priority 80) 'mhc-summary-face-sunday)
 	       ((>= mhc-tmp-priority 50) 'mhc-summary-face-saturday)))
@@ -380,9 +380,9 @@ which are replaced by the given information:
 		    (copy-sequence (mhc-schedule-categories mhc-tmp-schedule)))
 	  (mhc-schedule-categories mhc-tmp-schedule)))
     (?s (mhc-summary/line-subject-string)
-	'face 
+	'face
 	(if mhc-tmp-private (mhc-face-category-to-face "Private")
-	  (mhc-face-category-to-face 
+	  (mhc-face-category-to-face
 	   (car (mhc-schedule-categories mhc-tmp-schedule)))))
     (?l (mhc-summary/line-location-string)
 	'face 'mhc-summary-face-location)
@@ -429,20 +429,20 @@ PROP-VALUE is the property value correspond to PROP-TYPE.
 	(if (and (mhc-use-icon-p)
 		 (mhc-icon-exists-p "todo")
 		 (mhc-icon-exists-p "done"))
-	    (list 
+	    (list
 	     (if (mhc-schedule-in-category-p mhc-tmp-schedule "done")
 		 "done" "todo"))
 	  'mhc-summary-face-sunday))
     (?s (mhc-summary/line-subject-string)
 	'face
-	(mhc-face-category-to-face 
+	(mhc-face-category-to-face
 	 (car (mhc-schedule-categories mhc-tmp-schedule))))
     (?l (mhc-summary/line-location-string)
 	'face 'mhc-summary-face-location)
     (?p (if mhc-tmp-priority
 	    (format "%5s" (format "[%d]" mhc-tmp-priority))
 	  "     ")
-	'face (cond 
+	'face (cond
 	       ((null mhc-tmp-priority) nil)
 	       ((>= mhc-tmp-priority 80) 'mhc-summary-face-sunday)
 	       ((>= mhc-tmp-priority 50) 'mhc-summary-face-saturday)))
@@ -467,14 +467,14 @@ PROP-VALUE is the property value correspond to PROP-TYPE.
 	  (mhc-schedule-categories mhc-tmp-schedule)))
     (?s (mhc-summary/line-subject-string)
 	'face
-	(mhc-face-category-to-face 
+	(mhc-face-category-to-face
 	 (car (mhc-schedule-categories mhc-tmp-schedule))))
     (?l (mhc-summary/line-location-string)
 	'face 'mhc-summary-face-location)
     (?p (if mhc-tmp-priority
 	    (format "%5s" (format "[%d]" mhc-tmp-priority))
 	  "     ")
-	'face (cond 
+	'face (cond
 	       ((null mhc-tmp-priority) nil)
 	       ((>= mhc-tmp-priority 80) 'mhc-summary-face-sunday)
 	       ((>= mhc-tmp-priority 50) 'mhc-summary-face-saturday))))
@@ -571,7 +571,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
   "Return record on current line."
   (let ((filename (mhc-summary-filename mailer)))
     (if filename
-	(let ((key (mhc-slot-directory-to-key 
+	(let ((key (mhc-slot-directory-to-key
 		    (directory-file-name (file-name-directory filename)))))
 	  (assoc filename (mhc-slot-records (mhc-slot-get-month-schedule key)))))))
 
@@ -655,7 +655,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 					(car (cdr schedules))))
 			mhc-tmp-conflict (or (and mhc-tmp-end next-begin
 						  (< next-begin mhc-tmp-end))
-					     (and mhc-tmp-begin time-max 
+					     (and mhc-tmp-begin time-max
 						  (< mhc-tmp-begin time-max)))
 			mhc-tmp-recurrence (mhc-schedule-recurrence-tag (car schedules)))
 		  (if mhc-tmp-end (setq time-max (max mhc-tmp-end time-max)))
@@ -931,7 +931,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 			   ((mhc-schedule-in-category-p
 			     mhc-tmp-schedule "holiday")
 			    'mhc-category-face-holiday)
-			   ((eq (mhc-day-day-of-week 
+			   ((eq (mhc-day-day-of-week
 				 mhc-tmp-dayinfo) 0)
 			    'mhc-summary-face-sunday)
 			   ((eq (mhc-day-day-of-week mhc-tmp-dayinfo) 6)
@@ -972,7 +972,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -981,7 +981,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

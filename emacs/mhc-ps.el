@@ -190,7 +190,7 @@
             {
                 13 dict begin
                 /EUCFont EUCFont def
-                /UpperByte exch 16#80 add def       
+                /UpperByte exch 16#80 add def
                 % /FontName
                 /FontInfo \(EUC lower byte font\) readonly def
                 /PaintType 0 def
@@ -350,11 +350,11 @@ def
     /start startday def
     /day 2 1 roll def
     day start add 1 sub 7 mod daywidth mul
-    day start add 1 sub 7 div truncate dayheight neg mul 
+    day start add 1 sub 7 div truncate dayheight neg mul
     -5
     numevents day start add get -10 mul add
     numevents
-    day start add 
+    day start add
     numevents day start add get 1 add
     put
     add 2 add moveto
@@ -370,7 +370,7 @@ def
           0 0 0 0 0 0 0
           0 0 0 0 0 0 0
           0 0 0 0 0 0 0
-          0 0 0 0 0 0 0\] def 
+          0 0 0 0 0 0 0\] def
     eventfont findfont 9 scalefont setfont
     0 2 holidays length 2 sub { % for the \"Holidays\"
         dup
@@ -392,7 +392,7 @@ def
 
 /center {               % center string in given width
     /width exch def
-    /str exch def width str 
+    /str exch def width str
     stringwidth pop sub 2 div 0 rmoveto str show
 } def
 
@@ -422,7 +422,7 @@ def
         ifelse
         0 1 rowsused {
             gsave
-            daywidth 0 rlineto 
+            daywidth 0 rlineto
             0 dayheight neg rlineto
             daywidth neg 0 rlineto
             closepath stroke
@@ -489,7 +489,7 @@ def
                         exit
                     } if
                 } for
-            } 
+            }
             {
                 0 1 nholidays length 1 sub {
                     nholidays exch get day eq {
@@ -503,7 +503,7 @@ def
                         exit
                     } if
                 } for
-            } ifelse    
+            } ifelse
         } ifelse
         submonth 0 eq
         {
@@ -533,7 +533,7 @@ def
     daywidth 0 rlineto
     0 dayheight neg rlineto
     daywidth neg 0 rlineto
-    .9 setgray 
+    .9 setgray
     closepath fill
     grestore
 } def
@@ -572,7 +572,7 @@ def
     fillstart 1 start 1 sub {
         gsave
         .9 setgray
-        daywidth 0 rlineto 
+        daywidth 0 rlineto
         0 dayheight neg rlineto
         daywidth neg 0 rlineto
         closepath fill
@@ -595,7 +595,7 @@ def
         /day exch def
         gsave
         .9 setgray
-        daywidth 0 rlineto 
+        daywidth 0 rlineto
         0 dayheight neg rlineto
         daywidth neg 0 rlineto
         closepath fill
@@ -653,7 +653,7 @@ def
         daywidth days_week mul Cfootstring stringwidth pop sub 2 div
         bottomrow moveto
         Cfootstring show
-        
+
     } if
 
     0 -5 moveto
@@ -692,7 +692,7 @@ month 1 add 13 eq
 {
     /nmonth 1 def
     /nyear year 1 add def
-} 
+}
 {
     /nmonth month 1 add def
     /nyear year def
@@ -1144,7 +1144,7 @@ showpage
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -1153,7 +1153,7 @@ showpage
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

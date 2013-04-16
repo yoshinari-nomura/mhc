@@ -43,7 +43,7 @@ module MhcMake
       make_system("make clean")
     else
       Dir .foreach('.'){|src_file|
-	if src_file =~ /\.in$/ or src_file == 'Makefile' or 
+	if src_file =~ /\.in$/ or src_file == 'Makefile' or
 	    src_file == 'make.rb'
 
 	  dst_file = src_file .sub(/\.in$/, '')
@@ -102,11 +102,11 @@ module MhcMake
         end
       end
     }
-  end    
+  end
 
   def install
     if File .exists?('Makefile')
-      make_system("make", "install") 
+      make_system("make", "install")
     else
       INSTALL_FILES .each{|filename_mode_dir|
 	filename, mode, dir = filename_mode_dir .split(':')
@@ -120,7 +120,7 @@ module MhcMake
   def print_usage()
     print "Usage: make.rb [target]\ntarget can be none, install or clean.\n"
   end
-  
+
   def doit
     if (ARGV .size == 0)
       default()
@@ -156,7 +156,7 @@ class MhcConfigTable
       "=DIR   user executables go to  DIR",
       CONFIG["bindir"]],
 
-    ['--with-ruby', '@@MHC_RUBY_PATH@@', GetoptLong::REQUIRED_ARGUMENT, 
+    ['--with-ruby', '@@MHC_RUBY_PATH@@', GetoptLong::REQUIRED_ARGUMENT,
       "=PATH  absolute path of ruby executable",
       ''],
 
@@ -165,7 +165,7 @@ class MhcConfigTable
       File::join(CONFIG["libdir"], "ruby",
 		 CONFIG["MAJOR"] + "." + CONFIG["MINOR"])],
 
-    ['--with-emacs', '@@MHC_EMACS_PATH@@', GetoptLong::REQUIRED_ARGUMENT, 
+    ['--with-emacs', '@@MHC_EMACS_PATH@@', GetoptLong::REQUIRED_ARGUMENT,
       "=PATH  absolute path of emacs/xemacs executable",
       ''],
 
@@ -178,7 +178,7 @@ class MhcConfigTable
       '=DIR   emacs lisp files as package go to DIR.',
       ''],
 
-    ['--with-emacs-addpath', '@@MHC_EMACS_ADD_PATH@@', 
+    ['--with-emacs-addpath', '@@MHC_EMACS_ADD_PATH@@',
       GetoptLong::REQUIRED_ARGUMENT,
       '=PATH  add colon separated dirs list, to `load-path\'',
       '']
@@ -249,7 +249,7 @@ class MhcConfigure
     @macros .update(@config_table .macro_hash)
 
     ## set useful macros.
-    @macros['@@MHC_RUBY_VERSION@@'] = 
+    @macros['@@MHC_RUBY_VERSION@@'] =
       VERSION .split('.') .collect{|i| format("%02d", i)} .join('')
     @macros['@@MHC_TOPDIR@@'] = Dir .pwd
   end
@@ -424,7 +424,7 @@ class MhcConfigure
     end
 
     dst_file << src_contents
-    dst_file .close 
+    dst_file .close
     File .chmod(mode, dst_file_name) if mode
   end
 
@@ -437,7 +437,7 @@ end
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -446,7 +446,7 @@ end
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

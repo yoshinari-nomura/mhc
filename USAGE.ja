@@ -20,7 +20,7 @@ samples/DOT.schedule.sample.jp は日本の祭日についてのデータを記�
 今日の予定が表示されますが、指定の日のスケジュール一覧表示をすることも
 できます。
 
-today には次のようなオプションが使えます。 
+today には次のようなオプションが使えます。
 
   --format=html/ps
 
@@ -60,7 +60,7 @@ gemcal は、MHC の GUI です。
 ruby/gtk で書かれています。ruby の 1.4.2 + FreeBSD 3.3 / Solaris 2.6 で
 は正常に動くことを確認しています。ruby-gtk は 0.21 以降で使って下さい。
 
-gemcal 
+gemcal
    -g +X+Y     geometory の指定 X と Y には数値が入ります。
                + の代わりに - は使えません。
    -r dir      MHC のデータを保存しているディレクトリを指定します。
@@ -125,7 +125,7 @@ gemcal
 
          % mhc-sync -n -x exchange_id user@server.host.name
 
-create_message_id: 
+create_message_id:
 --------------------------------------------------------------------
 #!/usr/local/bin/ruby
 
@@ -237,7 +237,7 @@ pilot-link の libpisock を必要とします。
 
 ** adb2mhc の使い方
 
-adb2mhc は、HP200LX のスケジュールソフト用データ (adb ファイル) 
+adb2mhc は、HP200LX のスケジュールソフト用データ (adb ファイル)
 を MHC にコンバートするプログラムです。
 
   % adb2mhc --mhc-dir /tmp/schedule appt.adb
@@ -246,7 +246,7 @@ adb2mhc は、HP200LX のスケジュールソフト用データ (adb ファイ�
 
 ** mhc2ol -- MHC のデータを Outlook に転送する
 
-mhc2ol は、MHC のスケジュールを、Microsoft 社のスケジュール管理ソフト 
+mhc2ol は、MHC のスケジュールを、Microsoft 社のスケジュール管理ソフト
 Outlook に転送するスクリプトです。Outlook の OLE コントロールを利用し
 ているため、Windows マシンでしか動きません。
 

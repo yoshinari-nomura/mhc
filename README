@@ -44,7 +44,7 @@ MHC has following features:
         (popular MUA in the Emacs world)
         (emacs/mhc.el)
     + GUI (Ruby/Gtk based) desktop calendar application. (gemcal)
-    + CGI based Web interface 
+    + CGI based Web interface
         (not in this package please see http://mhc.hauN.org/web-mhc/)
     + Command line schedule lister like the scan of MH. (today)
 
@@ -72,7 +72,7 @@ Sorry, I've not written a precise document yet.
 Edit emacs/Makefile and type make in emacs/ directory to install mhc.el.
 For Ruby stuffs, type:
 
-  ruby configure.rb 
+  ruby configure.rb
   ruby make.rb
   ruby make.rb install
 

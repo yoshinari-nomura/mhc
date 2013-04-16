@@ -38,7 +38,7 @@
   (if cand
       (progn
 	(setq mhc-minibuf-candidate-overlay
-	      (make-overlay 
+	      (make-overlay
 	       (mhc-minibuf-candidate-nth-begin)
 	       (mhc-minibuf-candidate-nth-end)
 	       buffer))
@@ -47,7 +47,7 @@
 	(mhc-minibuf-move-candidate 0 t t)))
   (read-from-minibuffer
    prompt
-   (cond 
+   (cond
     (default default)
     ((and to-s (mhc-minibuf-candidate-nth-obj)
 	  (funcall to-s (mhc-minibuf-candidate-nth-obj))))
@@ -89,7 +89,7 @@
   (let ((len (length mhc-minibuf-candidate-alist)))
     (if (< 0 len)
 	(setq mhc-minibuf-candidate-offset
-	      (% 
+	      (%
 	       (+ len (% (+ mhc-minibuf-candidate-offset (or n 1)) len))
 	       len)))))
 
@@ -119,8 +119,8 @@
     (if (< 0 n)
 	(setq mhc-minibuf-candidate-offset (if nxt-i nxt-i min-i))
       (setq mhc-minibuf-candidate-offset (if prv-i prv-i max-i)))))
-  
-    
+
+
 (defun mhc-minibuf-candidate-set-offset (n)
   (setq mhc-minibuf-candidate-offset n))
 
@@ -224,7 +224,7 @@
 (defun mhc-minibuf/time-to-string (time-cons)
   (let ((time (car time-cons))
 	(time2 (cdr time-cons)))
-    (if time2 
+    (if time2
 	(concat
 	 (mhc-time-to-string time) "-" (mhc-time-to-string time2))
       (mhc-time-to-string time))))
@@ -241,8 +241,8 @@
   (interactive)
   (let (str-list date ret (error t) str)
     (while error
-      (setq str 
-	    (mhc-minibuf-read 
+      (setq str
+	    (mhc-minibuf-read
 	     (concat (or prompt "") "(yyyy/mm/dd): ")
 	     (if candidate
 		 nil
@@ -254,7 +254,7 @@
 		 (mhc-date-format default
 				  "%04d/%02d/%02d" yy mm dd))
 		((listp default)
-		 (mapconcat 
+		 (mapconcat
 		  (lambda (date)
 		    (mhc-date-format date
 				     "%04d/%02d/%02d" yy mm dd))
@@ -315,7 +315,7 @@
 		   candidate
 		   0
 		   (function mhc-minibuf/time-to-string)))
-	(cond 
+	(cond
 	 ((and (string-match
 		"^\\([0-9]+:[0-9]+\\)\\(-\\([0-9]+:[0-9]+\\)\\)?$" str)
 	       (setq time-b (mhc-time-new-from-string
@@ -343,7 +343,7 @@
   (let ((ret nil)
 	(month-str (mhc-date-format (or default (mhc-date-now)) "%04d/%02d" yy mm)))
     (while (null ret)
-      (setq month-str 
+      (setq month-str
 	    (read-from-minibuffer
 	     (concat prompt "(yyyy/mm) : ") month-str nil nil 'mhc-month-hist))
       (if (string-match "\\([0-9]+\\)/\\([0-9]+\\)" month-str)
@@ -405,7 +405,7 @@
       (and default
 	   (listp default)
 	   (setq default (mapconcat 'identity default " ")))
-      (if (string= "" (setq in (read-from-minibuffer 
+      (if (string= "" (setq in (read-from-minibuffer
 				(or prompt "Category: ")
 				(or default "")
 				nil nil 'mhc-category-hist)))
@@ -440,7 +440,7 @@
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -449,7 +449,7 @@
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

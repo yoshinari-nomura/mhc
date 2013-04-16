@@ -162,9 +162,9 @@ refer to mhc-calendar-hnf-face-alist-internal.")
 		       (and (fboundp 'set-face-italic-p)
 			    (set-face-italic-p new-face t)))))))
     new-face))
-;; 
+;;
 ;; (make-face-italic  new-face nil t))))
-    
+
 (defsubst mhc-face-get-today-face (face)
   (mhc-face-get-effect face 'today))
 
@@ -187,9 +187,9 @@ refer to mhc-calendar-hnf-face-alist-internal.")
 (defun mhc-face-setup-internal (alist &optional overwrite)
   (let (lst)
     (while (setq lst (car alist))
-      (cond 
+      (cond
        ((stringp (car lst))
-	(mhc-face-make-face-from-string 
+	(mhc-face-make-face-from-string
 	 (format "mhc-category-face-%s" (downcase (car lst)))
 	 (cdr lst)
 	 overwrite))
@@ -230,7 +230,7 @@ refer to mhc-calendar-hnf-face-alist-internal.")
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -239,7 +239,7 @@ refer to mhc-calendar-hnf-face-alist-internal.")
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

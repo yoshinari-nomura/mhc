@@ -72,16 +72,16 @@ conf .search_command('make',         '@@MHC_MAKE_PATH@@',       false, true)
 lib_search_path = ['/usr/local/lib', '/usr/local/pilot/lib',
   '/usr/lib', '/usr/pkg/lib']
 
-inc_search_path = ['/usr/local/include', '/usr/local/pilot/include', 
+inc_search_path = ['/usr/local/include', '/usr/local/pilot/include',
   '/usr/include/libpisock', '/usr/include', '/usr/pkg/include']
 
 if conf['@@MHC_DISABLE_PALM@@'] == ''
-  conf .search_library(lib_search_path, 
-		       'pisock', 
+  conf .search_library(lib_search_path,
+		       'pisock',
 		       'pi_socket',
 		       '@@MHC_PILOT_LINK_LIB@@', false, true)
   conf .search_include(inc_search_path,
-		       'pi-dlp.h', 
+		       'pi-dlp.h',
 		       '@@MHC_PILOT_LINK_INC@@', false, true)
 end
 
@@ -89,15 +89,15 @@ end
 ## replace keywords.
 
 infile_list = [
-  'mhc-sync.in:0755', 
-  'mhc2palm.in:0755', 
-  'palm2mhc.in:0755', 
-  'adb2mhc.in:0755', 
-  'gemcal.in:0755', 
-  'make.rb.in:0755', 
+  'mhc-sync.in:0755',
+  'mhc2palm.in:0755',
+  'palm2mhc.in:0755',
+  'adb2mhc.in:0755',
+  'gemcal.in:0755',
+  'make.rb.in:0755',
   'today.in:0755',
   'emacs/make.rb.in:0755',
-  'ruby-ext/lib/mhc-gtk.rb.in:0644', 
+  'ruby-ext/lib/mhc-gtk.rb.in:0644',
   'ruby-ext/extconf.rb.in:0755'
 ]
 

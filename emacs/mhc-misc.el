@@ -38,7 +38,7 @@
     (nreverse (cons str ret))))
 
 (defun mhc-misc-strip (str)
-  (mhc-misc-sub 
+  (mhc-misc-sub
    (mhc-misc-sub str "^[\t ]+" "") "[\t ]+$" ""))
 
 (defun mhc-misc-substring-to-int (str pos)
@@ -103,7 +103,7 @@
   (and (not (featurep 'xemacs)) (string< "19.3" emacs-version)))
 
 (defun mhc-misc-move-to-column (column)
-  "Move point to column COLUMN rigidly in the current line, considering 
+  "Move point to column COLUMN rigidly in the current line, considering
    invisible charracters."
   (if mhc-misc-column-count-visible-only
       ()
@@ -208,7 +208,7 @@
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -217,7 +217,7 @@
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

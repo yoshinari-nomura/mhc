@@ -22,7 +22,7 @@
   "*Remote server repository of mhc-sync ([user@]remote.host[:dir])."
   :group 'mhc
   :type 'string)
-  
+
 (defcustom mhc-sync-localdir nil
   "*Local repository directory of mhc-sync (-r option)."
   :group 'mhc

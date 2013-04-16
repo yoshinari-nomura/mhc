@@ -98,7 +98,7 @@ STYLE_ARRAY = [
 ################################################################
 
 ################################################################
-## input alarm 
+## input alarm
 class GtkAlarmEntry < Gtk::HBox
   UNIT_LABEL  = ['minute', 'hour', 'day']
   UNIT_INSEC  = {'minute' => 60, 'hour' => 60 * 60, 'day' => 60 * 60 * 24}
@@ -284,7 +284,7 @@ class GtkTimeRangeEdit < Gtk::VBox
   def set_value(b, e)
     if b
       have_paticular_value(true)
-      @b .set_value(b) 
+      @b .set_value(b)
       if e
 	@e .set_value(e)
       else
@@ -311,7 +311,7 @@ class GtkTimeRangeEdit < Gtk::VBox
 end
 
 ################################################################
-## Input Date 
+## Input Date
 
 class GtkDateEdit < Gtk::Table
   #FILL = Gtk::FILL | Gtk::EXPAND | Gtk::SHRINK
@@ -402,7 +402,7 @@ class GtkDateRangeEdit < Gtk::VBox
   def set_value(b, e)
     if b
       have_paticular_value(true)
-      @b .set_value(b) 
+      @b .set_value(b)
       if e
 	@e .set_value(e)
       else
@@ -522,7 +522,7 @@ class GtkDayBook < Gtk::VBox
       @btn .signal_connect('clicked', p)
     when 'day-lst-clicked'
       if @lst
-        @lsv .signal_connect('row-activated'){|w,path,t| 
+        @lsv .signal_connect('row-activated'){|w,path,t|
           p .call(self, path.indices[0].to_i)
         }
       end
@@ -562,7 +562,7 @@ class GtkCalendar < Gtk::VBox
     @m_tbl = Gtk::Table .new(6, 7, true)
     w_tbl  = Gtk::Table .new(1, 7, true)
     @title  = Gtk::Label .new(@date .ym_js) if need_title
-    
+
     ## add week label
     for w in 0 .. 6
       wlabel = Gtk::Label .new(MhcKconv::todisp(week_label[w]))
@@ -651,7 +651,7 @@ class GtkCalendar < Gtk::VBox
   def pos_to_date(p)
     return MhcDate .new(@date .y, @date .m, p - @offset)
   end
-    
+
   def on?(p)
     d = p - @offset
     return (d > 0 and d <= @date .m_days)
@@ -741,7 +741,7 @@ class GtkToplevel < Gtk::Window
   def pop_position
     if @pos
       print "pop_position #{@pos[0]}, #{@pos[1]}\n" if @pos && $DEBUG
-      self .move(@pos[0], @pos[1]) 
+      self .move(@pos[0], @pos[1])
     end
   end
 
@@ -761,7 +761,7 @@ class GtkToplevel < Gtk::Window
     n .grab_default
     n .signal_connect('clicked'){top .destroy}
     hbx .pack_start(n, true, true, 0)
-    
+
     vbx .pack_start(Gtk::Label .new('Exit GtkCalendar?'))
     vbx .pack_start(hbx, false, false, 0)
 
@@ -1110,7 +1110,7 @@ end
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -1119,7 +1119,7 @@ end
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

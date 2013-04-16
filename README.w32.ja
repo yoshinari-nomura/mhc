@@ -56,7 +56,7 @@ Configure.rb と make.rb を使った通常の手順で MHC をインストー�
 ** 使い方
 
 Unix 系のシェルを使った実行例を下記に示します。詳しくは、コマンド
-ライン・ヘルプを参照して下さい。このヘルプは、オプションなしで 
+ライン・ヘルプを参照して下さい。このヘルプは、オプションなしで
 mhc2ol を起動することで見ることができます。
 
 *** Outlook を初期化して転送
@@ -85,7 +85,7 @@ $ mhc2ol -N
 
 ** 制限
 
-MHC のスケジュールの全ての形式には対応できていません。 
+MHC のスケジュールの全ての形式には対応できていません。
 特に X-SC-Cond: での複雑な指定をした場合はダメだと思います。
 
 * Windows で mhc2palm/palm2mhc を動かす手順
@@ -116,7 +116,7 @@ MHC のスケジュールの全ての形式には対応できていません。
 
 *** ruby のインストール
 
-mhc2palm と palm2mhc は Ruby スクリプトなので、実行するには ruby 
+mhc2palm と palm2mhc は Ruby スクリプトなので、実行するには ruby
 の実行環境が必要です。
 
 http://www.ruby-lang.org/~eban/ruby/binaries/cygwin/
@@ -133,7 +133,7 @@ C:\autoexec.bat に次の設定を加えます。
 set PATH=C:\usr\local\bin;%PATH%
 
 Windows 2000/NT の場合：
-「コントロールパネル」→「システム」→「環境」で、環境変数 Path 
+「コントロールパネル」→「システム」→「環境」で、環境変数 Path
 に C:\usr\local\bin を追加します。
 
 (*)tar.gz 形式(別名 tgz)を展開できるツールを利用してください。こ
@@ -183,7 +183,7 @@ mhc2palm, palm2mhc は、DOS プロンプト、または、コマンドプロン
 ・mhc2palm と palm2mhc を実行する場合には、事前に、HotSync マネー
   ジャを停止しておく必要があります。
 
-注)後述する Cygwin に含まれる、sh.exe や bash.exe を使えば、ruby 
+注)後述する Cygwin に含まれる、sh.exe や bash.exe を使えば、ruby
    スクリプトを直接コマンドラインから実行できます。
 
 Palm のクレイドルがシリアルポートの1番(com1)に接続されている場合
@@ -220,7 +220,7 @@ http://www.jaist.ac.jp/~fujieda/cygwin/
 
 *** ruby のインストール
 
-mhc2palm, palm2mhc は Ruby スクリプトなので、実行のためには ruby 
+mhc2palm, palm2mhc は Ruby スクリプトなので、実行のためには ruby
 の実行環境が必要です。ここでは、後述する ruby 拡張ライブラリのイ
 ンストールのために、バイナリ配布を使わずに、ソースからビルドしま
 す。
@@ -258,9 +258,9 @@ http://www.quickhack.net/mhc/arc/distfiles/
 から入手できます。アーカイブとパッチファイル共に、カレントディレ
 クトリにあるとします。
 
-$ tar zxvf pilot-link.0.9.5.tar.gz 
+$ tar zxvf pilot-link.0.9.5.tar.gz
 $ cd pilot-link.0.9.5
-$ patch -p1 < ../pilot-link.0.9.5.cygwin.diff 
+$ patch -p1 < ../pilot-link.0.9.5.cygwin.diff
 $ ./configure  --enable-shared --with-tcl=no --with-tk=no
 $ make
 $ make install EXT='.exe'

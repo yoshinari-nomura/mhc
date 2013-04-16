@@ -5,7 +5,7 @@
 ;; Created: 2000/11/21
 ;; Revised: $Date: 2008/03/06 09:40:12 $
 
-(defcustom mhc-e21-icon-alist 
+(defcustom mhc-e21-icon-alist
   '(("Conflict"   . "Conflict.xpm")
     ("Recurrence" . "Recurrence.xpm")
     ("Private"    . "Private.xpm")
@@ -28,7 +28,7 @@ Example:
     (\"Done\"        . \"CheckedBox.xpm\")
     (\"Conflict\"    . \"Conflict.xpm\"))"
   :group 'mhc
-  :type '(repeat 
+  :type '(repeat
 	  :inline t
 	  (cons (string :tag "Icon Name")
 		(string :tag "XPM File Name"))))
@@ -125,7 +125,7 @@ Icon is decided by `mhc-e21-icon-alist'."
 			  'intangible icon))
 	(when (setq func (cdr (assoc (downcase (car icons))
 				     mhc-e21/icon-function-alist)))
-	  (setq props (nconc props 
+	  (setq props (nconc props
 			     (list
 			      'mouse-face 'highlight
 			      'mhc-e21-icon-function func

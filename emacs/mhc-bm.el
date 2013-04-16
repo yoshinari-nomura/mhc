@@ -95,7 +95,7 @@ icon line."
 			(expand-file-name (car (cdr (car alist)))
 					  mhc-icon-path))))
       (put-text-property 0 (length bmstr)
-			 'face 
+			 'face
 			 (mhc-face-make-face-from-string
 			  (concat "mhc-bm-icon-"
 				  (downcase (car (car alist)))
@@ -114,7 +114,7 @@ icon line."
 	  (mapcar (lambda (pair)
 		    (cons (downcase (car pair)) (cdr pair)))
 		  mhc-icon-function-alist))))
-       
+
 ;; Icon interface
 (defun mhc-icon-setup ()
   "Initialize MHC icons."
@@ -138,7 +138,7 @@ icon line."
 
 (defun mhc-put-icon (icons)
   "Put ICONS on current buffer.
-Icon is defined by `mhc-bm-icon-alist'."  
+Icon is defined by `mhc-bm-icon-alist'."
   (let (icon pos func overlay)
     (while icons
       (setq icon (cdr (assoc (downcase (car icons))

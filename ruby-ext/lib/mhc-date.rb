@@ -42,11 +42,11 @@ class MhcTime
   def to_i
     return @sec
   end
-  
+
   def to_a
     return [hh, mm]
   end
-  
+
   def to_t(date = MhcDate .new(1970, 1, 2))
     date = date .succ(day)
     Time .local(date .y, date .m, date .d, hour, minute)
@@ -225,7 +225,7 @@ class MhcDate
   end
 
   ################
-  ## date 
+  ## date
 
   ## xxx: succ and dec are very stupid.
   def succ!(n = 1)
@@ -309,7 +309,7 @@ end
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -318,7 +318,7 @@ end
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

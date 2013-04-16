@@ -69,7 +69,7 @@ class MhcScheduleDB
     del_sch(old_sch, false) if old_sch
     add_sch(sch)
   end
-  
+
   def scan_all
     @record_id_to_path_hash = {}
     Dir .glob(@basedir + '/{[0-9]*/[0-9]*,intersect}/[0-9]*') .each{|filename|
@@ -181,7 +181,7 @@ STDERR .print " done.\n"
 ################
 
 if $flag_serverp
-  ## server sends: 
+  ## server sends:
   ##
   ## M 2000-05-22 13:45:43 ... (1)
   ## M 2000-05-22 13:45:43 ... (2)
@@ -216,7 +216,7 @@ if $flag_serverp
   while line = STDIN .gets
     if line =~ /^#{$DELIMITER2}/
       got_delimiter = true
-      break 
+      break
     end
     lines += line
   end
@@ -230,7 +230,7 @@ if $flag_serverp
 	if sch
 	  STDERR .print "server: deleting #{sch .info}\n"
 	  if !$flag_noharm
-	    db .del_sch(sch) 
+	    db .del_sch(sch)
 	  else
 	    STDERR .print "S:deleting #{sch .info}\n"
 	  end
@@ -354,7 +354,7 @@ else
 	STDERR .print r_sch .dump
 	STDERR .print "*" * 70, "\n"
       end
-      
+
     when 'D-' # delete remote
       STDERR .print "---------------------------------------------------\n"
       STDERR .print "Delete remote #{rec_id}\n"
@@ -378,14 +378,14 @@ else
       STDERR .print "Please reedit the local one and do sync again.\n"
       l_sch .set_description(l_sch .description .to_s + $CONFLICT_INFO + r_sch .dump)
       if !$flag_noharm
-	db .modify_sch(l_sch) 
+	db .modify_sch(l_sch)
       else
 	STDERR .print "C:modifiying #{l_sch .info}\n"
 	STDERR .print "*" * 70, "\n"
 	STDERR .print l_sch .dump
 	STDERR .print "*" * 70, "\n"
       end
-	
+
 
     when 'M-' # transfer local to remote
       STDERR .print "---------------------------------------------------\n"
@@ -405,7 +405,7 @@ else
       STDERR .print "---------------------------------------------------\n"
       STDERR .print "Transfer  remote to local #{r_sch .info}\n"
       if !$flag_noharm
-	db .modify_sch(r_sch) 
+	db .modify_sch(r_sch)
       else
 	STDERR .print "C:modifiying #{r_sch .info}\n"
 	STDERR .print "*" * 70, "\n"
@@ -434,7 +434,7 @@ end
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -443,7 +443,7 @@ end
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY Yoshinari Nomura AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

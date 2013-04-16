@@ -5,7 +5,7 @@
 ;; Created: 1999/12/02
 ;; Revised: $Date: 2008/03/06 09:40:12 $
 
-(defcustom mhc-xmas-icon-alist 
+(defcustom mhc-xmas-icon-alist
   '(("Conflict"   . "Conflict.xpm")
     ("Private"    . "Private.xpm")
     ("Holiday"    . "Holiday.xpm")
@@ -27,7 +27,7 @@ Example:
     (\"Done\"        . \"CheckedBox.xpm\")
     (\"Conflict\"    . \"Conflict.xpm\"))"
   :group 'mhc
-  :type '(repeat 
+  :type '(repeat
 	  :inline t
 	  (cons (string :tag "Icon Name")
 		(string :tag "XPM File Name"))))
@@ -75,7 +75,7 @@ icon line."
       (setq mhc-xmas/icon-glyph-alist
 	    (cons
 	     (cons (downcase (car (car alist)))
-		   (make-glyph 
+		   (make-glyph
 		    (make-image-instance
 		     (vector 'xpm :file
 			     (expand-file-name (cdr (car alist))
@@ -140,7 +140,7 @@ Icon is decided by `mhc-xmas-icon-alist'."
     (setq icons (nreverse icons))
     (while icons
       (setq extent (make-extent (point) (point)))
-      (set-extent-properties extent 
+      (set-extent-properties extent
 			     (list 'mhc-icon t
 				   'keymap mhc-xmas-icon-keymap
 				   'mhc-xmas-icon-function (cdr (car icons))))
@@ -148,7 +148,7 @@ Icon is decided by `mhc-xmas-icon-alist'."
       (setq icons (cdr icons)))
     (while glyphs
       (setq extent (make-extent (point)(point)))
-      (set-extent-properties extent 
+      (set-extent-properties extent
 			     (list 'mhc-icon t
 				   'keymap mhc-xmas-icon-keymap
 				   'mhc-xmas-icon-function (cdr (car glyphs))))

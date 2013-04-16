@@ -79,9 +79,9 @@ require 'mhc-date'
 ##
 ## set_rec_id
 ## 	set record-id for schedule entry
-## 
+##
 ################################################################
-## category 
+## category
 ## 	return X-SC-Category: value as an array of String.
 ##
 ## category_as_string
@@ -100,7 +100,7 @@ require 'mhc-date'
 ##
 ## cond_as_string
 ##	return a string same as X-SC-Cond:
-## 	
+##
 ## cond_mon
 ## cond_ord
 ## cond_wek
@@ -114,7 +114,7 @@ require 'mhc-date'
 ## set_cond(String or [String,..])
 ## 	set X-SC-Cond:
 ##      A space separated string or an array of string is allowed as an arg.
-## 	
+##
 ## add_cond(String)
 ## del_cond(String)
 ## 	add/remove a cond.
@@ -249,7 +249,7 @@ class MhcScheduleItem
     return self if in_cond?(date)
 
     if !in_day?(date)
-      (@day << date) .uniq! 
+      (@day << date) .uniq!
       set_modified(true, 'add_day')
     end
     return self
@@ -398,7 +398,7 @@ class MhcScheduleItem
     set_modified(true, 'add_cond') # it may be over estimation.
     return self
   end
-  
+
   def del_cond(cond)
     cond = cond .capitalize
     case cond
@@ -567,7 +567,7 @@ class MhcScheduleItem
   def pilot_id_as_string
     @pilot_id ? @pilot_id .join(' ') : ''
   end
-  
+
   def set_pilot_id(id_array)
     @pilot_id = []
     id_array .each{|id|
@@ -589,7 +589,7 @@ class MhcScheduleItem
   end
 
   def set_path(path)
-    @path = path 
+    @path = path
     set_modified(true, 'set_path')
     return self
   end
@@ -685,14 +685,14 @@ class MhcScheduleItem
       min = (@day - @exception) .min
       # Sometimes palm makes empty @day - @exception.
       # ex. X-SC-Day: 20000911 !20000911
-      min = DURATION_MIN .dup if !min 
+      min = DURATION_MIN .dup if !min
     end
     min = @duration_b if min && @duration_b  && min < @duration_b
     return min
   end
 
   def occur_on?(date)
-    return (in_day?(date) || in_cond?(date)) && 
+    return (in_day?(date) || in_cond?(date)) &&
            !in_exception?(date) && in_duration?(date)
   end
 
@@ -771,7 +771,7 @@ class MhcScheduleItem
     elsif  cond_ord .length >= 1  &&
 	  !cond_ord .include?('5th') &&
 	   cond_wek .length >= 1  &&
-	   cond_num .length == 0  && 
+	   cond_num .length == 0  &&
 	   cond_mon .length == 0
       ## monthly by day
       cond_ord .each{|ord_str|
@@ -807,7 +807,7 @@ class MhcScheduleItem
       d = cond_num[0] .to_i
       date = MhcDate .new(y, m, d)
       if date < beg
-	date .y_succ! 
+	date .y_succ!
       end
       ## 2/29 はどうする?
       ret << mk_palm_skel .set_yearly(date, fin, 1)
@@ -815,14 +815,14 @@ class MhcScheduleItem
     elsif cond_ord .length == 1  &&
 	  cond_ord[0] != '5th'   &&
 	  cond_wek .length == 1  &&
-	  cond_num .length == 0  && 
+	  cond_num .length == 0  &&
 	  cond_mon .length == 1
       ## yearly by day
       ord = MhcDate::O_LABEL .index(cond_ord[0])
       wek = MhcDate::W_LABEL .index(cond_wek[0])
       m   = MhcDate::M_LABEL .index(cond_mon[0]) + 1
       date = MhcDate .new(beg .y, m, 1)
-      if date .m < beg .m 
+      if date .m < beg .m
 	date .y_succ!
       end
       while !occur_on?(date)
@@ -900,7 +900,7 @@ class MhcScheduleItem
     else
       pi_rec .set_description(subject)
     end
-      
+
     return pi_rec
   end
 
@@ -937,7 +937,7 @@ class MhcScheduleItem
   def init_by_string(string)
     clear
     all_headers, @description  = string .split(/\n\n/, 2)
-    @description = nil if @description == '' 
+    @description = nil if @description == ''
     @non_xsc_header, xsc_header_hash = select_headers(all_headers)
     parse_xsc_headers(xsc_header_hash)
     return self
@@ -1130,7 +1130,7 @@ class MhcScheduleDB
       @alarm .signal_connect('sec-changed'){
 	if update_all
 	  print "MhcScheduleDB: emit updated signal\n" if $DEBUG
-	  @alarm .signal_emit('updated') 
+	  @alarm .signal_emit('updated')
 	end
       }
     end
@@ -1151,7 +1151,7 @@ class MhcScheduleDB
       print "mv #{old_path} -> #{trash_path}\n" if $DEBUG
     end
     if add_log
-      @log .add_entry(MhcLogEntry .new('D', Time .now, 
+      @log .add_entry(MhcLogEntry .new('D', Time .now,
 				       sch .rec_id, sch .path, sch .subject))
     end
     sch .set_path(nil)
@@ -1192,7 +1192,7 @@ class MhcScheduleDB
       raise("#{$!}\nWrite/Move #{old_path} -> #{new_path} failed.")
     end
     if add_log
-      @log .add_entry(MhcLogEntry .new('M', Time .now, 
+      @log .add_entry(MhcLogEntry .new('M', Time .now,
 				       sch .rec_id, sch .path, sch .subject))
     end
     sch .set_modified(false, 'add_sch')
@@ -1252,7 +1252,7 @@ class MhcScheduleDB
     search_key = [date, mon+ord+wek, mon+ALL+wek, ALL+ord+wek,
                   ALL+ALL+wek, mon+day, ALL+day, mon+ALL, ALL+ALL]
     search_key << mon+last+wek << ALL+last+wek if d .o_last?
-    
+
     update(d) if do_update
     to_slots(d) .each{|slot|
       search_key .each{|key|
@@ -1277,13 +1277,13 @@ class MhcScheduleDB
   def regist(slot, o)
     day, mon, ord, wek, num =
       o.day, o.cond_mon, o.cond_ord, o.cond_wek, o.cond_num
-    
+
     day .each{|ymd|
       _regist(slot, ymd, o)
     }
     mon = [ALL] if (mon .empty?)
     ord = [ALL] if (ord .empty?)
-    
+
     mon .each{|mon|
       ord .each{|ord|
 	wek .each{|wek|
@@ -1298,7 +1298,7 @@ class MhcScheduleDB
       end
     }
   end
-  
+
   def makedir_or_higher(dir)
     return true if File .directory?(dir)
     parent = File .dirname(dir)
@@ -1350,7 +1350,7 @@ class MhcScheduleDB
     @db[slot] = {} if @db[slot] .nil?
 
     return false if !modified?(slot)
-#    STDERR .print "scanning '#{slot}'\n" 
+#    STDERR .print "scanning '#{slot}'\n"
 
     clear_slot(slot)
 
@@ -1378,7 +1378,7 @@ class MhcScheduleDB
       if  header != ''
 	regist(slot, MhcScheduleItem .new(header, false))
       end
-	  
+
     elsif (File .directory?(slot))
       ## read as a yyyy/mm folder.
       Dir .open(slot) .each{|file|
@@ -1542,7 +1542,7 @@ end
 ##    now   <= aTime <= xTime  な予定 --> @alarm_table に保存
 ##    aTime <= now   <= xTime  な予定 --> 即 signal を発行
 ##    aTime <= xTime <= now    な予定 --> 捨てる
-## 
+##
 ##    @alarm_table =  [[aTime, aMhcScheduleItem], ... ]
 ##
 ##
@@ -1578,7 +1578,7 @@ class MhcAlarm
       print "MhcAlarm: tick\n"  if $DEBUG
       check_alarm_table
     }
-    
+
     @sig_conduit .signal_connect('day-changed'){
       print "MhcAlarm: day_changed\n" if $DEBUG
       update_alarm_table
@@ -1634,7 +1634,7 @@ class MhcAlarm
     @alarm_table .sort!{|a, b| a[0] <=> b[0]} if @alarm_table
     if $DEBUG
       print "MhcAlarm::make_alarm_table\n"
-      dump_alarm_table 
+      dump_alarm_table
     end
   end
 
@@ -1691,7 +1691,7 @@ end
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -1700,7 +1700,7 @@ end
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

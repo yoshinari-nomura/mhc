@@ -5,7 +5,7 @@
 ##
 ## Author:  MIYOSHI Masanori <miyoshi@quickhack.net>
 ##          Yoshinari Nomura <nom@quickhack.net>
-##          
+##
 ##
 ## Created: 2001/09/15
 ## Revised: $Date: 2006/10/27 00:53:10 $
@@ -99,7 +99,7 @@ module RepeatPattern
       return rp
     end
   end
-  
+
   class NonRepeat < Period
     def initialize(sdate, stime, etime)
       super(sdate, sdate, stime, etime)
@@ -269,7 +269,7 @@ class MhcScheduleItem
     elsif  cond_ord .length >= 1  &&
 	  !cond_ord .include?('5th') &&
 	   cond_wek .length >= 1  &&
-	   cond_num .length == 0  && 
+	   cond_num .length == 0  &&
 	   cond_mon .length == 0
       ## monthly by day
       cond_ord .each{|ord_str|
@@ -304,7 +304,7 @@ class MhcScheduleItem
       d = cond_num[0] .to_i
       date = MhcDate .new(y, m, d)
       if date < beg
-	date .y_succ! 
+	date .y_succ!
       end
       ## 2/29 はどうする?
       dates << RepeatPattern::Yearly .new(date, fin, time_b, time_e, 1)
@@ -312,14 +312,14 @@ class MhcScheduleItem
     elsif cond_ord .length == 1  &&
 	  cond_ord[0] != '5th'   &&
 	  cond_wek .length == 1  &&
-	  cond_num .length == 0  && 
+	  cond_num .length == 0  &&
 	  cond_mon .length == 1
       ## yearly by day
       ord = MhcDate::O_LABEL .index(cond_ord[0])
       wek = MhcDate::W_LABEL .index(cond_wek[0])
       m   = MhcDate::M_LABEL .index(cond_mon[0]) + 1
       date = MhcDate .new(beg .y, m, 1)
-      if date .m < beg .m 
+      if date .m < beg .m
 	date .y_succ!
       end
       while !occur_on?(date)
@@ -460,10 +460,10 @@ class Exporter
       print "Subject:", MhcKconv::todisp(sch .subject()), "\n" if @@flag_verbose
       appoint .Subject = MhcKconv::todisp(sch .subject())
       appoint .Location = MhcKconv::todisp(sch .location()) if sch.location()
-	
+
       print "Time: ", sch .time_as_string(), "\n" if @@flag_verbose
       print "Path: ", sch .path(), "\n" if @@flag_verbose
-	
+
       stime, etime = period .get_time()
       sdate += " " + stime .to_s if sdate && stime
       etime_tmp = if etime then etime else stime end
@@ -488,7 +488,7 @@ class Exporter
       when 'all'
  	appoint .Body = MhcKconv::todisp(sch .dump())
       when 'body_only'
- 	appoint .Body = MhcKconv::todisp(sch .dump_without_header())	
+ 	appoint .Body = MhcKconv::todisp(sch .dump_without_header())
       end
 
       # a reminder is valid for a future schedule.
@@ -520,7 +520,7 @@ class Exporter
       when 'all'
  	appoint .Body = MhcKconv::todisp(sch .dump())
       when 'body_only'
- 	appoint .Body = MhcKconv::todisp(sch .dump_without_header())	
+ 	appoint .Body = MhcKconv::todisp(sch .dump_without_header())
       end
       appoint .Save() if !$flag_separation  || !todo_p
 
@@ -617,7 +617,7 @@ class Exporter
     # check if schedules are up-to-date.
     is_update = false
     last_sync_info = @last_sync_infos .assoc(rec_id)
-  
+
     if last_sync_info
       ## 前回のsync情報がある場合
       @last_sync_infos .delete(last_sync_info)
@@ -653,7 +653,7 @@ class Exporter
       next unless @category_regexp .match(sch .category_as_string())
       sch_count += 1
       print "adding ", MhcKconv::todisp(sch .subject), "\n" if @@flag_verbose
-  
+
       if periods = sch .to_outlook()
 	if @@flag_verbose
 	  print "    converted into #{periods .length} Outlook article(s)."
@@ -813,7 +813,7 @@ while ARGV .length > 0
     $flag_install = true
   when '-d'
     $flag_discreet = true
-  when '-H' 
+  when '-H'
     $flag_export_part = 'body_only'
   when '-n'
     $flag_noharm  = true
@@ -901,7 +901,7 @@ exit 0
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -910,7 +910,7 @@ exit 0
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

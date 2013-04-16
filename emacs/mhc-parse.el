@@ -46,7 +46,7 @@
   (mhc-logic-parse-duration (mhc-schedule-condition schedule))
   schedule)
 
-;; FIXME: Need to be deleted. 
+;; FIXME: Need to be deleted.
 (defun mhc-parse/todo (record schedule)
   (mhc-logic-parse-todo (mhc-schedule-condition schedule))
   schedule)
@@ -74,8 +74,8 @@
   schedule)
 
 (defun mhc-parse/location (record schedule)
-  (mhc-schedule/set-location 
-   schedule 
+  (mhc-schedule/set-location
+   schedule
    (mhc-eword-decode-string (mhc-parse/continuous-lines)))
   schedule)
 
@@ -249,7 +249,7 @@
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright
 ;;    notice, this list of conditions and the following disclaimer.
 ;; 2. Redistributions in binary form must reproduce the above copyright
@@ -258,7 +258,7 @@
 ;; 3. Neither the name of the team nor the names of its contributors
 ;;    may be used to endorse or promote products derived from this software
 ;;    without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS

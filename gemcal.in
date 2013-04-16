@@ -244,7 +244,7 @@ end
 ################################################################
 class MhcScheduleEdit < GtkToplevel
   BUTTONS = [
-    ['save', 'save to DB'], 
+    ['save', 'save to DB'],
     ['delete', 'delete this article'],
     ['close', 'close']
   ]
@@ -365,7 +365,7 @@ class MhcScheduleEdit < GtkToplevel
       @sch = sch
       @subj_ent .set_text(@sch .subject)
       @cat_ent  .set_text(@sch .category_as_string)
-      @desc_box .replace_text(@sch .non_xsc_header + "\n" + 
+      @desc_box .replace_text(@sch .non_xsc_header + "\n" +
 			      @sch .description .to_s)
       @date_box .set_schedule(@sch)
       @note .set_page(0)
@@ -558,7 +558,7 @@ class MhcCalendar
     @date     = date .m_first_day
     @db       = db
     @day_book = day_book
-    @vml      = Visual .new(@date, x, y) 
+    @vml      = Visual .new(@date, x, y)
     @sch_edit = nil
     @path     = {}
     @alarm    = Alarm .new
@@ -662,7 +662,7 @@ while ARGV[0]
   when /^-g(eometry)?$/
     geom = ARGV .shift
     if geom && geom =~ /\+(\d+)\+(\d+)$/
-      x, y = $1 .to_i, $2 .to_i      
+      x, y = $1 .to_i, $2 .to_i
     end
   when /^-r(epository)?$/
     repository  = File .expand_path(ARGV .shift)
@@ -710,7 +710,7 @@ Gtk .main
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
 ## are met:
-## 
+##
 ## 1. Redistributions of source code must retain the above copyright
 ##    notice, this list of conditions and the following disclaimer.
 ## 2. Redistributions in binary form must reproduce the above copyright
@@ -719,7 +719,7 @@ Gtk .main
 ## 3. Neither the name of the team nor the names of its contributors
 ##    may be used to endorse or promote products derived from this software
 ##    without specific prior written permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE TEAM AND CONTRIBUTORS ``AS IS''
 ## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
