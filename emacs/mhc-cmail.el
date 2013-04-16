@@ -21,16 +21,16 @@
       (require 'eword-decode))
   (error))
 (if (and (featurep 'mime-edit)
-	 (featurep 'eword-decode))
+         (featurep 'eword-decode))
     (require 'mhc-mime))
 
 ;;; Customize variables:
 
 (defcustom mhc-cmail-dummy-file (cond
-				 ((file-readable-p "nul")
-				  "nul")
-				 ((file-readable-p "/dev/null")
-				  "/dev/null"))
+                                 ((file-readable-p "nul")
+                                  "nul")
+                                 ((file-readable-p "/dev/null")
+                                  "/dev/null"))
   "*Null file name (Ex. \"/dev/null\")."
   :group 'mhc
   :type 'file)
@@ -67,7 +67,7 @@
   (save-excursion
     (beginning-of-line)
     (if (looking-at mhc-cmail/summary-filename-regex)
-	(buffer-substring-no-properties (match-beginning 1) (match-end 1)))))
+        (buffer-substring-no-properties (match-beginning 1) (match-end 1)))))
 
 (defun mhc-cmail-summary-display-article ()
   "Display the article on the current."
@@ -109,10 +109,10 @@
     (mhc-get-buffer-create (mhc-cmail/date-to-buffer date))))
   (kill-all-local-variables)
   (setq inhibit-read-only t
-	buffer-read-only nil
-	selective-display t
-	selective-display-ellipses nil
-	indent-tabs-mode nil)
+        buffer-read-only nil
+        selective-display t
+        selective-display-ellipses nil
+        indent-tabs-mode nil)
   (widen)
   (delete-region (point-min) (point-max)))
 
@@ -132,10 +132,10 @@
     (cmail-summary-mode)
     ;; moved code partially from cmail-mode-line-update
     (setq mode-line-buffer-identification
-	  (format "cmail: << %s >>" cmail-current-folder)))
+          (format "cmail: << %s >>" cmail-current-folder)))
   (setq selective-display t
-	selective-display-ellipses nil
-	indent-tabs-mode nil)
+        selective-display-ellipses nil
+        indent-tabs-mode nil)
   (make-local-variable 'cmail-highlight-mode)
   (setq cmail-highlight-mode nil)
   (delete-other-windows))
@@ -146,9 +146,9 @@
   "NTH番目のメイルの先頭のポインタの値を返す. ポインタも移動する."
   (if (not (integerp nth))
       (progn
- 	(mhc-insert-file-contents-as-coding-system
-	 *cmail-file-coding-system nth)
-	(goto-char (point-min)))
+        (mhc-insert-file-contents-as-coding-system
+         *cmail-file-coding-system nth)
+        (goto-char (point-min)))
     (cmail-rebuild-index)
     (goto-char (nth nth *cmail-pagelist))))
 
@@ -209,50 +209,50 @@
   (interactive (list (cmail-get-page-number-from-summary)))
   (let ((disp (get-buffer-window *cmail-mail-buffer)))
     (if (equal page 0)
-	(progn
-	  (setq *cmail-current-folder "")
-	  (setq *cmail-current-page 0)
-	  (cmail-error-resource 'read-contents-1)))
+        (progn
+          (setq *cmail-current-folder "")
+          (setq *cmail-current-page 0)
+          (cmail-error-resource 'read-contents-1)))
     (cmail-select-buffer *cmail-mail-buffer)
     (cmail-select-buffer *cmail-summary-buffer)
     (if (or (null disp)
-	    (not (string= cmail-current-folder *cmail-current-folder))
-	    (not (equal page *cmail-current-page)))
-	  (cmail-show-contents page)
+            (not (string= cmail-current-folder *cmail-current-folder))
+            (not (equal page *cmail-current-page)))
+          (cmail-show-contents page)
       (let* ((win (get-buffer-window *cmail-mail-buffer))
-	     (wh (window-height win))
-	     (mbll (save-excursion
-		     (set-buffer *cmail-mail-buffer)
-		     (count-lines (window-start win) (point-max))))
-	     (cp (/ wh 2))
-	   (swin (get-buffer-window *cmail-summary-buffer))
-	   (swh (window-height swin))
-	   (scp (/ swh 2))
-	   (ccp (count-lines (point-min) (point)))
-	   (sll (- swh (count-lines (window-start swin) (point-max)))))
-	(if (or (>= mbll wh)
-		(not (save-window-excursion
-		       (select-window (get-buffer-window *cmail-mail-buffer))
-		       (pos-visible-in-window-p (point-max)))))
-	    (cmail-scroll-up nil win)
-	  (set-buffer *cmail-mail-buffer)
-	  (goto-char (point-max))
-	  (widen)
-	  (if (/= (point) (point-max))
-	      (progn
-		(forward-line 2)
-		(cmail-narrow-to-page))
-	    (cmail-narrow-to-page)
-	    (set-buffer *cmail-summary-buffer)
-	    (let ((p (point)))
-	      (if (and (< sll 2) (>= ccp scp))
-		  (scroll-up 1))
-	      (and (= p (point))
-		   (forward-line 1)))
-	    (if (eobp)
-		(cmail-message-resource 'read-contents-2)
-	      (cmail-show-contents (cmail-get-page-number-from-summary)))))
-	(set-buffer *cmail-summary-buffer)))
+             (wh (window-height win))
+             (mbll (save-excursion
+                     (set-buffer *cmail-mail-buffer)
+                     (count-lines (window-start win) (point-max))))
+             (cp (/ wh 2))
+           (swin (get-buffer-window *cmail-summary-buffer))
+           (swh (window-height swin))
+           (scp (/ swh 2))
+           (ccp (count-lines (point-min) (point)))
+           (sll (- swh (count-lines (window-start swin) (point-max)))))
+        (if (or (>= mbll wh)
+                (not (save-window-excursion
+                       (select-window (get-buffer-window *cmail-mail-buffer))
+                       (pos-visible-in-window-p (point-max)))))
+            (cmail-scroll-up nil win)
+          (set-buffer *cmail-mail-buffer)
+          (goto-char (point-max))
+          (widen)
+          (if (/= (point) (point-max))
+              (progn
+                (forward-line 2)
+                (cmail-narrow-to-page))
+            (cmail-narrow-to-page)
+            (set-buffer *cmail-summary-buffer)
+            (let ((p (point)))
+              (if (and (< sll 2) (>= ccp scp))
+                  (scroll-up 1))
+              (and (= p (point))
+                   (forward-line 1)))
+            (if (eobp)
+                (cmail-message-resource 'read-contents-2)
+              (cmail-show-contents (cmail-get-page-number-from-summary)))))
+        (set-buffer *cmail-summary-buffer)))
     (cmail-fixcp)))
 
 (defun mhc-cmail-draft-setup-new ()
@@ -279,9 +279,9 @@
   (save-excursion
     (goto-char (point-min))
     (if (re-search-forward (concat "^"
-				   (regexp-quote mail-header-separator)
-				   "$") nil t)
-	(delete-region (match-beginning 0) (match-end 0)))))
+                                   (regexp-quote mail-header-separator)
+                                   "$") nil t)
+        (delete-region (match-beginning 0) (match-end 0)))))
 
 (defun mhc-cmail-goto-message (&optional view)
   "Go to a view position on summary buffer."

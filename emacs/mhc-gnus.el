@@ -102,18 +102,18 @@ this function."
 (defun mhc-gnus-generate-summary-buffer (date)
   "Generate a summary buffer for DATE, and change current buffer to it."
   (let* ((group (mhc-gnus/date-to-group-name date))
-	 (method `(nnmhc ,group))
-	 (vgroup (gnus-group-prefixed-name group method)))
+         (method `(nnmhc ,group))
+         (vgroup (gnus-group-prefixed-name group method)))
     ;; initialize ephemeral nnmhc group.
     (gnus-group-read-ephemeral-group vgroup method t
-				     (if (buffer-live-p gnus-summary-buffer)
-					 (cons gnus-summary-buffer 'summary)
-				       (cons (current-buffer) 'group))
-				     t)
+                                     (if (buffer-live-p gnus-summary-buffer)
+                                         (cons gnus-summary-buffer 'summary)
+                                       (cons (current-buffer) 'group))
+                                     t)
     (gnus-group-read-group 0 t vgroup)
     (gnus-summary-make-local-variables)
     (setq inhibit-read-only t
-	  nnmhc-article-list nil)
+          nnmhc-article-list nil)
     (delete-region (point-min) (point-max))))
 
 ;; This is a trick to suppress byte-compile of the inline function
@@ -124,40 +124,40 @@ this function."
 (defun mhc-gnus-insert-summary-contents (inserter)
   "Insert `mhc-tmp-schedule' with INSERTER."
   (let ((x (mhc-record-name (mhc-schedule-record mhc-tmp-schedule)))
-	(subject (mhc-gnus/encode-string
-		  (mhc-schedule-subject-as-string mhc-tmp-schedule)))
-	(pos (point)))
+        (subject (mhc-gnus/encode-string
+                  (mhc-schedule-subject-as-string mhc-tmp-schedule)))
+        (pos (point)))
     (when x
       (push (cons x subject) nnmhc-article-list)
       (setq x (length nnmhc-article-list)))
     (funcall inserter)
     (if x
-	(let ((header (mhc-gnus/make-full-mail-header x subject "")))
-	  (put-text-property pos (point) 'gnus-number x)
-	  (push (gnus-data-make x 0 0 header 0) gnus-newsgroup-data))
+        (let ((header (mhc-gnus/make-full-mail-header x subject "")))
+          (put-text-property pos (point) 'gnus-number x)
+          (push (gnus-data-make x 0 0 header 0) gnus-newsgroup-data))
       (remove-text-properties pos (point) '(gnus-number nil)))
     (insert "\n")))
 
 (defun mhc-gnus-summary-mode-setup (date)
   "Setup this current buffer as a summary buffer for DATE."
   (setq gnus-newsgroup-data (nreverse gnus-newsgroup-data)
-	nnmhc-article-list (nreverse nnmhc-article-list))
+        nnmhc-article-list (nreverse nnmhc-article-list))
   (save-excursion
     (goto-char (point-min))
     (while (not (eobp))
       (let ((num (get-text-property (point) 'gnus-number)))
-	(if num (gnus-data-set-pos (assoc num gnus-newsgroup-data) (point))))
+        (if num (gnus-data-set-pos (assoc num gnus-newsgroup-data) (point))))
       (forward-line 1)))
   (let ((group (gnus-group-prefixed-name
-		(mhc-gnus/date-to-group-name date) '(nnmhc))))
+                (mhc-gnus/date-to-group-name date) '(nnmhc))))
     ;; Reset all caches for this group.
     (let ((i 0))
       (while (<= (incf i) (length nnmhc-article-list))
-	(gnus-backlog-remove-article group i)))
+        (gnus-backlog-remove-article group i)))
     ;; Reset an article kept in `gnus-original-article-buffer'.
     (when (gnus-buffer-live-p gnus-original-article-buffer)
       (with-current-buffer gnus-original-article-buffer
-	(setq gnus-original-article nil)))
+        (setq gnus-original-article nil)))
     (let ((gnus-newsgroup-data))
       (gnus-summary-mode group)))
   (when (fboundp 'gnus-summary-setup-default-charset)
@@ -166,22 +166,22 @@ this function."
   (set (make-local-variable 'gnus-visual) nil)
   (set (make-local-variable 'gnus-auto-extend-newsgroup) nil)
   (setq gnus-article-current nil ; Reset structures of the current article.
-	gnus-current-article nil
-	gnus-current-headers nil
-	gnus-newsgroup-begin 1
-	gnus-newsgroup-end (length nnmhc-article-list)))
+        gnus-current-article nil
+        gnus-current-headers nil
+        gnus-newsgroup-begin 1
+        gnus-newsgroup-end (length nnmhc-article-list)))
 
 (defun mhc-gnus-highlight-message (for-draft)
   "Hilight message in the current buffer.
 If FOR-DRAFT is non-nil, Hilight message as draft message."
   (if for-draft
       (progn
-	(require 'message)
-	(set (make-local-variable 'font-lock-defaults)
-	     '(message-font-lock-keywords t)))
+        (require 'message)
+        (set (make-local-variable 'font-lock-defaults)
+             '(message-font-lock-keywords t)))
     (let ((gnus-article-buffer (current-buffer))
-	  ;; Adhoc fix to avoid errors in gnus-article-add-buttons().
-	  (gnus-button-marker-list))
+          ;; Adhoc fix to avoid errors in gnus-article-add-buttons().
+          (gnus-button-marker-list))
       (gnus-article-highlight))))
 
 (defalias 'mhc-gnus-decode-string 'rfc2047-decode-string)
@@ -229,21 +229,21 @@ this function."
     (insert-buffer buffer))
   (if original
       (save-restriction
-	(mail-narrow-to-head)
-	(mhc-gnus/decode-buffer)
-	(if (mhc-header-valid-p "Content-Type")
-	    (progn
-	      (widen)
-	      (mime-to-mml))
-	  (rfc2047-decode-region (point-min) (point-max))
-	  (goto-char (point-max))
-	  (widen)
-	  (decode-coding-region (point) (point-max)
-				mhc-default-coding-system))
-	(mail-narrow-to-head)
-	(mhc-header-delete-header
-	 (concat "^\\(" (mhc-regexp-opt mhc-draft-unuse-hdr-list) "\\)")
-	 'regexp))
+        (mail-narrow-to-head)
+        (mhc-gnus/decode-buffer)
+        (if (mhc-header-valid-p "Content-Type")
+            (progn
+              (widen)
+              (mime-to-mml))
+          (rfc2047-decode-region (point-min) (point-max))
+          (goto-char (point-max))
+          (widen)
+          (decode-coding-region (point) (point-max)
+                                mhc-default-coding-system))
+        (mail-narrow-to-head)
+        (mhc-header-delete-header
+         (concat "^\\(" (mhc-regexp-opt mhc-draft-unuse-hdr-list) "\\)")
+         'regexp))
     (mhc-header-narrowing
       (mhc-header-delete-header
        "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp)))
@@ -259,7 +259,7 @@ using T-gnus, `mhc-mime-draft-reedit-file' must be called instead of
 this function."
   (erase-buffer)
   (let ((coding-system-for-read 'raw-text-dos)
-	(format-alist))
+        (format-alist))
     (insert-file-contents file))
   (mhc-gnus-draft-reedit-buffer (current-buffer) t))
 
@@ -319,7 +319,7 @@ Note: This function is used only when using T-gnus."
     (around mhc-gnus-draft-edit-message activate compile)
     "If MHC is running, call `mhc-modify'."
     (if mhc-gnus/mhc-is-running
-	(mhc-modify)
+        (mhc-modify)
       ad-do-it)))
 
 (let (current-load-list)
@@ -327,7 +327,7 @@ Note: This function is used only when using T-gnus."
     (around mhc-gnus-summary-delete-article activate compile)
     "If MHC is running, call `mhc-delete'."
     (if mhc-gnus/mhc-is-running
-	(mhc-delete)
+        (mhc-delete)
       ad-do-it)))
 
 
@@ -342,23 +342,23 @@ Note: This function is used only when using T-gnus."
 
 (defun mhc-gnus/setup-methods ()
   (if (and (boundp 'gnus-version)
-	   (stringp (symbol-value 'gnus-version))
-	   (string-match "SEMI" (symbol-value 'gnus-version)))
+           (stringp (symbol-value 'gnus-version))
+           (string-match "SEMI" (symbol-value 'gnus-version)))
       (progn
-	(require 'mhc-mime)
-	(defalias 'mhc-gnus/encode-string 'eword-encode-string)
-	(put 'mhc-gnus 'draft-setup-new 'mhc-mime-draft-setup-new)
-	(put 'mhc-gnus 'draft-reedit-buffer 'mhc-mime-draft-reedit-buffer)
-	(put 'mhc-gnus 'draft-reedit-file 'mhc-mime-draft-reedit-file)
-	(put 'mhc-gnus 'draft-translate 'mhc-mime-draft-translate)
-	(put 'mhc-gnus 'get-import-buffer 'mhc-mime-get-import-buffer)
-	(put 'mhc-gnus 'decode-header 'mhc-mime-decode-header)
-	(put 'mhc-gnus 'eword-decode-string 'mhc-mime-eword-decode-string)
-	(put 'mhc-gnus 'mime-get-raw-buffer 'mhc-gnus-mime-get-raw-buffer)
-	(put 'mhc-gnus 'mime-get-mime-structure 'mhc-gnus-mime-get-mime-structure))
+        (require 'mhc-mime)
+        (defalias 'mhc-gnus/encode-string 'eword-encode-string)
+        (put 'mhc-gnus 'draft-setup-new 'mhc-mime-draft-setup-new)
+        (put 'mhc-gnus 'draft-reedit-buffer 'mhc-mime-draft-reedit-buffer)
+        (put 'mhc-gnus 'draft-reedit-file 'mhc-mime-draft-reedit-file)
+        (put 'mhc-gnus 'draft-translate 'mhc-mime-draft-translate)
+        (put 'mhc-gnus 'get-import-buffer 'mhc-mime-get-import-buffer)
+        (put 'mhc-gnus 'decode-header 'mhc-mime-decode-header)
+        (put 'mhc-gnus 'eword-decode-string 'mhc-mime-eword-decode-string)
+        (put 'mhc-gnus 'mime-get-raw-buffer 'mhc-gnus-mime-get-raw-buffer)
+        (put 'mhc-gnus 'mime-get-mime-structure 'mhc-gnus-mime-get-mime-structure))
     (defun mhc-gnus/encode-string (string)
       (let ((rfc2047-encoding-type 'mime))
-	(rfc2047-encode-string string)))
+        (rfc2047-encode-string string)))
     (put 'mhc-gnus 'draft-setup-new 'mhc-gnus-draft-setup-new)
     (put 'mhc-gnus 'draft-reedit-buffer 'mhc-gnus-draft-reedit-buffer)
     (put 'mhc-gnus 'draft-reedit-file 'mhc-gnus-draft-reedit-file)

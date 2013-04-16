@@ -26,10 +26,10 @@
     (skip-chars-forward " \t\n")
     (while (not (eobp))
       (setq list
-	    (cons (buffer-substring-no-properties
-		   (point)
-		   (progn (end-of-line) (skip-chars-backward " \t") (point)))
-		  list))
+            (cons (buffer-substring-no-properties
+                   (point)
+                   (progn (end-of-line) (skip-chars-backward " \t") (point)))
+                  list))
       (end-of-line)
       (skip-chars-forward " \t\n"))
     (mapconcat 'identity (nreverse list) " ")))
@@ -55,15 +55,15 @@
   (if (looking-at mhc-logic/space-regexp)
       (goto-char (match-end 0)))
   (let ((content (buffer-substring
-		  (point)
-		  (progn (skip-chars-forward "0-9") (point)))))
+                  (point)
+                  (progn (skip-chars-forward "0-9") (point)))))
     (if (looking-at mhc-logic/space-regexp)
-	(goto-char (match-end 0)))
+        (goto-char (match-end 0)))
     (if (eobp)
-	(mhc-schedule/set-priority schedule
-				   (if (eq (length content) 0)
-				       nil
-				     (string-to-number content)))
+        (mhc-schedule/set-priority schedule
+                                   (if (eq (length content) 0)
+                                       nil
+                                     (string-to-number content)))
       (error "Parse ERROR !!!(at X-SC-Priority:)")))
   schedule)
 
@@ -83,19 +83,19 @@
 
 (defun mhc-parse/time (record schedule)
   (let ((time (mhc-parse/continuous-lines))
-	begin end)
+        begin end)
     (cond
      ((string-match (concat "^" mhc-parse/time-regexp "-" mhc-parse/time-regexp "$") time)
       (setq begin (+ (* 60 (string-to-number (match-string 1 time)))
-		     (string-to-number (match-string 2 time)))
-	    end (+ (* 60 (string-to-number (match-string 3 time)))
-		   (string-to-number (match-string 4 time)))))
+                     (string-to-number (match-string 2 time)))
+            end (+ (* 60 (string-to-number (match-string 3 time)))
+                   (string-to-number (match-string 4 time)))))
      ((string-match (concat "^" mhc-parse/time-regexp "-?$") time)
       (setq begin (+ (* 60 (string-to-number (match-string 1 time)))
-		     (string-to-number (match-string 2 time)))))
+                     (string-to-number (match-string 2 time)))))
      ((string-match (concat "^-" mhc-parse/time-regexp "$") time)
       (setq end (+ (* 60 (string-to-number (match-string 1 time)))
-		   (string-to-number (match-string 2 time)))))
+                   (string-to-number (match-string 2 time)))))
      ((and mhc-parse/strict (not (string= "" time)))
       (error "Parse ERROR!!!(at X-SC-Time:)")))
     (mhc-schedule/set-time schedule begin end))
@@ -111,8 +111,8 @@
 (defun mhc-parse/alarm (record schedule)
   (let ((alarm (mhc-parse/continuous-lines)))
     (unless (or (not mhc-parse/strict)
-		(string-match mhc-parse/alarm-regexp alarm)
-		(string= "" alarm))
+                (string-match mhc-parse/alarm-regexp alarm)
+                (string= "" alarm))
       (error "Parse ERROR!!! (at X-SC-Alarm:)"))
     (mhc-schedule/set-alarm schedule alarm))
   schedule)
@@ -122,15 +122,15 @@
     (mhc-schedule/set-categories
      schedule
      (nconc (delq nil
-		  (mapcar
-		   (lambda (str)
-		     (and (stringp str) (downcase str)))
-		   (mhc-misc-split
-		    (mhc-eword-decode-string category)
-		    "[ \t]+")))
-	    (mhc-schedule-categories schedule))))
+                  (mapcar
+                   (lambda (str)
+                     (and (stringp str) (downcase str)))
+                   (mhc-misc-split
+                    (mhc-eword-decode-string category)
+                    "[ \t]+")))
+            (mhc-schedule-categories schedule))))
   (mhc-logic/set-todo (mhc-schedule-condition schedule)
-		      (mhc-schedule-in-category-p schedule "todo"))
+                      (mhc-schedule-in-category-p schedule "todo"))
   schedule)
 
 
@@ -152,24 +152,24 @@
 ;; 安全に無視される必要がある。
 (defun mhc-parse/schedule (record schedule)
   (let ((buffer (current-buffer))
-	(start (point))
-	(end (point-max))
-	(schedule (mhc-schedule-new record)))
+        (start (point))
+        (end (point-max))
+        (schedule (mhc-schedule-new record)))
     (mhc-schedule/set-region-start schedule start)
     (mhc-schedule/set-region-start schedule end)
     (with-temp-buffer
       (insert-buffer-substring buffer start end)
       (goto-char (point-min))
       (while (not (eobp))
-	(let ((start (point)))
-	  (if (skip-chars-forward " \t\n")
-	      (delete-region start (point))))
-	(while (if (eobp)
-		   nil
-		 (eq ?\\ (progn (end-of-line) (preceding-char))))
-	  (delete-char -1)
-	  (forward-line))
-	(forward-line))
+        (let ((start (point)))
+          (if (skip-chars-forward " \t\n")
+              (delete-region start (point))))
+        (while (if (eobp)
+                   nil
+                 (eq ?\\ (progn (end-of-line) (preceding-char))))
+          (delete-char -1)
+          (forward-line))
+        (forward-line))
       (goto-char (point-min))
       (mhc-parse/internal-parser record schedule)))
   schedule)
@@ -185,28 +185,28 @@
 (defun mhc-parse/internal-parser (record &optional schedule strict)
   "Internal parseser of schedule headers in this narrowed buffer."
   (let ((mhc-parse/strict strict)
-	(case-fold-search t)
-	func)
+        (case-fold-search t)
+        func)
     (while (not (eobp))
       (if (looking-at "\\([^ \t:]+\\):")
-	  (progn
-	    (setq func (mhc-header-parse-function
-			(format "%s" (match-string 1))))
-	    (mhc-header-goto-end)
-	    (if (fboundp func)
-		(save-restriction
-		  (narrow-to-region (match-beginning 0) (point))
-		  (goto-char (match-end 0))
-		  (setq schedule
-			(funcall func
-				 record
-				 (or schedule
-				     (if (memq func '(mhc-parse/schedule mhc-parse/next))
-					 nil
-				       (mhc-parse/next record nil)))))
-		  (goto-char (point-max)))))
-	;; Always skip non-header lines.
-	(forward-line 1))))
+          (progn
+            (setq func (mhc-header-parse-function
+                        (format "%s" (match-string 1))))
+            (mhc-header-goto-end)
+            (if (fboundp func)
+                (save-restriction
+                  (narrow-to-region (match-beginning 0) (point))
+                  (goto-char (match-end 0))
+                  (setq schedule
+                        (funcall func
+                                 record
+                                 (or schedule
+                                     (if (memq func '(mhc-parse/schedule mhc-parse/next))
+                                         nil
+                                       (mhc-parse/next record nil)))))
+                  (goto-char (point-max)))))
+        ;; Always skip non-header lines.
+        (forward-line 1))))
   schedule)
 
 (defun mhc-parse-buffer (&optional record strict)

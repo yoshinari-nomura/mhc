@@ -64,10 +64,10 @@
     (save-excursion
       (beginning-of-line)
       (if (not (looking-at mhc-mew/summary-filename-regex))
-	  ()
-	(setq folder (buffer-substring (match-beginning 1) (match-end 1))
-	      number (buffer-substring (match-beginning 2) (match-end 2)))
-	(mhc-summary-folder-to-path folder number)))))
+          ()
+        (setq folder (buffer-substring (match-beginning 1) (match-end 1))
+              number (buffer-substring (match-beginning 2) (match-end 2)))
+        (mhc-summary-folder-to-path folder number)))))
 
 
 (defun mhc-mew-summary-display-article ()
@@ -77,24 +77,24 @@
 
 (defun mhc-mew-get-import-buffer (get-original)
   (let (mew-use-highlight-x-face
-	mew-opt-highlight-x-face
-	mew-message-hook
-	mew-summary-display-message-filter-hook)
+        mew-opt-highlight-x-face
+        mew-message-hook
+        mew-summary-display-message-filter-hook)
     (if get-original
-	(condition-case nil
-	    (mew-summary-display-asis t)
-	  (error (mew-summary-display-asis)))
+        (condition-case nil
+            (mew-summary-display-asis t)
+          (error (mew-summary-display-asis)))
       (if mhc-mew-redisplay-import
-	  (cond
-	   ((fboundp 'mew-summary-analyze-again)
-	    (mew-summary-analyze-again))
-	   ((fboundp 'mew-summary-display-command)
-	    (mew-summary-display-command))
-	   (t (mew-summary-display))))))
+          (cond
+           ((fboundp 'mew-summary-analyze-again)
+            (mew-summary-analyze-again))
+           ((fboundp 'mew-summary-display-command)
+            (mew-summary-display-command))
+           (t (mew-summary-display))))))
   (save-window-excursion
     (if (eq (cdr (assq major-mode mhc-mew/summary-message-alist))
-	    (progn (other-window 1) major-mode))
-	(current-buffer))))
+            (progn (other-window 1) major-mode))
+        (current-buffer))))
 
 
 (defun mhc-mew/date-to-buffer (date)
@@ -106,10 +106,10 @@
    (set-buffer
     (mhc-get-buffer-create (mhc-mew/date-to-buffer date))))
   (setq inhibit-read-only t
-	buffer-read-only nil
-	selective-display t
-	selective-display-ellipses nil
-	indent-tabs-mode nil)
+        buffer-read-only nil
+        selective-display t
+        selective-display-ellipses nil
+        indent-tabs-mode nil)
   (widen)
   (delete-region (point-min) (point-max)))
 
@@ -117,42 +117,42 @@
 (defun mhc-mew/schedule-foldermsg (schedule)
   (let ((path (mhc-record-name (mhc-schedule-record schedule))) fld-msg)
     (if (and
-	 path
-	 (string-match
-	  (concat "^"
-		  (regexp-quote (file-name-as-directory mhc-mail-path)))
-	  path))
-	(if (fboundp 'mew-summary-parent-id)
-	    (progn
-	      (setq fld-msg (concat "+" (substring path (match-end 0))))
-	      (setq fld (directory-file-name (file-name-directory fld-msg)))
-	      (setq msg (file-name-nondirectory fld-msg))
-	      (with-temp-buffer
-		(mew-insert-message fld msg mew-cs-text-for-read mew-header-reasonable-size)
-		(setq msgid (or (mew-idstr-get-first-id
-				 (mew-header-get-value "X-SC-Record-Id:"))
-				" "))
-		(setq ref (or (mew-idstr-get-first-id
-			       (mew-header-get-value mew-message-id:))
-			      " ")))
-	      (concat "\r " (directory-file-name (file-name-directory fld-msg))
-		      " " (file-name-nondirectory fld-msg)
-		      " " msgid " " ref "  "))
-	  (setq fld-msg (concat "+" (substring path (match-end 0))))
-	  (concat "\r "
-		  (if mhc-mew-new-virtual-type "<> <> \006 ")
-		  (directory-file-name (file-name-directory fld-msg))
-		  " "
-		  (file-name-nondirectory fld-msg)))
+         path
+         (string-match
+          (concat "^"
+                  (regexp-quote (file-name-as-directory mhc-mail-path)))
+          path))
+        (if (fboundp 'mew-summary-parent-id)
+            (progn
+              (setq fld-msg (concat "+" (substring path (match-end 0))))
+              (setq fld (directory-file-name (file-name-directory fld-msg)))
+              (setq msg (file-name-nondirectory fld-msg))
+              (with-temp-buffer
+                (mew-insert-message fld msg mew-cs-text-for-read mew-header-reasonable-size)
+                (setq msgid (or (mew-idstr-get-first-id
+                                 (mew-header-get-value "X-SC-Record-Id:"))
+                                " "))
+                (setq ref (or (mew-idstr-get-first-id
+                               (mew-header-get-value mew-message-id:))
+                              " ")))
+              (concat "\r " (directory-file-name (file-name-directory fld-msg))
+                      " " (file-name-nondirectory fld-msg)
+                      " " msgid " " ref "  "))
+          (setq fld-msg (concat "+" (substring path (match-end 0))))
+          (concat "\r "
+                  (if mhc-mew-new-virtual-type "<> <> \006 ")
+                  (directory-file-name (file-name-directory fld-msg))
+                  " "
+                  (file-name-nondirectory fld-msg)))
       "")))
 
 
 (defun mhc-mew-insert-summary-contents (inserter)
   (insert (if mhc-tmp-schedule
-	      mhc-mew/header-string-review mhc-mew/header-string))
+              mhc-mew/header-string-review mhc-mew/header-string))
   (funcall inserter)
   (insert (mhc-mew/schedule-foldermsg mhc-tmp-schedule)
-	  "\n"))
+          "\n"))
 
 
 (defun mhc-mew-summary-mode-setup (date)
@@ -176,7 +176,7 @@
   ;; Mew 4.0.69 or later, fake mew-pickable-p()
   (when (fboundp 'mew-vinfo-set-flds)
     (mew-vinfo-set-flds `(,(mhc-mew/date-to-buffer date)
-			  ,(format "%s/intersect" mhc-base-folder))))
+                          ,(format "%s/intersect" mhc-base-folder))))
   (mew-summary-toggle-disp-msg 'off))
 
 
@@ -187,48 +187,48 @@
   "mew-message-hook function to decode RAW JIS subject in header"
   (condition-case e
       (if (mew-current-get 'cache)
-	  (let* ((cache (mew-current-get 'cache))
-		 (part (mew-current-get 'part))
-		 (syntax (mew-cache-decode-syntax cache))
-		 (ent (mew-syntax-get-entry syntax part))
-		 (ct (mew-syntax-get-ct ent))
-		 (buffer-read-only nil))
-	    (if (not (equal "Message/Rfc822" (car ct)))
-		()			; nothing to do
-	      ;; do only Message/Rfc822 contents
-	      (save-excursion
-		(save-restriction
-		  (widen)
-		  (goto-char 1)
-		  (if (not (re-search-forward "\r?\n\r?\n" nil t))
-		      ()		; no header
-		    (narrow-to-region (point-min) (point))
-		    (goto-char (point-min))
-		    (if (not (re-search-forward "^X-SC-Subject:" nil t))
-			()
-		      (goto-char (point-min))
-		      ;; decode raw JIS string
-		      (while (< (point) (point-max))
-			(if (looking-at "[^:]+:? *")
-			    (goto-char (match-end 0)))
-			(if (and (not (looking-at "[\t\x20-\x7e]+$"))
-				 (equal (mew-find-cs-region
-					 (point)
-					 (save-excursion (end-of-line)
-							 (point)))
-					(list mhc-mew/lc-ascii)))
-			    ;; decode!
-			    (mew-cs-decode-region (point)
-						  (save-excursion
-						    (end-of-line)
-						    (point))
-						  mhc-mew/cs-m17n))
-			(beginning-of-line)
-			(forward-line 1))
-		      ;; re-highlight
-		      (mew-highlight-header)
-		      (save-excursion
-			(mew-highlight-x-face (point-min) (point-max))))))))))
+          (let* ((cache (mew-current-get 'cache))
+                 (part (mew-current-get 'part))
+                 (syntax (mew-cache-decode-syntax cache))
+                 (ent (mew-syntax-get-entry syntax part))
+                 (ct (mew-syntax-get-ct ent))
+                 (buffer-read-only nil))
+            (if (not (equal "Message/Rfc822" (car ct)))
+                ()                      ; nothing to do
+              ;; do only Message/Rfc822 contents
+              (save-excursion
+                (save-restriction
+                  (widen)
+                  (goto-char 1)
+                  (if (not (re-search-forward "\r?\n\r?\n" nil t))
+                      ()                ; no header
+                    (narrow-to-region (point-min) (point))
+                    (goto-char (point-min))
+                    (if (not (re-search-forward "^X-SC-Subject:" nil t))
+                        ()
+                      (goto-char (point-min))
+                      ;; decode raw JIS string
+                      (while (< (point) (point-max))
+                        (if (looking-at "[^:]+:? *")
+                            (goto-char (match-end 0)))
+                        (if (and (not (looking-at "[\t\x20-\x7e]+$"))
+                                 (equal (mew-find-cs-region
+                                         (point)
+                                         (save-excursion (end-of-line)
+                                                         (point)))
+                                        (list mhc-mew/lc-ascii)))
+                            ;; decode!
+                            (mew-cs-decode-region (point)
+                                                  (save-excursion
+                                                    (end-of-line)
+                                                    (point))
+                                                  mhc-mew/cs-m17n))
+                        (beginning-of-line)
+                        (forward-line 1))
+                      ;; re-highlight
+                      (mew-highlight-header)
+                      (save-excursion
+                        (mew-highlight-x-face (point-min) (point-max))))))))))
     (error
      (ding t)
      (message "mhc-message-decode-header: %s" (or (cdr e) "some error!")))))
@@ -265,12 +265,12 @@
   (goto-char (point-min))
   (and (re-search-forward "^$" nil t)
        (save-excursion
-	 (save-restriction
-	   (narrow-to-region (point-min) (point))
-	   (goto-char (point-min))
-	   (let ((mew-field-spec nil)
-		 (mew-decode-broken nil))
-	     (mew-decode-rfc822-header t)))))
+         (save-restriction
+           (narrow-to-region (point-min) (point))
+           (goto-char (point-min))
+           (let ((mew-field-spec nil)
+                 (mew-decode-broken nil))
+             (mew-decode-rfc822-header t)))))
   (mhc-header-narrowing
     (mhc-header-delete-header "x-mew"))
   (goto-char (point-min))
@@ -285,76 +285,76 @@
     (mew-highlight-header))
   ;; Mew-1.95b104 or later, not have functions.
   (when (and (fboundp 'mew-highlight-url)
-	     (fboundp 'mew-highlight-body))
+             (fboundp 'mew-highlight-body))
     (mew-highlight-url)
     (mew-highlight-body)))
 
 
 (defun mhc-mew-draft-translate ()
   (let ((bufstr (buffer-substring (point-min) (point-max)))
-	(case-fold-search t)
-	ct cte boundary beg end)
+        (case-fold-search t)
+        ct cte boundary beg end)
     (condition-case nil
-	(progn
-	  (mhc-header-narrowing
-	    ;; Mew can't encode Mime-Version ?
-	    (setq ct (mhc-header-get-value "content-type"))
-	    (setq cte (mhc-header-get-value "content-transfer-encoding"))
-	    (mhc-header-delete-header "mime-version")
-	    (mhc-header-delete-header "content-type")
-	    (mhc-header-delete-header "content-transfer-encoding"))
-	  (when (and ct (string-match "^multipart/" ct)
-		     (or (string-match "boundary=\"\\([^\"]+\\)\"" ct)
-			 (string-match "boundary=\\(.+\\)" ct)))
-	    (setq boundary (regexp-quote (mhc-mew/match-string 1 ct)))
-	    (let ((case-fold-search nil))
-	      (goto-char (point-min))
-	      (unless (and boundary
-			   (re-search-forward (concat "^--" boundary "$") nil t)
-			   (re-search-forward (concat "^--" boundary "--$") nil t))
-		;; looks like Broken multi-part message.
-		(setq boundary nil))))
-	  (if (null (mew-header-end))
-	      (mhc-header-narrowing
-		(mew-header-encode-region (point-min) (point-max)))
-	    (mew-header-encode-region (point-min) (mew-header-end))
-	    (mew-header-clear)
-	    (insert "\n"))
-	  (if (null boundary)
-	      ;; text/plain
-	      (progn
-		(mhc-header-narrowing
-		  (mhc-header-put-value "Mime-Version" "1.0"))
-		(mhc-mew/make-message))
-	    ;; Multipart
-	    (mhc-header-narrowing
-	      (mhc-header-put-value "Mime-Version" "1.0")
-	      (mhc-header-put-value "Content-Type" (or ct mew-ct-txt))
-	      (mhc-header-put-value "Content-Transfer-Encoding" (or cte mew-7bit)))
-	    (when (and (re-search-forward (concat "^--" boundary "$") nil t)
-		       (forward-line)
-		       (setq beg (point))
-		       (re-search-forward (concat "\n--" boundary "\\(--\\)?$") nil t)
-		       (setq end (match-beginning 0)))
-	      ;; first sub-part
-	      (goto-char beg)
-	      (when (or (looking-at "^content-type: +text/plain")
-			(looking-at "^$"))
-		(save-excursion
-		  (save-restriction
-		    (narrow-to-region beg end)
-		    (mhc-mew/make-message)))))))
+        (progn
+          (mhc-header-narrowing
+            ;; Mew can't encode Mime-Version ?
+            (setq ct (mhc-header-get-value "content-type"))
+            (setq cte (mhc-header-get-value "content-transfer-encoding"))
+            (mhc-header-delete-header "mime-version")
+            (mhc-header-delete-header "content-type")
+            (mhc-header-delete-header "content-transfer-encoding"))
+          (when (and ct (string-match "^multipart/" ct)
+                     (or (string-match "boundary=\"\\([^\"]+\\)\"" ct)
+                         (string-match "boundary=\\(.+\\)" ct)))
+            (setq boundary (regexp-quote (mhc-mew/match-string 1 ct)))
+            (let ((case-fold-search nil))
+              (goto-char (point-min))
+              (unless (and boundary
+                           (re-search-forward (concat "^--" boundary "$") nil t)
+                           (re-search-forward (concat "^--" boundary "--$") nil t))
+                ;; looks like Broken multi-part message.
+                (setq boundary nil))))
+          (if (null (mew-header-end))
+              (mhc-header-narrowing
+                (mew-header-encode-region (point-min) (point-max)))
+            (mew-header-encode-region (point-min) (mew-header-end))
+            (mew-header-clear)
+            (insert "\n"))
+          (if (null boundary)
+              ;; text/plain
+              (progn
+                (mhc-header-narrowing
+                  (mhc-header-put-value "Mime-Version" "1.0"))
+                (mhc-mew/make-message))
+            ;; Multipart
+            (mhc-header-narrowing
+              (mhc-header-put-value "Mime-Version" "1.0")
+              (mhc-header-put-value "Content-Type" (or ct mew-ct-txt))
+              (mhc-header-put-value "Content-Transfer-Encoding" (or cte mew-7bit)))
+            (when (and (re-search-forward (concat "^--" boundary "$") nil t)
+                       (forward-line)
+                       (setq beg (point))
+                       (re-search-forward (concat "\n--" boundary "\\(--\\)?$") nil t)
+                       (setq end (match-beginning 0)))
+              ;; first sub-part
+              (goto-char beg)
+              (when (or (looking-at "^content-type: +text/plain")
+                        (looking-at "^$"))
+                (save-excursion
+                  (save-restriction
+                    (narrow-to-region beg end)
+                    (mhc-mew/make-message)))))))
       (error
        (let ((buffer-read-only nil)
-	     (inhibit-read-only t))
-	 (delete-region (point-min) (point-max))
-	 (insert bufstr)
-	 (goto-char (point-min))
-	 (ding t)
-	 (error "%s"
-		(or (and (fboundp 'mew-tinfo-get-encode-err)
-			 (mew-tinfo-get-encode-err))
-		    "Draft buffer has some illegal headers. Please fix it.")))))))
+             (inhibit-read-only t))
+         (delete-region (point-min) (point-max))
+         (insert bufstr)
+         (goto-char (point-min))
+         (ding t)
+         (error "%s"
+                (or (and (fboundp 'mew-tinfo-get-encode-err)
+                         (mew-tinfo-get-encode-err))
+                    "Draft buffer has some illegal headers. Please fix it.")))))))
 
 (defun mhc-mew/make-message ()
   (mew-charset-sanity-check (point-min) (point-max))
@@ -410,22 +410,22 @@
     (while (string-match "\n" string)
       (setq string (replace-match "" nil nil string)))
     (while (string-match (concat mhc-mew-header-decode-regex
-				 "\\([ \t]+\\)"
-				 mhc-mew-header-decode-regex)
-				 string)
+                                 "\\([ \t]+\\)"
+                                 mhc-mew-header-decode-regex)
+                                 string)
       (setq string (replace-match "\\1\\3" nil nil string)))
     (while (string-match "[ \t\][ \t\]+" string)
       (setq string (replace-match " " nil nil string)))
     (while (not (string= string ""))
       (if (not (string-match mew-header-decode-regex string))
-	  (setq ret (concat ret string) string "")
-	(setq tmpstr (substring string (match-end 0)))
-	(setq ret (concat ret
-			  (substring string 0 (match-beginning 0))
-			  (mew-header-decode (mhc-mew/match-string 1 string)
-					     (mhc-mew/match-string 2 string)
-					     (mhc-mew/match-string 3 string))))
-	(setq string tmpstr)))
+          (setq ret (concat ret string) string "")
+        (setq tmpstr (substring string (match-end 0)))
+        (setq ret (concat ret
+                          (substring string 0 (match-beginning 0))
+                          (mew-header-decode (mhc-mew/match-string 1 string)
+                                             (mhc-mew/match-string 2 string)
+                                             (mhc-mew/match-string 3 string))))
+        (setq string tmpstr)))
     ret))
 
 
@@ -440,7 +440,7 @@
     (mew-summary-goto-message))
   (when view
     (condition-case nil
-	(mew-summary-display 'force)
+        (mew-summary-display 'force)
       (error
        (mew-summary-display)))))
 

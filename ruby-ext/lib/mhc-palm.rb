@@ -345,32 +345,32 @@ class PilotApptRecord < PilotRecord
     return ary .join(' ')
   end
 
-  ## b 	@event                 	時間指定がないイベントかどうか
-  ## t 	@beg	           	開始日付、時間。
-  ## 		           	(repeat の場合は、duration の開始でもある)
-  ## t 	@fin                   	終わりの時間 (date 部分は beg と同じにする)
-  ## 			   	event == 1 のときは、time 部分は全部 0
-  ## b 	@alarm                	1 or 0
-  ## i 	@advance		0-99
-  ## i 	@advanceUnits		units = ['minute', 'hour', 'day'];
+  ## b  @event                  時間指定がないイベントかどうか
+  ## t  @beg                    開始日付、時間。
+  ##                            (repeat の場合は、duration の開始でもある)
+  ## t  @fin                    終わりの時間 (date 部分は beg と同じにする)
+  ##                            event == 1 のときは、time 部分は全部 0
+  ## b  @alarm                  1 or 0
+  ## i  @advance                0-99
+  ## i  @advanceUnits           units = ['minute', 'hour', 'day'];
 
-  ## i     @repeatType           	None,Daily Weekly MonthlyByDay,
-  ##				MonthlyByDate,Yearly
-  ## 				byday -> cond (@repeatDay を信用)
-  ## 				bydate -> num @beg .day を信用。
-  ## b     @repeatForever		repeatEnd を信用していいかどうか。
-  ## 				repeatEnd は信用してはならない。
-  ## t     @repeatEnd		Duration end (date 部分だけ)
-  ## i     @repeatFrequency		int
-  ## i     @repeatDay		o = repeatDay /7, w = repeatDay % 7
-  ## 				5th がないのはなぜ?
-  ## b[7]  @repeatDays		Sun, Mon, Tue, 1 or 0
-  ## i     @repeatWeekstart		いつも 0
+  ## i     @repeatType                  None,Daily Weekly MonthlyByDay,
+  ##                            MonthlyByDate,Yearly
+  ##                            byday -> cond (@repeatDay を信用)
+  ##                            bydate -> num @beg .day を信用。
+  ## b     @repeatForever               repeatEnd を信用していいかどうか。
+  ##                            repeatEnd は信用してはならない。
+  ## t     @repeatEnd           Duration end (date 部分だけ)
+  ## i     @repeatFrequency             int
+  ## i     @repeatDay           o = repeatDay /7, w = repeatDay % 7
+  ##                            5th がないのはなぜ?
+  ## b[7]  @repeatDays          Sun, Mon, Tue, 1 or 0
+  ## i     @repeatWeekstart             いつも 0
 
-  ## i     @exceptions, 	0?
-  ## t[x]  @exception		[]
-  ## s     @description		NULL  or Subject:
-  ## s     @note		NULL  or 本文
+  ## i     @exceptions,         0?
+  ## t[x]  @exception           []
+  ## s     @description         NULL  or Subject:
+  ## s     @note                NULL  or 本文
 
 
   ################################################################
@@ -385,16 +385,16 @@ class PilotApptRecord < PilotRecord
       @alarm = true
 
       if alarm % 86400 == 0 && alarm <= 86400 * 99
-	@alarmUnit = 2 ## day
-	@advance   = alarm / 86400
+        @alarmUnit = 2 ## day
+        @advance   = alarm / 86400
       elsif alarm % 3600 == 0 && alarm <= 3600 * 99
-	@alarmUnit = 1 ## hour
-	@advance   = alarm / 3600
+        @alarmUnit = 1 ## hour
+        @advance   = alarm / 3600
       elsif alarm % 60 == 0 && alarm <= 60 * 99
-	@alarmUnit = 0 ## minute
-	@advance   = alarm / 60
+        @alarmUnit = 0 ## minute
+        @advance   = alarm / 60
       else
-	raise "Could not convert alarm."
+        raise "Could not convert alarm."
       end
     else
       @alarm        = false
@@ -485,10 +485,10 @@ class PilotApptRecord < PilotRecord
 
     if weeks .is_a?(Array) && weeks .length == 7
       weeks .each{|bool|
-	if !(bool == true || bool == false)
-	  raise "Type error: weeks must be bool[7]"
-	end
-	w << bool
+        if !(bool == true || bool == false)
+          raise "Type error: weeks must be bool[7]"
+        end
+        w << bool
       }
     else
       raise "Type error: weeks must be bool[7]"
@@ -601,34 +601,34 @@ class PilotApptRecord < PilotRecord
 
     if repeat?
       if @repeatFrequency > 1
-	STDERR .print "#{@beg} : #{Kconv::tojis(@description)} "
-	STDERR .print "unsupported. ignored..\n"
-	return nil
+        STDERR .print "#{@beg} : #{Kconv::tojis(@description)} "
+        STDERR .print "unsupported. ignored..\n"
+        return nil
       end
 
       if !forever?
-	b, e = @beg .to_xscday, @repeatEnd .to_xscday
-	xsc["Duration"] = b + '-' + e
-	b_date, e_date = MhcDate .new(b), MhcDate .new(e)
+        b, e = @beg .to_xscday, @repeatEnd .to_xscday
+        xsc["Duration"] = b + '-' + e
+        b_date, e_date = MhcDate .new(b), MhcDate .new(e)
       end
 
       case repeatType
       when 'Daily'
-	if !forever? && (e_date - b_date < 7)
-	  for d in b_date .. e_date
-	    xsc["Day"] += ' ' + d .to_s
-	  end
-	else
-	  xsc["Cond"] = 'Sun Mon Tue Wed Thu Fri Sat' # xxx
-	end
+        if !forever? && (e_date - b_date < 7)
+          for d in b_date .. e_date
+            xsc["Day"] += ' ' + d .to_s
+          end
+        else
+          xsc["Cond"] = 'Sun Mon Tue Wed Thu Fri Sat' # xxx
+        end
       when 'Weekly'
- 	xsc["Cond"] = repeatDays
+        xsc["Cond"] = repeatDays
       when 'MonthlyByDay'
- 	xsc["Cond"] = repeatDay
+        xsc["Cond"] = repeatDay
       when 'MonthlyByDate'
- 	xsc["Cond"] = @beg .day .to_s
+        xsc["Cond"] = @beg .day .to_s
       when 'Yearly'
- 	xsc["Cond"] = MONTH_TYPE[@beg .mon - 1] + ' ' + @beg .day .to_s
+        xsc["Cond"] = MONTH_TYPE[@beg .mon - 1] + ' ' + @beg .day .to_s
       end
     end
 
@@ -636,9 +636,9 @@ class PilotApptRecord < PilotRecord
     note = ''
     xsc .each{|key, val|
       if key == 'Note'
-	note = val
+        note = val
       else
-	str += "X-SC-#{key}: #{val}\n"
+        str += "X-SC-#{key}: #{val}\n"
       end
     }
     x = MhcScheduleItem .new(str, false)
@@ -671,7 +671,7 @@ class PilotApptRecord < PilotRecord
 
     part1 .to_s .split("\n") .each{|line|
       if !(line =~ /^[ \t]+/ or line =~ /^[A-Za-z0-9_-]+:/)
-	part1_is_header = false
+        part1_is_header = false
       end
     }
 
@@ -722,9 +722,9 @@ class PilotApptRecord < PilotRecord
   def unpack
     if @data != ''
       @event, @beg, @fin, @alarm, @advance, @advanceUnits,
-	@repeatType, @repeatForever, @repeatEnd, @repeatFrequency,
-	@repeatDay,  @repeatDays, @repeatWeekstart, @exceptions,
-	@exception,  @description, @note = PiLib .unpack_Appointment(@data)
+        @repeatType, @repeatForever, @repeatEnd, @repeatFrequency,
+        @repeatDay,  @repeatDays, @repeatWeekstart, @exceptions,
+        @exception,  @description, @note = PiLib .unpack_Appointment(@data)
 
     else
       @event           = true

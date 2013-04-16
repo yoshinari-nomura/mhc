@@ -1,9 +1,9 @@
 /* XPM */
 static char * Conflict_xpm[] = {
 "16 16 3 1",
-" 	s backgroundColor c None",
-".	c #FFFFFFFF0000",
-"X	c #000000000000",
+"       s backgroundColor c None",
+".      c #FFFFFFFF0000",
+"X      c #000000000000",
 "       .      . ",
 "       .    ..  ",
 ".     ...  ..   ",

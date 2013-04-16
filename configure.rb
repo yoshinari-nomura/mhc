@@ -77,12 +77,12 @@ inc_search_path = ['/usr/local/include', '/usr/local/pilot/include',
 
 if conf['@@MHC_DISABLE_PALM@@'] == ''
   conf .search_library(lib_search_path,
-		       'pisock',
-		       'pi_socket',
-		       '@@MHC_PILOT_LINK_LIB@@', false, true)
+                       'pisock',
+                       'pi_socket',
+                       '@@MHC_PILOT_LINK_LIB@@', false, true)
   conf .search_include(inc_search_path,
-		       'pi-dlp.h',
-		       '@@MHC_PILOT_LINK_INC@@', false, true)
+                       'pi-dlp.h',
+                       '@@MHC_PILOT_LINK_INC@@', false, true)
 end
 
 ################################################################

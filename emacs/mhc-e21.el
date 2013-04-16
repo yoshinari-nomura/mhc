@@ -29,9 +29,9 @@ Example:
     (\"Conflict\"    . \"Conflict.xpm\"))"
   :group 'mhc
   :type '(repeat
-	  :inline t
-	  (cons (string :tag "Icon Name")
-		(string :tag "XPM File Name"))))
+          :inline t
+          (cons (string :tag "Icon Name")
+                (string :tag "XPM File Name"))))
 
 (defcustom mhc-icon-function-alist
   '(("Todo" . mhc-todo-set-as-done)
@@ -44,9 +44,9 @@ If the icon named NAME is clicked, then FUNCTION is invoked at
 icon line."
   :group 'mhc
   :type '(repeat
-	  :inline t
-	  (cons (string :tag "Icon Name")
-		(function :tag "Function"))))
+          :inline t
+          (cons (string :tag "Icon Name")
+                (function :tag "Function"))))
 
 (defvar mhc-e21-icon-keymap nil)
 (if (null mhc-e21-icon-keymap)
@@ -69,24 +69,24 @@ icon line."
 
 (defsubst mhc-e21/setup-icons ()
   (let ((alist mhc-e21-icon-alist)
-	name image
-	(load-path (cons mhc-icon-path load-path)))
+        name image
+        (load-path (cons mhc-icon-path load-path)))
     (setq mhc-e21/icon-glyph-alist nil)
     (while alist
       (setq image (find-image (list (list
-				     :type 'xpm
-				     :file (cdr (car alist))
-				     :ascent 'center))))
+                                     :type 'xpm
+                                     :file (cdr (car alist))
+                                     :ascent 'center))))
       (when image
-	(setq mhc-e21/icon-glyph-alist
-	      (cons
-	       (cons (downcase (car (car alist))) image)
-	       mhc-e21/icon-glyph-alist)))
+        (setq mhc-e21/icon-glyph-alist
+              (cons
+               (cons (downcase (car (car alist))) image)
+               mhc-e21/icon-glyph-alist)))
       (setq alist (cdr alist)))
     (setq mhc-e21/icon-function-alist
-	  (mapcar (lambda (pair)
-		    (cons (downcase (car pair)) (cdr pair)))
-		  mhc-icon-function-alist))))
+          (mapcar (lambda (pair)
+                    (cons (downcase (car pair)) (cdr pair)))
+                  mhc-icon-function-alist))))
 
 ;; Icon interface
 (defun mhc-icon-setup ()
@@ -96,10 +96,10 @@ icon line."
       (setq mhc-e21/icon-glyph-alist nil))
   (or mhc-e21/icon-glyph-alist
       (progn
-	(message "Initializing MHC icons...")
-	(mhc-e21/setup-icons)
-	(run-hooks 'mhc-icon-setup-hook)
-	(message "Initializing MHC icons...done"))))
+        (message "Initializing MHC icons...")
+        (mhc-e21/setup-icons)
+        (run-hooks 'mhc-icon-setup-hook)
+        (message "Initializing MHC icons...done"))))
 
 (defun mhc-use-icon-p ()
   "Returns t if MHC displays icon."
@@ -117,20 +117,20 @@ Icon is decided by `mhc-e21-icon-alist'."
   (let (icon pos func props)
     (while icons
       (when (setq icon (cdr (assoc (downcase (car icons))
-				   mhc-e21/icon-glyph-alist)))
-	(setq pos (point))
-	(insert (make-string (floor (car (image-size icon))) ?  ))
-	(setq props (list 'display icon
-			  'invisible nil
-			  'intangible icon))
-	(when (setq func (cdr (assoc (downcase (car icons))
-				     mhc-e21/icon-function-alist)))
-	  (setq props (nconc props
-			     (list
-			      'mouse-face 'highlight
-			      'mhc-e21-icon-function func
-			      'local-map mhc-e21-icon-keymap))))
-	(add-text-properties pos (point) props))
+                                   mhc-e21/icon-glyph-alist)))
+        (setq pos (point))
+        (insert (make-string (floor (car (image-size icon))) ?  ))
+        (setq props (list 'display icon
+                          'invisible nil
+                          'intangible icon))
+        (when (setq func (cdr (assoc (downcase (car icons))
+                                     mhc-e21/icon-function-alist)))
+          (setq props (nconc props
+                             (list
+                              'mouse-face 'highlight
+                              'mhc-e21-icon-function func
+                              'local-map mhc-e21-icon-keymap))))
+        (add-text-properties pos (point) props))
       (setq icons (cdr icons)))))
 
 (provide 'mhc-e21)

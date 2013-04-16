@@ -54,7 +54,7 @@ MHC は以下のような特長をもっています:
     + Mew や Wanderlust と協調して動く Elisp パッケージ  (mhc.el)
     + Ruby/Gtk で記述された GUI カレンダー (gemcal)
     + CGI ベースの Web インターフェース    (web-mhc)
-	(パッケージには含まれてません。http://mhc.hauN.org/web-mhc/ 参照)
+        (パッケージには含まれてません。http://mhc.hauN.org/web-mhc/ 参照)
     + コマンドラインでの予定一覧表示ツール (mscan)
 
 MHC は、予定の情報を MH と同じ形式で保存します。そのため、上記以外のツー

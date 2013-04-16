@@ -50,18 +50,18 @@
 
 (cond
  ((eval-when-compile  (and (not (featurep 'xemacs))
-			   (>= emacs-major-version 21)
-			   (if (eq system-type 'windows-nt)
-			       ;; Meadow2 or NTEmacs21.3(and the later
-			       ;; version) supports the image feature.
-			       (or (featurep 'meadow)
-				   (>= emacs-major-version 22)
-				   (>= emacs-minor-version 3))
-			     t)))
+                           (>= emacs-major-version 21)
+                           (if (eq system-type 'windows-nt)
+                               ;; Meadow2 or NTEmacs21.3(and the later
+                               ;; version) supports the image feature.
+                               (or (featurep 'meadow)
+                                   (>= emacs-major-version 22)
+                                   (>= emacs-minor-version 3))
+                             t)))
   (require 'mhc-e21))
  ((eval-when-compile
     (condition-case nil
-	(require 'bitmap)
+        (require 'bitmap)
       (error nil)))
   (require 'mhc-bm))
  ((eval-when-compile (featurep 'xemacs))
@@ -77,41 +77,41 @@
 ;;
 (defvar mhc-mode-menu-spec
       '("Mhc"
-	["This month"   mhc-goto-this-month t]
-	["Next month"   mhc-goto-next-month t]
-	["Prev month"   mhc-goto-prev-month t]
-	["Goto month"   mhc-goto-month t]
-	["Goto date"    mhc-goto-date t]
-	["Import"       mhc-import t]
-	["Set category" mhc-set-default-category t]
-	"----"
-	["Goto today"   mhc-goto-today (mhc-summary-buffer-p)]
-	["Modify"       mhc-modify (mhc-summary-buffer-p)]
-	["Edit"         mhc-edit (mhc-summary-buffer-p)]
-	["Rescan"       mhc-rescan-month (mhc-summary-buffer-p)]
-	["Delete"       mhc-delete (mhc-summary-buffer-p)]
-	["Insert Schedule" mhc-insert-schedule (not buffer-read-only)]
-	["3 months Mini calendar" mhc-calendar t]
-	["Toggle 3 months calendar" mhc-calendar-toggle-insert-rectangle
-	 (mhc-summary-buffer-p)]
-	"----"
-	["Reset"        mhc-reset (mhc-summary-buffer-p)]
-	("Network"
-	 ["Online" mhc-file-toggle-offline mhc-file/offline]
-	 ["Offline" mhc-file-toggle-offline (not mhc-file/offline)]
-	 ["Sync" mhc-file-sync (and (not (and mhc-file/offline
-					      (not mhc-file-sync-enable-offline)))
-				    (if (eq mhc-file-method 'mhc-sync)
-					(and (stringp mhc-sync-remote)
-					     (stringp mhc-sync-id))
-				      mhc-file-method))])
-	"----"
-	("PostScript"
-	 ["PostScript" mhc-ps t]
-	 ["Preview" mhc-ps-preview t]
-	 ["Print" mhc-ps-print t]
-	 ["Save" mhc-ps-save t]
-	 ["Insert buffer" mhc-ps-insert-buffer t])))
+        ["This month"   mhc-goto-this-month t]
+        ["Next month"   mhc-goto-next-month t]
+        ["Prev month"   mhc-goto-prev-month t]
+        ["Goto month"   mhc-goto-month t]
+        ["Goto date"    mhc-goto-date t]
+        ["Import"       mhc-import t]
+        ["Set category" mhc-set-default-category t]
+        "----"
+        ["Goto today"   mhc-goto-today (mhc-summary-buffer-p)]
+        ["Modify"       mhc-modify (mhc-summary-buffer-p)]
+        ["Edit"         mhc-edit (mhc-summary-buffer-p)]
+        ["Rescan"       mhc-rescan-month (mhc-summary-buffer-p)]
+        ["Delete"       mhc-delete (mhc-summary-buffer-p)]
+        ["Insert Schedule" mhc-insert-schedule (not buffer-read-only)]
+        ["3 months Mini calendar" mhc-calendar t]
+        ["Toggle 3 months calendar" mhc-calendar-toggle-insert-rectangle
+         (mhc-summary-buffer-p)]
+        "----"
+        ["Reset"        mhc-reset (mhc-summary-buffer-p)]
+        ("Network"
+         ["Online" mhc-file-toggle-offline mhc-file/offline]
+         ["Offline" mhc-file-toggle-offline (not mhc-file/offline)]
+         ["Sync" mhc-file-sync (and (not (and mhc-file/offline
+                                              (not mhc-file-sync-enable-offline)))
+                                    (if (eq mhc-file-method 'mhc-sync)
+                                        (and (stringp mhc-sync-remote)
+                                             (stringp mhc-sync-id))
+                                      mhc-file-method))])
+        "----"
+        ("PostScript"
+         ["PostScript" mhc-ps t]
+         ["Preview" mhc-ps-preview t]
+         ["Print" mhc-ps-print t]
+         ["Save" mhc-ps-save t]
+         ["Insert buffer" mhc-ps-insert-buffer t])))
 
 (defvar mhc-prefix-key "\C-c."
   "*Prefix key to call MHC functions.")
@@ -171,22 +171,22 @@
 
    Key assinment on mhc-mode.
 
-\\[mhc-goto-this-month]	Review the schedule of this month
-\\[mhc-goto-next-month]	Review the schedule of next month
-\\[mhc-goto-prev-month]	Review the schedule of previous month
-\\[mhc-goto-month]	Jump to your prefer month
-\\[mhc-goto-date]	Jump to your prefer date
-\\[mhc-rescan-month]	Rescan the buffer of the month
-\\[mhc-goto-today]	Move cursor to today (Only available reviewing this month)
-\\[mhc-import]	Register the reviewing mail to schdule
-\\[mhc-delete]	Delete the schdule on the cursor line
-\\[mhc-set-default-category]	Edit the schdule on the cursor line
-\\[mhc-modify]	Modify the schdule on the cursor line
-\\[mhc-edit]	Create new schdule file
-\\[mhc-set-default-category]	Change default category
-\\[mhc-calendar]	Display 3 months mini calendar
-\\[mhc-calendar-toggle-insert-rectangle]	Toggle 3 months calendar
-\\[mhc-reset]	Reset MHC
+\\[mhc-goto-this-month] Review the schedule of this month
+\\[mhc-goto-next-month] Review the schedule of next month
+\\[mhc-goto-prev-month] Review the schedule of previous month
+\\[mhc-goto-month]      Jump to your prefer month
+\\[mhc-goto-date]       Jump to your prefer date
+\\[mhc-rescan-month]    Rescan the buffer of the month
+\\[mhc-goto-today]      Move cursor to today (Only available reviewing this month)
+\\[mhc-import]  Register the reviewing mail to schdule
+\\[mhc-delete]  Delete the schdule on the cursor line
+\\[mhc-set-default-category]    Edit the schdule on the cursor line
+\\[mhc-modify]  Modify the schdule on the cursor line
+\\[mhc-edit]    Create new schdule file
+\\[mhc-set-default-category]    Change default category
+\\[mhc-calendar]        Display 3 months mini calendar
+\\[mhc-calendar-toggle-insert-rectangle]        Toggle 3 months calendar
+\\[mhc-reset]   Reset MHC
 
    '\\[universal-argument]' prefix is available on using '\\[mhc-rescan-month]', '\\[mhc-goto-this-month]', '\\[mhc-goto-month]', '\\[mhc-goto-date]'
   , it works to assign the category (see below).
@@ -203,9 +203,9 @@
   (interactive "P")
   (make-local-variable 'mhc-mode)
   (setq mhc-mode
-	(if (null arg)
-	    (not mhc-mode)
-	  (> (prefix-numeric-value arg) 0)))
+        (if (null arg)
+            (not mhc-mode)
+          (> (prefix-numeric-value arg) 0)))
   (when (featurep 'xemacs)
     (easy-menu-add mhc-mode-menu))
   (force-mode-line-update)
@@ -244,17 +244,17 @@
 ;; Eat one token from parsing string in obj.
 (defun mhc-expr/gettoken (obj)
   (let ((string (mhc-expr/string obj))
-	(token-alist mhc-expr-token-type-alist)
-	(token-type nil)
-	(token      nil))
+        (token-alist mhc-expr-token-type-alist)
+        (token-type nil)
+        (token      nil))
     ;; delete leading white spaces.
     (if (string-match "^[\t ]+" string)
-	(setq string (substring string (match-end 0))))
+        (setq string (substring string (match-end 0))))
     (while (and token-alist (not token-type))
       (if (string-match (concat "^" (car (car token-alist))) string)
-	  (setq token      (substring string 0 (match-end 0))
-		string     (substring string (match-end 0))
-		token-type (cdr (car token-alist))))
+          (setq token      (substring string 0 (match-end 0))
+                string     (substring string (match-end 0))
+                token-type (cdr (car token-alist))))
       (setq token-alist (cdr token-alist)))
 
     (mhc-expr/set-token      obj token)
@@ -275,7 +275,7 @@
       (mhc-expr/gettoken obj)
       (setq ret (cons (mhc-expr/term obj) ret)))
     (if (= 1 (length ret))
-	(car ret)
+        (car ret)
       (cons 'or (nreverse ret)))))
 
 ;;
@@ -287,7 +287,7 @@
       (mhc-expr/gettoken obj)
       (setq ret (cons (mhc-expr/factor obj) ret)))
     (if (= 1 (length ret))
-	(car ret)
+        (car ret)
       (cons 'and (nreverse ret)))))
 
 ;;
@@ -295,7 +295,7 @@
 ;;
 (defun mhc-expr/factor (obj)
   (let ((ret)
-	(neg-flag nil))
+        (neg-flag nil))
     (while (eq (mhc-expr/token-type obj) 'negop)
       (setq neg-flag (not neg-flag))
       (mhc-expr/gettoken obj))
@@ -303,14 +303,14 @@
      ;; symbol
      ((eq (mhc-expr/token-type obj) 'symbol)
       (setq ret (list 'mhc-schedule-in-category-p
-		      'schedule (mhc-expr/token obj)))
+                      'schedule (mhc-expr/token obj)))
       (mhc-expr/gettoken obj))
      ;; ( expression )
      ((eq (mhc-expr/token-type obj) 'lparen)
       (mhc-expr/gettoken obj)
       (setq ret (mhc-expr/expression obj))
       (if (not (eq (mhc-expr/token-type obj) 'rparen))
-	  (error "Syntax error."))
+          (error "Syntax error."))
       (mhc-expr/gettoken obj))
      ;; error
      (t
@@ -323,13 +323,13 @@
 (defun mhc-expr-parse (string)
   (let ((obj (mhc-expr/new)) (ret nil))
     (if (or (not string) (string= string ""))
-	t
+        t
       (mhc-expr/set-string obj string)
       (mhc-expr/gettoken obj)
       (setq ret (mhc-expr/expression obj))
       (if (mhc-expr/token obj)
-	  (error "Syntax Error.")
-	ret))))
+          (error "Syntax Error.")
+        ret))))
 
 (defun mhc-expr-compile (string)
   (byte-compile
@@ -350,11 +350,11 @@
 (defun mhc-set-default-category ()
   (interactive)
   (setq mhc-default-category
-	(read-from-minibuffer "Default Category: "
-			      (or mhc-default-category "")
-			      nil nil 'mhc-default-category-hist))
+        (read-from-minibuffer "Default Category: "
+                              (or mhc-default-category "")
+                              nil nil 'mhc-default-category-hist))
   (setq mhc-default-category-predicate-sexp
-	(mhc-expr-compile mhc-default-category))
+        (mhc-expr-compile mhc-default-category))
   (if (mhc-summary-buffer-p)
       (mhc-rescan-month)))
 
@@ -362,8 +362,8 @@
 ;   (let (ret inv)
 ;     ;; preceding `!' means invert logic.
 ;     (if (and lst (string-match "^!" (car lst)))
-; 	(setq lst (cons (substring (car lst) (match-end 0)) (cdr lst))
-; 	      inv t))
+;       (setq lst (cons (substring (car lst) (match-end 0)) (cdr lst))
+;             inv t))
 ;     (cons inv lst)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -376,12 +376,12 @@ If HIDE-PRIVATE, priavate schedules are suppressed."
    (list
     (mhc-input-month "Month ")
     (if mhc-default-hide-private-schedules
-	(not current-prefix-arg)
+        (not current-prefix-arg)
       current-prefix-arg)))
   (mhc-scan-month date
-		  (mhc-summary-mailer-type)
-		  mhc-default-category-predicate-sexp
-		  hide-private))
+                  (mhc-summary-mailer-type)
+                  mhc-default-category-predicate-sexp
+                  hide-private))
 
 (defvar mhc-goto-date-func 'mhc-goto-date-calendar)
                                         ; or mhc-goto-date-summary
@@ -391,7 +391,7 @@ If HIDE-PRIVATE, private schedules are suppressed."
   (interactive
    (list
     (if mhc-default-hide-private-schedules
-	(not current-prefix-arg)
+        (not current-prefix-arg)
       current-prefix-arg)))
   (let* ((owin (get-buffer-window (current-buffer)))
          (buf (mhc-summary-get-import-buffer))
@@ -420,15 +420,15 @@ If HIDE-PRIVATE, private schedules are suppressed."
   (interactive
    (list
     (if mhc-default-hide-private-schedules
-	(not current-prefix-arg)
+        (not current-prefix-arg)
       current-prefix-arg)))
   (mhc-goto-month (mhc-date-now) hide-private))
 
 (defun mhc-goto-next-month (&optional arg)
   (interactive "p")
   (mhc-goto-month (mhc-date-mm+
-		   (or (mhc-current-date-month) (mhc-date-now)) arg)
-		  mhc-default-hide-private-schedules))
+                   (or (mhc-current-date-month) (mhc-date-now)) arg)
+                  mhc-default-hide-private-schedules))
 
 (defun mhc-goto-prev-month (&optional arg)
   (interactive "p")
@@ -439,25 +439,25 @@ If HIDE-PRIVATE, private schedules are suppressed."
 Unless NO-DISPLAY, display it."
   (interactive "P")
   (let ((now (mhc-date-now))
-	(buf-date (mhc-current-date-month)))
+        (buf-date (mhc-current-date-month)))
     (when buf-date
       (goto-char (point-min))
       (mhc-date-let now
-	(if (and (= yy (mhc-date-yy buf-date))
-		 (= mm (mhc-date-mm buf-date)))
-	    (when (mhc-summary-search-date now)
-	      (forward-line 0)
-	      (or (pos-visible-in-window-p (point))
-		  (recenter))
-	      (or no-display
-		  (mhc-summary-display-article)))
-	  (when (and mhc-use-wide-scope
-		     (mhc-summary-search-date (mhc-date-mm-first buf-date)))
-	    (forward-line 0)
-	    (or (pos-visible-in-window-p (point))
-		(recenter))
-	    (or no-display
-		(mhc-summary-display-article)))))
+        (if (and (= yy (mhc-date-yy buf-date))
+                 (= mm (mhc-date-mm buf-date)))
+            (when (mhc-summary-search-date now)
+              (forward-line 0)
+              (or (pos-visible-in-window-p (point))
+                  (recenter))
+              (or no-display
+                  (mhc-summary-display-article)))
+          (when (and mhc-use-wide-scope
+                     (mhc-summary-search-date (mhc-date-mm-first buf-date)))
+            (forward-line 0)
+            (or (pos-visible-in-window-p (point))
+                (recenter))
+            (or no-display
+                (mhc-summary-display-article)))))
       ;; Emacs-21.3.50 something wrong
       (beginning-of-line))))
 
@@ -467,15 +467,15 @@ If HIDE-PRIVATE, private schedules are suppressed."
   (interactive
    (list
     (if mhc-default-hide-private-schedules
-	(not current-prefix-arg)
+        (not current-prefix-arg)
       current-prefix-arg)))
   (move-to-column 1)
   (let ((line (+ (count-lines (point-min) (point))
-		 (if (= (current-column) 0) 1 0))))
+                 (if (= (current-column) 0) 1 0))))
     (mhc-scan-month (or (mhc-current-date-month) (mhc-date-now))
-		    (mhc-summary-mailer-type)
-		    mhc-default-category-predicate-sexp
-		    hide-private)
+                    (mhc-summary-mailer-type)
+                    mhc-default-category-predicate-sexp
+                    hide-private)
     (goto-line line)
     (beginning-of-line)))
 
@@ -492,102 +492,102 @@ If HIDE-PRIVATE, private schedules are suppressed."
 
 (defun mhc-scan-month (date mailer category-predicate secret)
   (let ((from  (mhc-date-mm-first date))
-	(to    (mhc-date-mm-last date))
-	(today (mhc-date-now))
-	bfrom bto afrom ato wweek0 wweek1 wweek2)
+        (to    (mhc-date-mm-last date))
+        (today (mhc-date-now))
+        bfrom bto afrom ato wweek0 wweek1 wweek2)
     (or (eq 'direct mailer)
-	(mhc-summary-generate-buffer date mailer))
+        (mhc-summary-generate-buffer date mailer))
     (when mhc-use-wide-scope
       (if (and mhc-use-week-separator
-	       (not (eq (mhc-end-day-of-week) 0)))
-	  (setq wweek0 0 wweek1 6 wweek2 7)
-	(setq wweek0 1 wweek1 0 wweek2 8))
+               (not (eq (mhc-end-day-of-week) 0)))
+          (setq wweek0 0 wweek1 6 wweek2 7)
+        (setq wweek0 1 wweek1 0 wweek2 8))
       (cond
        ((integerp mhc-use-wide-scope)
-	(setq bfrom (mhc-date- from mhc-use-wide-scope))
-	(setq bto (mhc-date-mm-last bfrom))
-	(setq ato (mhc-date+ to mhc-use-wide-scope))
-	(setq afrom (mhc-date-mm-first ato)))
+        (setq bfrom (mhc-date- from mhc-use-wide-scope))
+        (setq bto (mhc-date-mm-last bfrom))
+        (setq ato (mhc-date+ to mhc-use-wide-scope))
+        (setq afrom (mhc-date-mm-first ato)))
        ((eq mhc-use-wide-scope 'week)
-	(if (eq (mhc-date-ww from) wweek0)
-	    (setq bfrom nil bto nil)
-	  (setq bfrom
-		(mhc-date+ (mhc-date- from 7)
-			   (% (mhc-date- wweek2 (mhc-date-ww from)) 7)))
-	  (setq bto (mhc-date-mm-last bfrom)))
-	(if (eq (mhc-date-ww to) wweek1)
-	    (setq afrom nil ato nil)
-	  (setq ato (mhc-date+ to (mhc-date- wweek2 (mhc-date-ww to) 1)))
-	  (setq afrom (mhc-date-mm-first ato))))
+        (if (eq (mhc-date-ww from) wweek0)
+            (setq bfrom nil bto nil)
+          (setq bfrom
+                (mhc-date+ (mhc-date- from 7)
+                           (% (mhc-date- wweek2 (mhc-date-ww from)) 7)))
+          (setq bto (mhc-date-mm-last bfrom)))
+        (if (eq (mhc-date-ww to) wweek1)
+            (setq afrom nil ato nil)
+          (setq ato (mhc-date+ to (mhc-date- wweek2 (mhc-date-ww to) 1)))
+          (setq afrom (mhc-date-mm-first ato))))
        ((eq mhc-use-wide-scope 'wide)
-	(if (eq (mhc-date-ww from) wweek0)
-	    (setq bfrom (mhc-date- from 7))
-	  (setq bfrom
-		(mhc-date+ (mhc-date- from 7)
-			   (% (mhc-date- wweek2 (mhc-date-ww from)) 7))))
-	(setq bto (mhc-date-mm-last bfrom))
-	(if (eq (mhc-date-ww to) wweek1)
-	    (setq ato (mhc-date+ to 7))
-	  (setq ato (mhc-date+ to (mhc-date- wweek2 (mhc-date-ww to) 1))))
-	(setq afrom (mhc-date-mm-first ato)))))
+        (if (eq (mhc-date-ww from) wweek0)
+            (setq bfrom (mhc-date- from 7))
+          (setq bfrom
+                (mhc-date+ (mhc-date- from 7)
+                           (% (mhc-date- wweek2 (mhc-date-ww from)) 7))))
+        (setq bto (mhc-date-mm-last bfrom))
+        (if (eq (mhc-date-ww to) wweek1)
+            (setq ato (mhc-date+ to 7))
+          (setq ato (mhc-date+ to (mhc-date- wweek2 (mhc-date-ww to) 1))))
+        (setq afrom (mhc-date-mm-first ato)))))
     (message "%s" (mhc-date-format date "Scanning %04d/%02d..." yy mm))
     (unless (eq 'direct mailer)
       (when (and (eq mhc-todo-position 'top)
-		 (or mhc-insert-todo-list mhc-insert-memo-list))
-	(mhc-summary-make-todo-memo today mailer category-predicate secret)
-	(insert (make-string mhc-todo-mergin ?\n))
-	(mhc-summary/insert-separator))
+                 (or mhc-insert-todo-list mhc-insert-memo-list))
+        (mhc-summary-make-todo-memo today mailer category-predicate secret)
+        (insert (make-string mhc-todo-mergin ?\n))
+        (mhc-summary/insert-separator))
       (setq mhc-summary-buffer-current-date-month
-	    (mhc-date-mm-first date)))
+            (mhc-date-mm-first date)))
     (when (and bfrom bto)
       (mhc-summary-make-contents bfrom bto mailer category-predicate secret)
       (if mhc-use-month-separator
-	  (mhc-summary/insert-separator
-	   'wide
-	   (when (eq (mhc-end-day-of-week) (mhc-date-ww bto))
-	     (if mhc-summary/cw-separator
-		 (format " CW %d " (mhc-date-cw (mhc-date++ bto)))
-	       (make-string (length " CW 00 ") mhc-summary-month-separator))))
-	(if (and mhc-use-week-separator
-		 (eq (mhc-end-day-of-week) (mhc-date-ww bto)))
-	    (mhc-summary/insert-separator
-	     nil
-	     (when mhc-summary/cw-separator
-	       (format " CW %d " (mhc-date-cw (mhc-date++ bto))))))))
+          (mhc-summary/insert-separator
+           'wide
+           (when (eq (mhc-end-day-of-week) (mhc-date-ww bto))
+             (if mhc-summary/cw-separator
+                 (format " CW %d " (mhc-date-cw (mhc-date++ bto)))
+               (make-string (length " CW 00 ") mhc-summary-month-separator))))
+        (if (and mhc-use-week-separator
+                 (eq (mhc-end-day-of-week) (mhc-date-ww bto)))
+            (mhc-summary/insert-separator
+             nil
+             (when mhc-summary/cw-separator
+               (format " CW %d " (mhc-date-cw (mhc-date++ bto))))))))
     (mhc-summary-make-contents from to mailer category-predicate secret)
     (when (and afrom ato)
       (if mhc-use-month-separator
-	  (mhc-summary/insert-separator
-	   'wide
-	   (when (eq mhc-start-day-of-week (mhc-date-ww afrom))
-	     (if mhc-summary/cw-separator
-		 (format " CW %d " (mhc-date-cw afrom))
-	       (make-string (length " CW 00 ") mhc-summary-month-separator))))
-	(if (and mhc-use-week-separator
-		 (eq mhc-start-day-of-week (mhc-date-ww afrom)))
-	    (mhc-summary/insert-separator
-	     nil
-	     (when mhc-summary/cw-separator
-		   (format " CW %d " (mhc-date-cw afrom))))))
+          (mhc-summary/insert-separator
+           'wide
+           (when (eq mhc-start-day-of-week (mhc-date-ww afrom))
+             (if mhc-summary/cw-separator
+                 (format " CW %d " (mhc-date-cw afrom))
+               (make-string (length " CW 00 ") mhc-summary-month-separator))))
+        (if (and mhc-use-week-separator
+                 (eq mhc-start-day-of-week (mhc-date-ww afrom)))
+            (mhc-summary/insert-separator
+             nil
+             (when mhc-summary/cw-separator
+                   (format " CW %d " (mhc-date-cw afrom))))))
       (mhc-summary-make-contents afrom ato mailer category-predicate secret))
     (unless (eq 'direct mailer)
       (when (and (eq mhc-todo-position 'bottom)
-		 (or mhc-insert-todo-list mhc-insert-memo-list))
-	(mhc-summary/insert-separator)
-	(insert (make-string mhc-todo-mergin ?\n))
-	(mhc-summary-make-todo-memo today mailer category-predicate secret))
+                 (or mhc-insert-todo-list mhc-insert-memo-list))
+        (mhc-summary/insert-separator)
+        (insert (make-string mhc-todo-mergin ?\n))
+        (mhc-summary-make-todo-memo today mailer category-predicate secret))
       (when mhc-insert-calendar
-	(mhc-calendar-insert-rectangle-at
-	 date
-	 (- (mhc-misc-get-width) mhc-calendar-width)
-	 mhc-vertical-calendar-length))
+        (mhc-calendar-insert-rectangle-at
+         date
+         (- (mhc-misc-get-width) mhc-calendar-width)
+         mhc-vertical-calendar-length))
       (mhc-summary-mode-setup date mailer)
       (mhc-mode 1)
       (setq inhibit-read-only nil)
       (setq buffer-read-only t)
       (set-buffer-modified-p nil)
       (setq mhc-summary-buffer-current-date-month
-	    (mhc-date-mm-first date))
+            (mhc-date-mm-first date))
       (mhc-goto-today t)
       (message "%s" (mhc-date-format date "Scanning %04d/%02d...done" yy mm)))))
 
@@ -598,12 +598,12 @@ If HIDE-PRIVATE, private schedules are suppressed."
   "*Sequence of the inputs."
   :group 'mhc
   :type '(repeat (choice (const :tag "Date" date)
-			 (const :tag "Time" time)
-			 (const :tag "Subject" subject)
-			 (const :tag "Location" location)
-			 (const :tag "Category" category)
-			 (const :tag "Recurrence tag" recurrence-tag)
-			 (const :tag "Alarm" alarm))))
+                         (const :tag "Time" time)
+                         (const :tag "Subject" subject)
+                         (const :tag "Location" location)
+                         (const :tag "Category" category)
+                         (const :tag "Recurrence tag" recurrence-tag)
+                         (const :tag "Alarm" alarm))))
 
 (defun mhc-edit (&optional import-buffer)
   "Edit a new schedule.
@@ -612,182 +612,182 @@ Returns t if the importation was succeeded."
   (interactive
    (if current-prefix-arg
        (list (get-buffer (read-buffer "Import buffer: "
-				      (current-buffer))))))
+                                      (current-buffer))))))
   (let ((draft-buffer (generate-new-buffer mhc-draft-buffer-name))
-	(current-date (or (mhc-current-date) (mhc-calendar-get-date) (mhc-date-now)))
-	(succeed t)
-	msgp date time subject location category recurrence-tag priority alarm)
+        (current-date (or (mhc-current-date) (mhc-calendar-get-date) (mhc-date-now)))
+        (succeed t)
+        msgp date time subject location category recurrence-tag priority alarm)
     (and (interactive-p)
-	 (mhc-window-push))
+         (mhc-window-push))
     (set-buffer draft-buffer)
     (if import-buffer
-	(progn
-	  (insert-buffer (if (consp import-buffer)
-			     (cdr import-buffer)
-			   import-buffer))
-	  (mhc-header-narrowing
-	    (setq msgp (or (mhc-header-get-value "from")
-			   (mhc-header-get-value "x-sc-subject")))
-	    (mhc-header-delete-header
-	     (concat "^\\("
-		     (mhc-regexp-opt mhc-draft-unuse-hdr-list)
-		     "\\)")
-	     'regexp))
-	  (mhc-highlight-message)
-	  (switch-to-buffer draft-buffer t)))
+        (progn
+          (insert-buffer (if (consp import-buffer)
+                             (cdr import-buffer)
+                           import-buffer))
+          (mhc-header-narrowing
+            (setq msgp (or (mhc-header-get-value "from")
+                           (mhc-header-get-value "x-sc-subject")))
+            (mhc-header-delete-header
+             (concat "^\\("
+                     (mhc-regexp-opt mhc-draft-unuse-hdr-list)
+                     "\\)")
+             'regexp))
+          (mhc-highlight-message)
+          (switch-to-buffer draft-buffer t)))
     (condition-case ()
-	(if import-buffer
-	    (progn
-	      (delete-other-windows)
-	      (if (y-or-n-p "Do you want to import this article? ")
-		  (let* ((original (save-excursion
-				     (set-buffer
-				      (if (consp import-buffer)
-					  (cdr import-buffer)
-					import-buffer))
-				     (mhc-parse-buffer)))
-			 (schedule (car (mhc-record-schedules original)))
-			 (inputs (copy-sequence mhc-input-sequences))
-			 input)
-		    (while (setq input (car inputs))
-		      (setq inputs (delq input inputs))
-		      (cond
-		       ((eq input 'date)
-			;; input date
-			(setq date
-			      (mhc-input-day "Date: "
-					     current-date
-					     (mhc-guess-date))))
-		       ((eq input 'time)
-			;; input time
-			(setq time
-			      (mhc-input-time "Time: "
-					      (mhc-schedule-time-as-string
-					       schedule)
-					      (mhc-guess-time
-					       (mhc-minibuf-candidate-nth-begin)))))
-		       ((eq input 'subject)
-			;; input subject
-			(setq subject
-			      (mhc-input-subject
-			       "Subject: "
-			       (mhc-misc-sub
-				(or (mhc-record-subject original)
-				    (mhc-header-narrowing
-				      (mhc-header-get-value "subject")))
-				"^\\(Re:\\)? *\\(\\[[^\]]+\\]\\)? *"
-				""))))
-		       ((eq input 'location)
-			;; input location
-			(setq location
-			      (mhc-input-location
-			       "Location: "
-			       (mhc-schedule-location schedule))))
-		       ((eq input 'category)
-			;; input category
-			(setq category
-			      (mhc-input-category
-			       "Category: "
-			       (mhc-schedule-categories-as-string schedule))))
-			;; input recurrence tag
-		       ((eq input 'recurrence-tag)
-			(setq recurrence-tag
-			      (mhc-input-recurrence-tag
-			       "Recurrence Tag: "
-			       (mhc-schedule-recurrence-tag-as-string schedule))))
-		       ;; input alarm
-		       ((eq input 'alarm)
-			(if mhc-ask-alarm
-			    (setq alarm
-				  (mhc-input-alarm
-				   "Alarm: "
-				   mhc-default-alarm))))))
-		    ;;
-		    (setq priority (mhc-schedule-priority schedule)))
-		;; Answer was no.
-		(message "") ; flush minibuffer.
-		(and (interactive-p)
-		     (mhc-window-pop))
-		(setq succeed nil)
-		(kill-buffer draft-buffer)))
-	  ;; No import (it succeeds).
-	  (let ((inputs (copy-sequence mhc-input-sequences))
-		input)
-	    (while (setq input (car inputs))
-	      (setq inputs (delq input inputs))
-	      (cond
-	       ((eq input 'date)
-		(setq date (mhc-input-day "Date: " current-date)))
-	       ((eq input 'time)
-		(setq time (mhc-input-time "Time: ")))
-	       ((eq input 'subject)
-		(setq subject (mhc-input-subject "Subject: ")))
-	       ((eq input 'location)
-		(setq location (mhc-input-location "Location: ")))
-	       ((eq input 'category)
-		(setq category (mhc-input-category "Category: ")))
-	       ((eq input 'recurrence-tag)
-		(setq recurrence-tag (mhc-input-recurrence-tag "Recurrence Tag: " (or subject ""))))
-	       ((eq input 'alarm)
-		(if mhc-ask-alarm
-		    (setq alarm (mhc-input-alarm "Alarm: " mhc-default-alarm))))))))
+        (if import-buffer
+            (progn
+              (delete-other-windows)
+              (if (y-or-n-p "Do you want to import this article? ")
+                  (let* ((original (save-excursion
+                                     (set-buffer
+                                      (if (consp import-buffer)
+                                          (cdr import-buffer)
+                                        import-buffer))
+                                     (mhc-parse-buffer)))
+                         (schedule (car (mhc-record-schedules original)))
+                         (inputs (copy-sequence mhc-input-sequences))
+                         input)
+                    (while (setq input (car inputs))
+                      (setq inputs (delq input inputs))
+                      (cond
+                       ((eq input 'date)
+                        ;; input date
+                        (setq date
+                              (mhc-input-day "Date: "
+                                             current-date
+                                             (mhc-guess-date))))
+                       ((eq input 'time)
+                        ;; input time
+                        (setq time
+                              (mhc-input-time "Time: "
+                                              (mhc-schedule-time-as-string
+                                               schedule)
+                                              (mhc-guess-time
+                                               (mhc-minibuf-candidate-nth-begin)))))
+                       ((eq input 'subject)
+                        ;; input subject
+                        (setq subject
+                              (mhc-input-subject
+                               "Subject: "
+                               (mhc-misc-sub
+                                (or (mhc-record-subject original)
+                                    (mhc-header-narrowing
+                                      (mhc-header-get-value "subject")))
+                                "^\\(Re:\\)? *\\(\\[[^\]]+\\]\\)? *"
+                                ""))))
+                       ((eq input 'location)
+                        ;; input location
+                        (setq location
+                              (mhc-input-location
+                               "Location: "
+                               (mhc-schedule-location schedule))))
+                       ((eq input 'category)
+                        ;; input category
+                        (setq category
+                              (mhc-input-category
+                               "Category: "
+                               (mhc-schedule-categories-as-string schedule))))
+                        ;; input recurrence tag
+                       ((eq input 'recurrence-tag)
+                        (setq recurrence-tag
+                              (mhc-input-recurrence-tag
+                               "Recurrence Tag: "
+                               (mhc-schedule-recurrence-tag-as-string schedule))))
+                       ;; input alarm
+                       ((eq input 'alarm)
+                        (if mhc-ask-alarm
+                            (setq alarm
+                                  (mhc-input-alarm
+                                   "Alarm: "
+                                   mhc-default-alarm))))))
+                    ;;
+                    (setq priority (mhc-schedule-priority schedule)))
+                ;; Answer was no.
+                (message "") ; flush minibuffer.
+                (and (interactive-p)
+                     (mhc-window-pop))
+                (setq succeed nil)
+                (kill-buffer draft-buffer)))
+          ;; No import (it succeeds).
+          (let ((inputs (copy-sequence mhc-input-sequences))
+                input)
+            (while (setq input (car inputs))
+              (setq inputs (delq input inputs))
+              (cond
+               ((eq input 'date)
+                (setq date (mhc-input-day "Date: " current-date)))
+               ((eq input 'time)
+                (setq time (mhc-input-time "Time: ")))
+               ((eq input 'subject)
+                (setq subject (mhc-input-subject "Subject: ")))
+               ((eq input 'location)
+                (setq location (mhc-input-location "Location: ")))
+               ((eq input 'category)
+                (setq category (mhc-input-category "Category: ")))
+               ((eq input 'recurrence-tag)
+                (setq recurrence-tag (mhc-input-recurrence-tag "Recurrence Tag: " (or subject ""))))
+               ((eq input 'alarm)
+                (if mhc-ask-alarm
+                    (setq alarm (mhc-input-alarm "Alarm: " mhc-default-alarm))))))))
       ;; Quit.
       (quit
        (and (interactive-p)
-	    (mhc-window-pop))
+            (mhc-window-pop))
        (setq succeed nil)
        (kill-buffer draft-buffer)))
     (if succeed
-	(progn
-	  (switch-to-buffer draft-buffer t)
-	  (set-buffer draft-buffer)
-	  (if (and import-buffer msgp)
-	      (if (consp import-buffer)
-		  (mhc-draft-reedit-buffer (car import-buffer) 'original)
-		;; Delete candidate overlay if exists.
-		(if mhc-minibuf-candidate-overlay
-		    (delete-overlay mhc-minibuf-candidate-overlay))
-		;; Already imported to current buffer.
-		(mhc-draft-reedit-buffer (current-buffer)))
-	    ;; Delete candidate overlay if exists.
-	    (if mhc-minibuf-candidate-overlay
-		(delete-overlay mhc-minibuf-candidate-overlay))
-	    (mhc-draft-setup-new))
-	  (mhc-header-narrowing
-	    (mhc-header-delete-header
-	     (concat "^\\("
-		     (mhc-regexp-opt (mhc-header-list))
-		     "\\)")
-	     'regexp))
-	  (goto-char (point-min))
-	  (insert "X-SC-Subject: " subject
-		  "\nX-SC-Location: " location
-		  "\nX-SC-Day: "
-		  (mapconcat
-		   (lambda (day)
-		     (mhc-date-format day "%04d%02d%02d" yy mm dd))
-		   date " ")
-		  "\nX-SC-Time: "
-		  (if time
-		      (let ((begin (car time))
-			    (end (nth 1 time)))
-			(concat
-			 (if begin (mhc-time-to-string begin) "")
-			 (if end (concat "-" (mhc-time-to-string end)) "")))
-		    "")
-		  "\nX-SC-Category: "
-		  (mapconcat (function capitalize) category " ")
-		  "\nX-SC-Priority: " (if priority
-					  (number-to-string priority)
-					"")
-		  "\nX-SC-Recurrence-Tag: " recurrence-tag
-		  "\nX-SC-Cond: "
-		  "\nX-SC-Duration: "
-		  "\nX-SC-Alarm: " (or alarm "")
-		  "\nX-SC-Record-Id: " (mhc-record-create-id) "\n")
-	  (goto-char (point-min))
-	  (mhc-draft-mode)
-	  succeed))))
+        (progn
+          (switch-to-buffer draft-buffer t)
+          (set-buffer draft-buffer)
+          (if (and import-buffer msgp)
+              (if (consp import-buffer)
+                  (mhc-draft-reedit-buffer (car import-buffer) 'original)
+                ;; Delete candidate overlay if exists.
+                (if mhc-minibuf-candidate-overlay
+                    (delete-overlay mhc-minibuf-candidate-overlay))
+                ;; Already imported to current buffer.
+                (mhc-draft-reedit-buffer (current-buffer)))
+            ;; Delete candidate overlay if exists.
+            (if mhc-minibuf-candidate-overlay
+                (delete-overlay mhc-minibuf-candidate-overlay))
+            (mhc-draft-setup-new))
+          (mhc-header-narrowing
+            (mhc-header-delete-header
+             (concat "^\\("
+                     (mhc-regexp-opt (mhc-header-list))
+                     "\\)")
+             'regexp))
+          (goto-char (point-min))
+          (insert "X-SC-Subject: " subject
+                  "\nX-SC-Location: " location
+                  "\nX-SC-Day: "
+                  (mapconcat
+                   (lambda (day)
+                     (mhc-date-format day "%04d%02d%02d" yy mm dd))
+                   date " ")
+                  "\nX-SC-Time: "
+                  (if time
+                      (let ((begin (car time))
+                            (end (nth 1 time)))
+                        (concat
+                         (if begin (mhc-time-to-string begin) "")
+                         (if end (concat "-" (mhc-time-to-string end)) "")))
+                    "")
+                  "\nX-SC-Category: "
+                  (mapconcat (function capitalize) category " ")
+                  "\nX-SC-Priority: " (if priority
+                                          (number-to-string priority)
+                                        "")
+                  "\nX-SC-Recurrence-Tag: " recurrence-tag
+                  "\nX-SC-Cond: "
+                  "\nX-SC-Duration: "
+                  "\nX-SC-Alarm: " (or alarm "")
+                  "\nX-SC-Record-Id: " (mhc-record-create-id) "\n")
+          (goto-char (point-min))
+          (mhc-draft-mode)
+          succeed))))
 
 (defcustom mhc-default-import-original-article nil
   "*If non-nil value, import a schedule with MIME attachements."
@@ -803,8 +803,8 @@ argument.  Set non-nil to `mhc-default-import-original-article', and
 the default action of this command is changed to the latter."
   (interactive
    (list (if mhc-default-import-original-article
-	     (not current-prefix-arg)
-	   current-prefix-arg)))
+             (not current-prefix-arg)
+           current-prefix-arg)))
   (mhc-window-push)
   (unless (mhc-edit (mhc-summary-get-import-buffer get-original))
     ;; failed.
@@ -825,22 +825,22 @@ the default action of this command is changed to the latter."
   (if (not (and record (file-exists-p (mhc-record-name record))))
       (message "File does not exist (%s)." (mhc-record-name record))
     (if (not (y-or-n-p (format "Do you delete %s ?"
-			       (mhc-record-subject-as-string record))))
-	(message "Never mind..")
+                               (mhc-record-subject-as-string record))))
+        (message "Never mind..")
       (if (and
-	   (mhc-record-occur-multiple-p record)
-	   (not (y-or-n-p
-		 (format
-		  "%s has multiple occurrences. Delete all(=y) or one(=n) ?"
-		  (mhc-record-subject-as-string record)))))
-	  (mhc-db-add-exception-rule
-	   record
-	   (or (mhc-current-date)
-	       (mhc-calendar-view-date)))
-	(mhc-db-delete-file record))
+           (mhc-record-occur-multiple-p record)
+           (not (y-or-n-p
+                 (format
+                  "%s has multiple occurrences. Delete all(=y) or one(=n) ?"
+                  (mhc-record-subject-as-string record)))))
+          (mhc-db-add-exception-rule
+           record
+           (or (mhc-current-date)
+               (mhc-calendar-view-date)))
+        (mhc-db-delete-file record))
       (or (and (mhc-summary-buffer-p)
-	       (mhc-rescan-month mhc-default-hide-private-schedules))
-	  (and (mhc-calendar-p) (mhc-calendar-rescan)))
+               (mhc-rescan-month mhc-default-hide-private-schedules))
+          (and (mhc-calendar-p) (mhc-calendar-rescan)))
       (run-hooks 'mhc-delete-file-hook))))
 
 (defun mhc-modify ()
@@ -881,39 +881,39 @@ the default action of this command is changed to the latter."
   "Browse X-URL field."
   (interactive)
   (let ((filename (mhc-summary-filename))
-	url)
+        url)
     (with-temp-buffer
       (insert-file-contents filename)
       (if (setq url (mhc-header-narrowing
-		      (or (mhc-header-get-value "x-uri")
-			  (mhc-header-get-value "x-url"))))
-	  (progn
-	    (funcall mhc-browse-x-url-function url)
-	    (message "X-URL browser started."))
-	(message "No X-URL field.")))))
+                      (or (mhc-header-get-value "x-uri")
+                          (mhc-header-get-value "x-url"))))
+          (progn
+            (funcall mhc-browse-x-url-function url)
+            (message "X-URL browser started."))
+        (message "No X-URL field.")))))
 
 (defun mhc-modify-file (file)
   (if (and (stringp file) (file-exists-p file))
       (let* ((name (format
-		    "*mhc draft %s/%s*"
-		    mhc-base-folder
-		    (file-relative-name
-		     file
-		     (file-name-as-directory
-		      (mhc-summary-folder-to-path mhc-base-folder)))))
-	     (buffer (get-buffer name)))
-	(if (buffer-live-p buffer)
-	    (progn
-	      (message "Specified file(%s) has already been opened." file)
-	      (switch-to-buffer-other-window buffer))
-	  (mhc-window-push)
-	  (set-buffer (setq buffer (get-buffer-create name)))
-	  (mhc-draft-reedit-file file)
-	  (set-buffer-modified-p nil)
-	  (switch-to-buffer-other-window buffer)
-	  (goto-char (point-min))
-	  (mhc-draft-mode)
-	  (set (make-local-variable 'mhc-draft-buffer-file-name) file)))
+                    "*mhc draft %s/%s*"
+                    mhc-base-folder
+                    (file-relative-name
+                     file
+                     (file-name-as-directory
+                      (mhc-summary-folder-to-path mhc-base-folder)))))
+             (buffer (get-buffer name)))
+        (if (buffer-live-p buffer)
+            (progn
+              (message "Specified file(%s) has already been opened." file)
+              (switch-to-buffer-other-window buffer))
+          (mhc-window-push)
+          (set-buffer (setq buffer (get-buffer-create name)))
+          (mhc-draft-reedit-file file)
+          (set-buffer-modified-p nil)
+          (switch-to-buffer-other-window buffer)
+          (goto-char (point-min))
+          (mhc-draft-mode)
+          (set (make-local-variable 'mhc-draft-buffer-file-name) file)))
     (message "Specified file(%s) does not exist." file)))
 
 
@@ -927,7 +927,7 @@ the default action of this command is changed to the latter."
 (defun mhc-window-push ()
   (interactive)
   (setq mhc-window-stack
-	(cons (current-window-configuration) mhc-window-stack)))
+        (cons (current-window-configuration) mhc-window-stack)))
 
 (defun mhc-window-pop ()
   (interactive)
@@ -949,8 +949,8 @@ the default action of this command is changed to the latter."
 
 ;(defun mhc-summary-buffer-p (&optional buffer)
 ;  (string-match mhc-summary-buf-regex
-;		(buffer-name
-;		 (or buffer (current-buffer)))))
+;               (buffer-name
+;                (or buffer (current-buffer)))))
 
 (defun mhc-summary-buffer-p (&optional buffer)
   (if buffer
@@ -961,21 +961,21 @@ the default action of this command is changed to the latter."
   (when (mhc-summary-buffer-p)
     (let ((dayinfo (get-text-property (point) 'mhc-dayinfo)))
       (or (and dayinfo (mhc-day-date dayinfo))
-	  (save-excursion
-	    (end-of-line)
-	    (while (and (not (bobp))
-			(null dayinfo))
-	      (or (setq dayinfo (get-text-property (point) 'mhc-dayinfo))
-		  (forward-char -1)))
-	    (and dayinfo (mhc-day-date dayinfo)))))))
+          (save-excursion
+            (end-of-line)
+            (while (and (not (bobp))
+                        (null dayinfo))
+              (or (setq dayinfo (get-text-property (point) 'mhc-dayinfo))
+                  (forward-char -1)))
+            (and dayinfo (mhc-day-date dayinfo)))))))
 
 ; (defun mhc-current-date-month ()
 ;   (let ((buf (buffer-name)) yy mm dd)
 ;     (if (not (string-match mhc-summary-buf-regex buf))
-; 	nil
+;       nil
 ;       (mhc-date-new (string-to-number (match-string 1 buf))
-; 		    (string-to-number (match-string 2 buf))
-; 		    1))))
+;                   (string-to-number (match-string 2 buf))
+;                   1))))
 
 (defun mhc-current-date-month ()
   mhc-summary-buffer-current-date-month)
@@ -991,9 +991,9 @@ the default action of this command is changed to the latter."
   (interactive "P")
   (set-mark (point))
   (mhc-scan-month (mhc-input-month "Month ")
-		  'direct ;; insert into current buffer.
-		  mhc-default-category-predicate-sexp
-		  hide-private)
+                  'direct ;; insert into current buffer.
+                  mhc-default-category-predicate-sexp
+                  hide-private)
   (exchange-point-and-mark))
 
 (defun mhc-view-file ()
@@ -1011,19 +1011,19 @@ the default action of this command is changed to the latter."
   "Return buffer for temporary use of MHC."
   (let ((buf (get-buffer name)))
     (or (and buf (buffer-name buf))
-	(progn
-	  (setq buf (get-buffer-create name)
-		mhc-tmp-buffer-list (cons buf mhc-tmp-buffer-list))
-	  (buffer-disable-undo buf)))
+        (progn
+          (setq buf (get-buffer-create name)
+                mhc-tmp-buffer-list (cons buf mhc-tmp-buffer-list))
+          (buffer-disable-undo buf)))
     buf))
 
 (defun mhc-kill-all-buffers ()
   "Kill all buffers for temporary use of MHC."
   (while mhc-tmp-buffer-list
     (if (buffer-name (car mhc-tmp-buffer-list))
-	(kill-buffer (car mhc-tmp-buffer-list)))
+        (kill-buffer (car mhc-tmp-buffer-list)))
     (setq mhc-tmp-buffer-list
-	  (cdr mhc-tmp-buffer-list))))
+          (cdr mhc-tmp-buffer-list))))
 
 
 ;;; Setup and exit
@@ -1038,30 +1038,30 @@ the default action of this command is changed to the latter."
 (defun mhc-setup ()
   (unless mhc-setup-p
     (condition-case nil
-	(progn
-	  (or (featurep 'easymenu) (require 'easymenu))
-	  (easy-menu-define mhc-mode-menu
-			    mhc-mode-map
-			    "Menu used in mhc mode."
-			    mhc-mode-menu-spec)
-	  (easy-menu-define mhc-calendar-mode-menu
-			    mhc-calendar-mode-map
-			    "Menu used in mhc calendar mode."
-			    mhc-calendar-mode-menu-spec))
+        (progn
+          (or (featurep 'easymenu) (require 'easymenu))
+          (easy-menu-define mhc-mode-menu
+                            mhc-mode-map
+                            "Menu used in mhc mode."
+                            mhc-mode-menu-spec)
+          (easy-menu-define mhc-calendar-mode-menu
+                            mhc-calendar-mode-map
+                            "Menu used in mhc calendar mode."
+                            mhc-calendar-mode-menu-spec))
       (error nil))
     (or (assq 'mhc-mode minor-mode-alist)
-	(setq minor-mode-alist
-	      (cons (list 'mhc-mode (mhc-file-line-status))
-		    minor-mode-alist)))
+        (setq minor-mode-alist
+              (cons (list 'mhc-mode (mhc-file-line-status))
+                    minor-mode-alist)))
     (or (assq 'mhc-mode minor-mode-map-alist)
-	(setq minor-mode-map-alist
-	      (cons (cons 'mhc-mode mhc-mode-map)
-		    minor-mode-map-alist)))
+        (setq minor-mode-map-alist
+              (cons (cons 'mhc-mode mhc-mode-map)
+                    minor-mode-map-alist)))
     (mhc-face-setup)
     (mhc-calendar-setup)
     (mhc-file-setup)
     (setq mhc-default-category-predicate-sexp
-	  (mhc-expr-compile mhc-default-category))
+          (mhc-expr-compile mhc-default-category))
     (and (mhc-use-icon-p) (mhc-icon-setup))
     (and mhc-calendar-link-hnf (mhc-calendar-hnf-face-setup))
     (mhc-summary-line-inserter-setup)
@@ -1086,7 +1086,7 @@ the default action of this command is changed to the latter."
   (mhc-summary-line-inserter-setup)
   (mhc-guess-location-setup)
   (or (and (mhc-summary-buffer-p)
-	   (mhc-rescan-month mhc-default-hide-private-schedules))
+           (mhc-rescan-month mhc-default-hide-private-schedules))
       (and (mhc-calendar-p) (mhc-calendar-rescan)))
   (message "MHC resetting...done"))
 

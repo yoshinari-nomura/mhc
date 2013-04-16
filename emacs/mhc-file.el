@@ -31,18 +31,18 @@
 ;;          ネットワークの状態に依存する終了処理を行う関数
 ;;
 ;;     (mhc-foo/sync)
-;;	    スケジュールファイルの同期を取る関数
+;;          スケジュールファイルの同期を取る関数
 ;;
 ;;     (mhc-foo/add FILENAME &optional OFFLINE)
-;;	    ファイルを追加を通知する関数
+;;          ファイルを追加を通知する関数
 ;;          (ファイルの実体は追加された後に呼び出される)
 ;;
 ;;     (mhc-foo/modify FILENAME &optional  OFFLINE)
-;;	    ファイルの変更を通知する関数
+;;          ファイルの変更を通知する関数
 ;;          (ファイルの実体が変更された後に呼び出される)
 ;;
 ;;     (mhc-foo/remove FILENAME &optional OFFLINE)
-;;	    ファイルを削除する関数
+;;          ファイルを削除する関数
 ;;          (ファイルの実体は *削除されずに* 呼び出される)
 ;;
 ;; これらのメソッドを適切に定義し、更に以下のような宣言を付け加える。
@@ -74,14 +74,14 @@
   "*Variable to specify the method to control schdule files."
   :group 'mhc
   :type '(radio (const :tag "Backup and remove" mhc-sync)
-		(const :tag "CVS" mhc-cvs)
-		(symbol :tag "Other")))
+                (const :tag "CVS" mhc-cvs)
+                (symbol :tag "Other")))
 
 (defcustom mhc-file-sync-enable-offline nil
   "*If non-nil, enable mhc-file-sync when status is offline."
   :group 'mhc
   :type '(radio (const :tag "Disable when offline" nil)
-		(const :tag "Enable when offline" t)))
+                (const :tag "Enable when offline" t)))
 
 ;;; Internal Variables
 (defvar mhc-file/offline (not mhc-default-network-status)
@@ -99,17 +99,17 @@
 ;; To suprress byte compile warnings.
 (eval-when-compile
   (mapcar (lambda (s)
-	    (let ((f (intern (concat "mhc-file/" (symbol-name s)))))
-	      (or (fboundp f) (fset f 'mhc-file/true))))
-	  mhc-file/backend-method-list))
+            (let ((f (intern (concat "mhc-file/" (symbol-name s)))))
+              (or (fboundp f) (fset f 'mhc-file/true))))
+          mhc-file/backend-method-list))
 
 (defun mhc-file-setup (&optional method)
   "Initialize backend to manipulate files."
   (require (or method mhc-file-method))
   (mapcar (lambda (s)
-	    (fset (intern (concat "mhc-file/" (symbol-name s)))
-		  (or (get mhc-file-method s) 'mhc-file/true)))
-	  mhc-file/backend-method-list)
+            (fset (intern (concat "mhc-file/" (symbol-name s)))
+                  (or (get mhc-file-method s) 'mhc-file/true)))
+          mhc-file/backend-method-list)
   (and (mhc-file/init)
        (mhc-file/open mhc-file/offline)))
 
@@ -130,23 +130,23 @@
   "Strings to describe MHC network status."
   :group 'mhc
   :type '(choice
-	  (const :tag "Long format" (" mhc[offline]" . " mhc[ONLINE]"))
-	  (const :tag "Short format" (" Mhc" . " MHC"))
-	  (cons :tag "User definition"
-		(string :tag "String for offline")
-		(string :tag "String for online")))
+          (const :tag "Long format" (" mhc[offline]" . " mhc[ONLINE]"))
+          (const :tag "Short format" (" Mhc" . " MHC"))
+          (cons :tag "User definition"
+                (string :tag "String for offline")
+                (string :tag "String for online")))
   :set (lambda (symbol value)
-	 (set-default symbol value)
-	 (if (assq 'mhc-mode minor-mode-alist)
-	     (setcdr (assq 'mhc-mode minor-mode-alist) (list (mhc-file-line-status))))
-	 (force-mode-line-update)))
+         (set-default symbol value)
+         (if (assq 'mhc-mode minor-mode-alist)
+             (setcdr (assq 'mhc-mode minor-mode-alist) (list (mhc-file-line-status))))
+         (force-mode-line-update)))
 
 (defun mhc-file-line-status ()
   "Return status string for mode line."
   (if mhc-show-network-status
       (if mhc-file/offline
-	  (car mhc-file-line-status-strings)
-	(cdr mhc-file-line-status-strings))))
+          (car mhc-file-line-status-strings)
+        (cdr mhc-file-line-status-strings))))
 
 (defun mhc-file-toggle-offline (&optional full set-to no-sync)
   "*Toggle line status of file manipulation backend."
@@ -154,14 +154,14 @@
   (let ((previous mhc-file/offline))
     (setq mhc-file/offline set-to)
     (if (assq 'mhc-mode minor-mode-alist)
-	(setcdr (assq 'mhc-mode minor-mode-alist)
-		(list (mhc-file-line-status))))
+        (setcdr (assq 'mhc-mode minor-mode-alist)
+                (list (mhc-file-line-status))))
     (if mhc-file/offline
-	(message "mhc-file is offline.")
+        (message "mhc-file is offline.")
       (if (and (not no-sync)
-	       previous
-	       (y-or-n-p "Sync schedule files right now ? "))
-	  (mhc-file-sync full))
+               previous
+               (y-or-n-p "Sync schedule files right now ? "))
+          (mhc-file-sync full))
       (message "mhc-file is online."))))
 
 
@@ -180,11 +180,11 @@
   (if (file-directory-p dirname)
       t
     (if (mhc-file-make-directory
-	 (directory-file-name (file-name-directory (directory-file-name dirname))))
-	(progn
-	  (make-directory (directory-file-name dirname))
-	  (mhc-file-add (file-name-as-directory dirname))
-	  t))))
+         (directory-file-name (file-name-directory (directory-file-name dirname))))
+        (progn
+          (make-directory (directory-file-name dirname))
+          (mhc-file-add (file-name-as-directory dirname))
+          t))))
 
 
 

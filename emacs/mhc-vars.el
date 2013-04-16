@@ -28,8 +28,8 @@
   "*Variable to set your favorite mailer."
   :group 'mhc
   :type '(radio (const :tag "Mew" mew)
-		(const :tag "Wanderlust" wl)
-		(const :tag "Gnus" gnus)))
+                (const :tag "Wanderlust" wl)
+                (const :tag "Gnus" gnus)))
 
 (defcustom mhc-base-folder "+schedule"
   "*Base foler of MHC"
@@ -52,12 +52,12 @@
   "*Day of the week as the start of the week."
   :group 'mhc
   :type '(choice (const :tag "Sunday" 0)
-		 (const :tag "Monday" 1)
-		 (const :tag "Tuesday" 2)
-		 (const :tag "Wednesday" 3)
-		 (const :tag "Thursday" 4)
-		 (const :tag "Friday" 5)
-		 (const :tag "Saturday" 6)))
+                 (const :tag "Monday" 1)
+                 (const :tag "Tuesday" 2)
+                 (const :tag "Wednesday" 3)
+                 (const :tag "Thursday" 4)
+                 (const :tag "Friday" 5)
+                 (const :tag "Saturday" 6)))
 
 (defcustom mhc-insert-calendar t
   "*If non nil value, display vertical calender."
@@ -68,8 +68,8 @@
   "*Length of vertical calendar in summary buffer."
   :group 'mhc
   :type '(radio (integer :tag "Show length (current month is center)" 3)
-		(cons (integer :tag "             Show length" 3)
-		      (integer :tag "Length of before current" 1))))
+                (cons (integer :tag "             Show length" 3)
+                      (integer :tag "Length of before current" 1))))
 
 (defcustom mhc-insert-todo-list t
   "*If non nil value, display TODO list."
@@ -111,16 +111,16 @@
   "*Flag to decide whether to use cache or not."
   :group 'mhc
   :type '(radio (const :tag "Use" t)
-		(const :tag "Lazy check" 0)
-		(const :tag "No use" nil)))
+                (const :tag "Lazy check" 0)
+                (const :tag "No use" nil)))
 
 (defcustom mhc-use-wide-scope nil
   "*Wide scope method in summary mode."
   :group 'mhc
   :type '(radio (const :tag "No use" nil)
-		(const :tag "Complete week scope" week)
-		(const :tag "Wide week scope" wide)
-		(integer :tag "Scope wide size (>=0)" 3)))
+                (const :tag "Complete week scope" week)
+                (const :tag "Wide week scope" wide)
+                (integer :tag "Scope wide size (>=0)" 3)))
 
 (defcustom mhc-default-alarm "5 minute"
   "*Default alarm string in making draft."

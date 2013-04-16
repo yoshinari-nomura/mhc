@@ -41,7 +41,7 @@
 (require 'bytecomp)
 
 ;;----------------------------------------------------------------------
-;;		MHC-LOGIC 構造体
+;;              MHC-LOGIC 構造体
 ;;----------------------------------------------------------------------
 
 ;; MHC-LOGIC    ::= [ DAY AND TODO INTERMEDIATE SEXP ]
@@ -85,38 +85,38 @@
 
 (defun mhc-logic-day-as-string-list (logicinfo)
   (mapcar (lambda (day)
-	    (if (consp day)
-		(mhc-date-format (car day) "!%04d%02d%02d" yy mm dd)
-	      (mhc-date-format day "%04d%02d%02d" yy mm dd)))
-	  (mhc-logic/day logicinfo)))
+            (if (consp day)
+                (mhc-date-format (car day) "!%04d%02d%02d" yy mm dd)
+              (mhc-date-format day "%04d%02d%02d" yy mm dd)))
+          (mhc-logic/day logicinfo)))
 
 
 
 ;;----------------------------------------------------------------------
-;;		条件式を評価する関数
+;;              条件式を評価する関数
 ;;----------------------------------------------------------------------
 
 (defun mhc-logic-eval-for-date (sexp-list day &optional todo)
   "指定された日のスケジュールを探索"
   (mhc-day-let day
     (let ((week-of-month (/ (+ day-of-month
-			       (mhc-date-ww (mhc-date-mm-first day))
-			       -8)
-			    7))
-	  (last-week (> 7 (- (mhc-date/last-day-of-month year month)
-			     day-of-month)))
-	  (new (mhc-day-new year month day-of-month day-of-week)))
+                               (mhc-date-ww (mhc-date-mm-first day))
+                               -8)
+                            7))
+          (last-week (> 7 (- (mhc-date/last-day-of-month year month)
+                             day-of-month)))
+          (new (mhc-day-new year month day-of-month day-of-week)))
       (mhc-day-set-schedules new (delq nil
-				       (mapcar
-					(lambda (sexp)
-					  (and sexp
-					       (funcall sexp))) sexp-list)))
+                                       (mapcar
+                                        (lambda (sexp)
+                                          (and sexp
+                                               (funcall sexp))) sexp-list)))
       new)))
 
 
 
 ;;----------------------------------------------------------------------
-;;		条件式を生成するための関数群
+;;              条件式を生成するための関数群
 ;;----------------------------------------------------------------------
 
 ;; S式を表現する中間形式のマクロ
@@ -194,14 +194,14 @@
   "X-SC-Day: ヘッダを解析する関数"
   (let ((d) (days (mhc-logic/day logicinfo)))
     (if (looking-at mhc-logic/space-regexp)
-	(goto-char (match-end 0)))
+        (goto-char (match-end 0)))
     (while (not (eobp))
       (or (mhc-logic/looking-at mhc-logic/not-regexp mhc-logic/day-regexp)
-	  (error "Parse ERROR !!! (at X-SC-Day:)"))
+          (error "Parse ERROR !!! (at X-SC-Day:)"))
       (setq d (mhc-date-new (string-to-number (match-string 2))
-			    (string-to-number (match-string 3))
-			    (string-to-number (match-string 4)))
-	    days (cons (if (match-string 1) (cons d nil) d) days))
+                            (string-to-number (match-string 3))
+                            (string-to-number (match-string 4)))
+            days (cons (if (match-string 1) (cons d nil) d) days))
       (goto-char (match-end 0)))
     (mhc-logic/set-day logicinfo (nreverse days)))) ;; xxxxx
 
@@ -212,20 +212,20 @@
       (goto-char (match-end 0)))
   (let (month)
     (if (and (mhc-logic/looking-at mhc-logic/old-style-date-regexp)
-	     (setq month (cdr (assoc (downcase (match-string 2))
-				     mhc-logic/month-alist))))
-	(let ((year (string-to-number (match-string 3))))
-	  (mhc-logic/set-day
-	   logicinfo
-	   (cons (mhc-date-new (cond ((< year 69)
-				      (+ year 2000))
-				     ((< year 1000)
-				      (+ year 1900))
-				     (t year))
-			       month
-			       (string-to-number (match-string 1)))
-		 (mhc-logic/day logicinfo)))
-	  (goto-char (match-end 0)))
+             (setq month (cdr (assoc (downcase (match-string 2))
+                                     mhc-logic/month-alist))))
+        (let ((year (string-to-number (match-string 3))))
+          (mhc-logic/set-day
+           logicinfo
+           (cons (mhc-date-new (cond ((< year 69)
+                                      (+ year 2000))
+                                     ((< year 1000)
+                                      (+ year 1900))
+                                     (t year))
+                               month
+                               (string-to-number (match-string 1)))
+                 (mhc-logic/day logicinfo)))
+          (goto-char (match-end 0)))
       (error "Parse ERROR !!!(at X-SC-Date:)"))))
 
 
@@ -233,47 +233,47 @@
   "X-SC-Cond: ヘッダを解析する関数"
   (let (sexp day-of-month week-of-month day-of-week month)
     (if (looking-at mhc-logic/space-regexp)
-	(goto-char (match-end 0)))
+        (goto-char (match-end 0)))
     (while (not (eobp))
       (cond
        ;; 何日目
        ((mhc-logic/looking-at mhc-logic/day-of-month-regexp)
-	(setq day-of-month
-	      (cons (list 'mhc-logic/condition-day-of-month (string-to-number (match-string 1)))
-		    day-of-month)))
+        (setq day-of-month
+              (cons (list 'mhc-logic/condition-day-of-month (string-to-number (match-string 1)))
+                    day-of-month)))
        ;; 何週目
        ((mhc-logic/looking-at mhc-logic/week-of-month-regexp)
-	(setq week-of-month
-	      (cons (nth 2 (assoc (downcase (match-string 1))
-				  mhc-logic/week-of-month-alist))
-		    week-of-month)))
+        (setq week-of-month
+              (cons (nth 2 (assoc (downcase (match-string 1))
+                                  mhc-logic/week-of-month-alist))
+                    week-of-month)))
        ;; 曜日
        ((mhc-logic/looking-at mhc-logic/day-of-week-regexp)
-	(setq day-of-week
-	      (cons (list 'mhc-logic/condition-day-of-week
-			  (cdr (assoc (downcase (match-string 1))
-				      mhc-logic/day-of-week-alist)))
-		    day-of-week)))
+        (setq day-of-week
+              (cons (list 'mhc-logic/condition-day-of-week
+                          (cdr (assoc (downcase (match-string 1))
+                                      mhc-logic/day-of-week-alist)))
+                    day-of-week)))
        ;; 月
        ((mhc-logic/looking-at mhc-logic/month-regexp)
-	(setq month
-	      (cons (list 'mhc-logic/condition-month
-			  (cdr (assoc (downcase (match-string 1))
-				      mhc-logic/month-alist)))
-		    month)))
+        (setq month
+              (cons (list 'mhc-logic/condition-month
+                          (cdr (assoc (downcase (match-string 1))
+                                      mhc-logic/month-alist)))
+                    month)))
        (t ;; 解釈できない要素の場合
-	(error "Parse ERROR !!!(at X-SC-Cond:)")))
+        (error "Parse ERROR !!!(at X-SC-Cond:)")))
       (goto-char (match-end 0)))
     (mapcar (lambda (s)
-	      (set s (if (symbol-value s)
-			 (if (= 1 (length (symbol-value s)))
-			     (car (symbol-value s))
-			   (cons 'or (nreverse (symbol-value s)))))))
-	    '(day-of-month week-of-month day-of-week month))
+              (set s (if (symbol-value s)
+                         (if (= 1 (length (symbol-value s)))
+                             (car (symbol-value s))
+                           (cons 'or (nreverse (symbol-value s)))))))
+            '(day-of-month week-of-month day-of-week month))
     (setq sexp (cond
-		((and week-of-month day-of-week) `(and ,week-of-month ,day-of-week))
-		(week-of-month week-of-month)
-		(day-of-week day-of-week)))
+                ((and week-of-month day-of-week) `(and ,week-of-month ,day-of-week))
+                (week-of-month week-of-month)
+                (day-of-week day-of-week)))
     (if day-of-month (setq sexp (if sexp (list 'or day-of-month sexp) day-of-month)))
     (if month (setq sexp (if sexp (list 'and month sexp) month)))
     (if sexp (mhc-logic/set-and logicinfo (cons sexp (mhc-logic/and logicinfo))))))
@@ -283,69 +283,69 @@
   "X-SC-Duration: ヘッダを解析する関数"
   (let (sexp)
     (if (looking-at mhc-logic/space-regexp)
-	(goto-char (match-end 0)))
+        (goto-char (match-end 0)))
     (while (not (eobp))
       (setq sexp
-	    (cons (cond
-		   ((mhc-logic/looking-at mhc-logic/day-regexp
-					  "-" mhc-logic/day-regexp)
-		    (list 'mhc-logic/condition-duration
-			  (mhc-date-new (string-to-number (match-string 1))
-					(string-to-number (match-string 2))
-					(string-to-number (match-string 3)))
-			  (mhc-date-new (string-to-number (match-string 4))
-					(string-to-number (match-string 5))
-					(string-to-number (match-string 6)))))
-		   ((mhc-logic/looking-at mhc-logic/day-regexp "-")
-		    (list 'mhc-logic/condition-duration-begin
-			  (mhc-date-new (string-to-number (match-string 1))
-					(string-to-number (match-string 2))
-					(string-to-number (match-string 3)))))
-		   ((mhc-logic/looking-at "-" mhc-logic/day-regexp)
-		    (list 'mhc-logic/condition-duration-end
-			  (mhc-date-new (string-to-number (match-string 1))
-					(string-to-number (match-string 2))
-					(string-to-number (match-string 3)))))
-		   (t ; それ以外の場合
-		    (error "Parse ERROR !!!(at X-SC-Duration:)")))
-		  sexp))
+            (cons (cond
+                   ((mhc-logic/looking-at mhc-logic/day-regexp
+                                          "-" mhc-logic/day-regexp)
+                    (list 'mhc-logic/condition-duration
+                          (mhc-date-new (string-to-number (match-string 1))
+                                        (string-to-number (match-string 2))
+                                        (string-to-number (match-string 3)))
+                          (mhc-date-new (string-to-number (match-string 4))
+                                        (string-to-number (match-string 5))
+                                        (string-to-number (match-string 6)))))
+                   ((mhc-logic/looking-at mhc-logic/day-regexp "-")
+                    (list 'mhc-logic/condition-duration-begin
+                          (mhc-date-new (string-to-number (match-string 1))
+                                        (string-to-number (match-string 2))
+                                        (string-to-number (match-string 3)))))
+                   ((mhc-logic/looking-at "-" mhc-logic/day-regexp)
+                    (list 'mhc-logic/condition-duration-end
+                          (mhc-date-new (string-to-number (match-string 1))
+                                        (string-to-number (match-string 2))
+                                        (string-to-number (match-string 3)))))
+                   (t ; それ以外の場合
+                    (error "Parse ERROR !!!(at X-SC-Duration:)")))
+                  sexp))
       (goto-char (match-end 0)))
     (if sexp
-	(mhc-logic/set-and logicinfo (cons (if (= 1 (length sexp))
-					       (car sexp)
-					     (cons 'or (nreverse sexp)))
-					   (mhc-logic/and logicinfo))))))
+        (mhc-logic/set-and logicinfo (cons (if (= 1 (length sexp))
+                                               (car sexp)
+                                             (cons 'or (nreverse sexp)))
+                                           (mhc-logic/and logicinfo))))))
 
 ;; Need to be deleted.
 (defun mhc-logic-parse-todo (logicinfo)
   (if (looking-at mhc-logic/space-regexp)
       (goto-char (match-end 0)))
   (let ((content (buffer-substring
-		  (point) (progn (skip-chars-forward "0-9") (point)))))
+                  (point) (progn (skip-chars-forward "0-9") (point)))))
     (if (looking-at mhc-logic/space-regexp)
-	(goto-char (match-end 0)))
+        (goto-char (match-end 0)))
     (if (eobp)
-	(mhc-logic/set-todo logicinfo (string-to-number content))
+        (mhc-logic/set-todo logicinfo (string-to-number content))
       (error "Parse ERROR !!!(at X-SC-Todo:)"))))
 
 
 (defun mhc-logic-compile-file (record)
   "日付を指定されたときに、関係するスケジュールを選びだすためのS式を生成する"
   (let ((sexp) (schedules (mhc-record-schedules record))
-	(byte-compile-warnings))
+        (byte-compile-warnings))
     (while schedules
       (setq sexp (cons (mhc-logic/compile-schedule (car schedules)) sexp)
-	    schedules (cdr schedules)))
+            schedules (cdr schedules)))
     (setq sexp (delq nil sexp))
     (mhc-record-set-sexp
      record
      (if sexp
-	 (let (year month day day-of-month day-of-week week-of-month last-week todo)
-	   (byte-compile
-	    (list 'lambda ()
-		  (if (= 1 (length sexp))
-		      (car sexp)
-		    (cons 'or (nreverse sexp))))))))))
+         (let (year month day day-of-month day-of-week week-of-month last-week todo)
+           (byte-compile
+            (list 'lambda ()
+                  (if (= 1 (length sexp))
+                      (car sexp)
+                    (cons 'or (nreverse sexp))))))))))
 
 
 (defun mhc-logic/compile-schedule (schedule)
@@ -353,38 +353,38 @@
   (let* ((logicinfo (mhc-schedule-condition schedule)) sexp)
     ;; 日付による例外条件とそれ以外の条件を結合した論理式を生成する
     (setq sexp
-	  (nreverse
-	   (delq nil
-		 (cons (let ((and (mhc-logic/and logicinfo)))
-			 (if and
-			     (if (= 1 (length and))
-				 (list (car and) t)
-			       (list (cons 'and (reverse and)) t))))
-		       (mapcar (lambda (day)
-				 (if (consp day)
-				     `((mhc-logic/condition-day ,(car day)) nil)
-				   `((mhc-logic/condition-day ,day) t)))
-			       (mhc-logic/day logicinfo))))))
+          (nreverse
+           (delq nil
+                 (cons (let ((and (mhc-logic/and logicinfo)))
+                         (if and
+                             (if (= 1 (length and))
+                                 (list (car and) t)
+                               (list (cons 'and (reverse and)) t))))
+                       (mapcar (lambda (day)
+                                 (if (consp day)
+                                     `((mhc-logic/condition-day ,(car day)) nil)
+                                   `((mhc-logic/condition-day ,day) t)))
+                               (mhc-logic/day logicinfo))))))
     (if sexp
-	(progn
-	  ;; 条件の数によって、条件式を最適化しておく
- 	  (setq sexp (if (= 1 (length sexp))
- 			 (if (nth 1 (car sexp))
- 			     (car (car sexp))
- 			   `(not ,(car (car sexp))))
- 		       (cons 'cond sexp)))
-	  ;; TODOに基づく条件を加える
-	  (setq sexp (if (mhc-logic-todo logicinfo)
-			 `(if todo t ,sexp)
-		       `(if todo nil ,sexp))))
+        (progn
+          ;; 条件の数によって、条件式を最適化しておく
+          (setq sexp (if (= 1 (length sexp))
+                         (if (nth 1 (car sexp))
+                             (car (car sexp))
+                           `(not ,(car (car sexp))))
+                       (cons 'cond sexp)))
+          ;; TODOに基づく条件を加える
+          (setq sexp (if (mhc-logic-todo logicinfo)
+                         `(if todo t ,sexp)
+                       `(if todo nil ,sexp))))
       (if (mhc-logic-todo logicinfo)
-	  (setq sexp 'todo)))
+          (setq sexp 'todo)))
     ;; この中間形式を保存しておく
     (mhc-logic/set-intermediate logicinfo sexp)
     ;; 中間形式を展開する
     (mhc-logic/set-sexp logicinfo
-			(if sexp (mhc-logic/macroexpand
-				  `(if ,sexp ,schedule))))))
+                        (if sexp (mhc-logic/macroexpand
+                                  `(if ,sexp ,schedule))))))
 
 
 (defun mhc-logic/macroexpand (sexp)
@@ -397,21 +397,21 @@
 
 
 ;;----------------------------------------------------------------------
-;;		mhc-logic-record-to-slot
+;;              mhc-logic-record-to-slot
 ;;----------------------------------------------------------------------
 
 (defun mhc-logic-record-to-slot (record)
   "Return appropriate slot key, ( YEAR . MONTH ), for RECORD."
   (let ((schedules (mhc-record-schedules record))
-	pre-month cur-month)
+        pre-month cur-month)
     (while (and schedules
-		(not (mhc-logic-todo (mhc-schedule-condition (car schedules))))
-		(setq cur-month
-		      (mhc-logic/check-sexp-range
-		       (mhc-schedule-condition (car schedules))))
-		(if pre-month
-		    (equal pre-month cur-month)
-		  (setq pre-month cur-month)))
+                (not (mhc-logic-todo (mhc-schedule-condition (car schedules))))
+                (setq cur-month
+                      (mhc-logic/check-sexp-range
+                       (mhc-schedule-condition (car schedules))))
+                (if pre-month
+                    (equal pre-month cur-month)
+                  (setq pre-month cur-month)))
       (setq schedules (cdr schedules)))
     (if schedules (cons nil nil) cur-month)))
 
@@ -426,24 +426,24 @@
   (let (duration-begin duration-end day-list month-list require-duration)
     (mhc-logic/check-sexp-range-internal (mhc-logic/intermediate logicinfo))
     (if (or (> (length month-list) 1)
-	    (if require-duration
-		(or (not duration-begin)
-		    (not duration-end)))
-	    (progn
-	      (if day-list (setq day-list (sort day-list '<)))
-	      (not (equal
-		    (setq duration-begin
-			  (if day-list
-			      (mhc-logic/day-to-slot
-			       (if duration-begin
-				   (min (car day-list) duration-begin)
-				 (car day-list)))))
-		    (if day-list
-			(mhc-logic/day-to-slot
-			 (if duration-end
-			     (max (nth (1- (length day-list)) day-list) duration-end)
-			   (nth (1- (length day-list)) day-list))))))))
-	'(nil . nil)
+            (if require-duration
+                (or (not duration-begin)
+                    (not duration-end)))
+            (progn
+              (if day-list (setq day-list (sort day-list '<)))
+              (not (equal
+                    (setq duration-begin
+                          (if day-list
+                              (mhc-logic/day-to-slot
+                               (if duration-begin
+                                   (min (car day-list) duration-begin)
+                                 (car day-list)))))
+                    (if day-list
+                        (mhc-logic/day-to-slot
+                         (if duration-end
+                             (max (nth (1- (length day-list)) day-list) duration-end)
+                           (nth (1- (length day-list)) day-list))))))))
+        '(nil . nil)
       duration-begin)))
 
 
@@ -459,34 +459,34 @@
   (if (listp sexp)
       (cond
        ((eq (car sexp) 'mhc-logic/condition-duration)
-	(if (or (not duration-begin)
-		(< (nth 1 sexp) duration-begin))
-	    (setq duration-begin (nth 1 sexp)))
-	(if (or (not duration-end)
-		(> (nth 1 sexp) duration-end))
-	    (setq duration-end (nth 2 sexp))))
+        (if (or (not duration-begin)
+                (< (nth 1 sexp) duration-begin))
+            (setq duration-begin (nth 1 sexp)))
+        (if (or (not duration-end)
+                (> (nth 1 sexp) duration-end))
+            (setq duration-end (nth 2 sexp))))
        ((eq (car sexp) 'mhc-logic/condition-duration-begin)
-	(if (or (not duration-begin)
-		(< (nth 1 sexp) duration-begin))
-	    (setq duration-begin (nth 1 sexp))))
+        (if (or (not duration-begin)
+                (< (nth 1 sexp) duration-begin))
+            (setq duration-begin (nth 1 sexp))))
        ((eq (car sexp) 'mhc-logic/condition-duration-end)
-	(if (or (not duration-end)
-		(> (nth 1 sexp) duration-end))
-	    (setq duration-end (nth 1 sexp))))
+        (if (or (not duration-end)
+                (> (nth 1 sexp) duration-end))
+            (setq duration-end (nth 1 sexp))))
        ((eq (car sexp) 'mhc-logic/condition-day)
-	(setq day-list (cons (nth 1 sexp) day-list)))
+        (setq day-list (cons (nth 1 sexp) day-list)))
        ((eq (car sexp) 'mhc-logic/condition-month)
-	(or (memq (nth 1 sexp) month-list)
-	    (setq month-list (cons (nth 1 sexp) month-list)))
-	(setq require-duration t))
+        (or (memq (nth 1 sexp) month-list)
+            (setq month-list (cons (nth 1 sexp) month-list)))
+        (setq require-duration t))
        ((eq (car sexp) 'mhc-logic/condition-day-of-week)
-	(setq require-duration t))
+        (setq require-duration t))
        ((eq (car sexp) 'mhc-logic/condition-day-of-month)
-	(setq require-duration t))
+        (setq require-duration t))
        (t
-	(while sexp
-	  (mhc-logic/check-sexp-range-internal (car sexp))
-	  (setq sexp (cdr sexp)))))))
+        (while sexp
+          (mhc-logic/check-sexp-range-internal (car sexp))
+          (setq sexp (cdr sexp)))))))
 
 
 ; (defun mhc-logic-occur-multiple-p (logicinfo)
@@ -494,16 +494,16 @@
 ;   (let (duration-begin duration-end day-list month-list require-duration)
 ;     (mhc-logic/check-sexp-range-internal (mhc-logic/intermediate logicinfo))
 ;     (if (or duration-begin
-; 	    duration-end
-; 	    month-list
-; 	    (> (length day-list) 1))
-; 	t)))
+;           duration-end
+;           month-list
+;           (> (length day-list) 1))
+;       t)))
 
 ;; rough (but safety) check  -- nom
 (defun mhc-logic-occur-multiple-p (logicinfo)
   "If LOGICINFO occurs multiple times, return t."
   (if (or (mhc-logic/and logicinfo)
-	  (> (length (mhc-logic/day logicinfo)) 1))
+          (> (length (mhc-logic/day logicinfo)) 1))
       t))
 
 (provide 'mhc-logic)

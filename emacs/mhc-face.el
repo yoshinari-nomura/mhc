@@ -99,7 +99,7 @@ refer to mhc-calendar-hnf-face-alist-internal.")
 (defun mhc-face-category-to-face (category)
   (if category
       (or (intern-soft (format "mhc-category-face-%s" (downcase category)))
-	  'default)
+          'default)
     'default))
 
 (defun mhc-face-make-face-from-string (string prop &optional overwrite prefix)
@@ -108,14 +108,14 @@ refer to mhc-calendar-hnf-face-alist-internal.")
 
 (defun mhc-face-make-face-from-symbol (symbol prop &optional overwrite)
   (let ((parent  (nth 0 prop))
-	(fg      (nth 1 prop))
-	(bg      (nth 2 prop))
-	(uline   (nth 3 prop))
-	(font    (nth 4 prop))
-	(stipple (nth 5 prop))
-	(face    nil))
+        (fg      (nth 1 prop))
+        (bg      (nth 2 prop))
+        (uline   (nth 3 prop))
+        (font    (nth 4 prop))
+        (stipple (nth 5 prop))
+        (face    nil))
     (if (and (mhc-facep symbol) (not overwrite))
-	symbol
+        symbol
       (setq face (if parent (copy-face parent symbol) (make-face symbol)))
       (if fg      (set-face-foreground  face fg))
       (if bg      (set-face-background  face bg))
@@ -138,29 +138,29 @@ refer to mhc-calendar-hnf-face-alist-internal.")
 ;; ex. mhc-summary-face + today -> mhc-summary-face-today
 (defun mhc-face-get-effect (face effect)
   (let ((new-face (intern (concat
-			   (symbol-name face) "-"
-			   (symbol-name effect))))
-	effect-list)
+                           (symbol-name face) "-"
+                           (symbol-name effect))))
+        effect-list)
     (if (mhc-facep new-face)
-	()
+        ()
       (copy-face face new-face)
       (if (setq effect-list (cdr (assq effect mhc-face-effect-alist)))
-	  (let ((fg (nth 0 effect-list))
-		(bg (nth 1 effect-list))
-		(bl (nth 2 effect-list))
-		(it (nth 3 effect-list))
-		(ul (nth 4 effect-list)))
-	    (if fg (set-face-foreground  new-face fg))
-	    (if bg (set-face-background  new-face bg))
-	    (if ul (set-face-underline-p new-face t))
-	    ;;
-	    (if bl (or (mhc-face/make-face-bold new-face)
-		       (and (fboundp 'set-face-bold-p)
-			    (set-face-bold-p new-face t))))
-	    ;;
-	    (if it (or (mhc-face/make-face-italic new-face)
-		       (and (fboundp 'set-face-italic-p)
-			    (set-face-italic-p new-face t)))))))
+          (let ((fg (nth 0 effect-list))
+                (bg (nth 1 effect-list))
+                (bl (nth 2 effect-list))
+                (it (nth 3 effect-list))
+                (ul (nth 4 effect-list)))
+            (if fg (set-face-foreground  new-face fg))
+            (if bg (set-face-background  new-face bg))
+            (if ul (set-face-underline-p new-face t))
+            ;;
+            (if bl (or (mhc-face/make-face-bold new-face)
+                       (and (fboundp 'set-face-bold-p)
+                            (set-face-bold-p new-face t))))
+            ;;
+            (if it (or (mhc-face/make-face-italic new-face)
+                       (and (fboundp 'set-face-italic-p)
+                            (set-face-italic-p new-face t)))))))
     new-face))
 ;;
 ;; (make-face-italic  new-face nil t))))
@@ -189,15 +189,15 @@ refer to mhc-calendar-hnf-face-alist-internal.")
     (while (setq lst (car alist))
       (cond
        ((stringp (car lst))
-	(mhc-face-make-face-from-string
-	 (format "mhc-category-face-%s" (downcase (car lst)))
-	 (cdr lst)
-	 overwrite))
+        (mhc-face-make-face-from-string
+         (format "mhc-category-face-%s" (downcase (car lst)))
+         (cdr lst)
+         overwrite))
        ((symbolp (car lst))
-	(mhc-face-make-face-from-symbol
-	 (car lst)
-	 (cdr lst)
-	 overwrite)))
+        (mhc-face-make-face-from-symbol
+         (car lst)
+         (cdr lst)
+         overwrite)))
       (setq alist (cdr alist)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -213,12 +213,12 @@ refer to mhc-calendar-hnf-face-alist-internal.")
   (defun mhc-facep (x)
     "Return non-nil if X is a face name or an internal face vector."
     (or (and (fboundp 'internal-facep)
-	     (let ((fn 'internal-facep))
-	       ;; Avoid compile warning under old Emacsen.
-	       (funcall fn x)))
-	(and (symbolp x)
-	     (assq x (and (boundp 'global-face-data)
-			  (symbol-value 'global-face-data))))))))
+             (let ((fn 'internal-facep))
+               ;; Avoid compile warning under old Emacsen.
+               (funcall fn x)))
+        (and (symbolp x)
+             (assq x (and (boundp 'global-face-data)
+                          (symbol-value 'global-face-data))))))))
 
 (provide 'mhc-face)
 

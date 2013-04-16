@@ -1,10 +1,10 @@
 /* XPM */
 static char * Party_xpm[] = {
 "16 16 4 1",
-" 	s backgroundColor c None",
-".	c #000000000000",
-"X	c #F7DEFFFFE79D",
-"o	c #FFFFE79D2081",
+"       s backgroundColor c None",
+".      c #000000000000",
+"X      c #F7DEFFFFE79D",
+"o      c #FFFFE79D2081",
 "                ",
 "    .....       ",
 "   .XXXXX.      ",

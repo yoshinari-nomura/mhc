@@ -64,7 +64,7 @@
   "*Ignore English dates."
   :group 'mhc
   :type '(choice (const :tag "Ignore" t)
-		 (const :tag "Don't Ignore" nil)))
+                 (const :tag "Don't Ignore" nil)))
 
 (defcustom mhc-guess-english-date-format '(usa)
   "*English date formats.
@@ -73,7 +73,7 @@ You can specify following symbols as a list.
     british: Suppose British style date formats. (e.g. 25 Feb, 2004)"
   :group 'mhc
   :type '(repeat (choice (const :tag "USA" usa)
-			 (const :tag "British" british))))
+                         (const :tag "British" british))))
 
 ;;
 ;; regexp for get date strings.
@@ -82,65 +82,65 @@ You can specify following symbols as a list.
 (defvar mhc-guess-date-regexp-list
   `(
     (,(concat "\\([０-９0-9][０-９0-9][０-９0-9][０-９0-9]\\)[-−/／]"
-	      "\\([０-９0-9][０-９0-9]\\)[-−/／]"
-	      "\\([０-９0-9][０-９0-9]\\)")
+              "\\([０-９0-9][０-９0-9]\\)[-−/／]"
+              "\\([０-９0-9][０-９0-9]\\)")
      mhc-guess/make-date-from-yyyymmdd 1 2 3)
 
     (,(concat "\\([０-９0-9]+年\\)?"
-	      "\\([来今０-９0-9]+\\)[\n　 ]*月[\n 　]*の?[\n 　]*"
-	      "\\([０-９0-9]+\\)日?"
-	      "\\([（）()月火水木金土日曜\n 　 ]*"
-	      "\\([〜−-，,、]\\|から\\|より\\)[\n 　]*"
-	      "\\([０-９0-9]+年\\)?"
-	      "\\(\\([来今０-９0-9]+\\)[\n　 ]*月\\)?[\n 　]*の?[\n 　]*"
-	      "\\([０-９0-9]+\\)日?\\(間\\)?"
-	      "\\)?")
+              "\\([来今０-９0-9]+\\)[\n　 ]*月[\n 　]*の?[\n 　]*"
+              "\\([０-９0-9]+\\)日?"
+              "\\([（）()月火水木金土日曜\n 　 ]*"
+              "\\([〜−-，,、]\\|から\\|より\\)[\n 　]*"
+              "\\([０-９0-9]+年\\)?"
+              "\\(\\([来今０-９0-9]+\\)[\n　 ]*月\\)?[\n 　]*の?[\n 　]*"
+              "\\([０-９0-9]+\\)日?\\(間\\)?"
+              "\\)?")
      mhc-guess/make-date-from-mmdd 2 3 8 9 10)
 
     (,(concat "\\([０-９0-9]+[　 ]*[／/][　 ]*\\)?"
-	      "\\([０-９0-9]+\\)[　 ]*[／/][　 ]*\\([０-９0-9]+\\)"
-	      "\\([（）()月火水木金土日曜\n 　 ]*"
- 	           "\\([〜−，,、-]\\|から\\|より\\)[\n 　]*"
-		   "\\([０-９0-9]+[　 ]*[／/][　 ]*\\)?"
- 		   "\\(\\([０-９0-9]+\\)[　 ]*[／/][　 ]*\\)"
- 		   "\\([０-９0-9]+\\)日?\\(間\\)?"
-	      "\\)?")
+              "\\([０-９0-9]+\\)[　 ]*[／/][　 ]*\\([０-９0-9]+\\)"
+              "\\([（）()月火水木金土日曜\n 　 ]*"
+                   "\\([〜−，,、-]\\|から\\|より\\)[\n 　]*"
+                   "\\([０-９0-9]+[　 ]*[／/][　 ]*\\)?"
+                   "\\(\\([０-９0-9]+\\)[　 ]*[／/][　 ]*\\)"
+                   "\\([０-９0-9]+\\)日?\\(間\\)?"
+              "\\)?")
      mhc-guess/make-date-from-mmdd 2 3 8 9 10)
 
     ;; USA style date format
     (,(concat "\\(Jan\\(uary\\)?\\|Feb\\(ruary\\)?\\|Mar\\(ch\\)?\\|"
-	      "Apr\\(il\\)?\\|May\\|June?\\|July?\\|Aug\\(ust\\)?\\|"
-	      "Sep\\(tember\\)?\\|Oct\\(ober\\)?\\|"
-	      "Nov\\(ember\\)?\\|Dec\\(ember\\)?\\)"
-	      "\.?,? +"
-	      "\\([0-9][0-9]?\\)\\(st\\|nd\\rd\\|th\\)?,?[ \n]+" ;; day
-	      "\\(\\('\\|[1-9][0-9]\\)?[0-9][0-9]\\)?") ;; year
+              "Apr\\(il\\)?\\|May\\|June?\\|July?\\|Aug\\(ust\\)?\\|"
+              "Sep\\(tember\\)?\\|Oct\\(ober\\)?\\|"
+              "Nov\\(ember\\)?\\|Dec\\(ember\\)?\\)"
+              "\.?,? +"
+              "\\([0-9][0-9]?\\)\\(st\\|nd\\rd\\|th\\)?,?[ \n]+" ;; day
+              "\\(\\('\\|[1-9][0-9]\\)?[0-9][0-9]\\)?") ;; year
      mhc-guess/make-date-from-usa-style-date 1 11 13)
 
     ;; British style date format
     (,(concat "\\([0-9][0-9]?\\)\\(st\\|nd\\rd\\|th\\)?,? " ;; day
-	      "\\(Jan\\(uary\\)?\\|Feb\\(ruary\\)?\\|Mar\\(ch\\)?\\|"
-	      "Apr\\(il\\)?\\|May\\|June?\\|July?\\|Aug\\(ust\\)?\\|"
-	      "Sep\\(tember\\)?\\|Oct\\(ober\\)?\\|"
-	      "Nov\\(ember\\)?\\|Dec\\(ember\\)?\\)"
-	      "\.?,?[ \n]+"
-	      "\\(\\('\\|[1-9][0-9]\\)?[0-9][0-9]\\)?") ;; year
+              "\\(Jan\\(uary\\)?\\|Feb\\(ruary\\)?\\|Mar\\(ch\\)?\\|"
+              "Apr\\(il\\)?\\|May\\|June?\\|July?\\|Aug\\(ust\\)?\\|"
+              "Sep\\(tember\\)?\\|Oct\\(ober\\)?\\|"
+              "Nov\\(ember\\)?\\|Dec\\(ember\\)?\\)"
+              "\.?,?[ \n]+"
+              "\\(\\('\\|[1-9][0-9]\\)?[0-9][0-9]\\)?") ;; year
      mhc-guess/make-date-from-british-style-date 1 3 13)
 
     throw
 
     (,(concat "\\(今度\\|[今来次]週\\|再来週\\)[\n 　]*の?[\n 　]*"
-	     "\\([月火水木金土日]\\)曜")
+             "\\([月火水木金土日]\\)曜")
      mhc-guess/make-date-from-relative-week 1 2)
 
     (,(concat "\\([Tt]his\\|[Nn]ext\\)[\n ]+"
               "\\(Monday\\|Tuesday\\|Wednesday\\|Thursday\\|Friday\\|"
-	      "Saturday\\|Sunday\\)")
+              "Saturday\\|Sunday\\)")
      mhc-guess/make-date-from-english-relative-week 2 1 nil)
 
     (,(concat "\\(Monday\\|Tuesday\\|Wednesday\\|Thursday\\|Friday\\|"
-	      "Saturday\\|Sunday\\)[\n ]+"
-	      "\\([Tt]his\\|[Nn]ext\\)[ \n]+\\([Ww]eek\\)")
+              "Saturday\\|Sunday\\)[\n ]+"
+              "\\([Tt]his\\|[Nn]ext\\)[ \n]+\\([Ww]eek\\)")
      mhc-guess/make-date-from-english-relative-week 1 2 3)
 
     throw
@@ -155,26 +155,26 @@ You can specify following symbols as a list.
      mhc-guess/make-date-from-relative-week nil 1)
 
     (,(concat "\\(Monday\\|Tuesday\\|Wednesday\\|Thursday\\|Friday\\|"
-	      "Saturday\\|Sunday\\)")
+              "Saturday\\|Sunday\\)")
      mhc-guess/make-date-from-english-relative-week 1 nil nil)
 
     ("\\(本日\\|今日\\|あす\\|あした\\|あさって\\|明日\\|明後日\\)"
      mhc-guess/make-date-from-relative-day 1)
 
     (,(concat "\\([Tt]oday\\|[Tt]omorrow\\|"
-	      "[Tt]he[ \n]+[Dd]ay[ \n]+[Aa]fter[ \n]+[Tt]omorrow\\)")
+              "[Tt]he[ \n]+[Dd]ay[ \n]+[Aa]fter[ \n]+[Tt]omorrow\\)")
      mhc-guess/make-date-from-english-relative-day 1)
     ))
 
 (defvar mhc-guess-time-regexp-list
   `(
     (,(concat "\\([０-９0-9]+\\) *[時] *\\([０-９0-9]+\\|半\\)?分?"
-	      "\\([\n 　]*\\([〜−-]\\|から\\|より\\)[\n 　午前後]*"
-	      "\\([０-９0-9]+\\) *[時]\\(間\\)? *\\([０-９0-9]+\\|半\\)?\\)?")
+              "\\([\n 　]*\\([〜−-]\\|から\\|より\\)[\n 　午前後]*"
+              "\\([０-９0-9]+\\) *[時]\\(間\\)? *\\([０-９0-9]+\\|半\\)?\\)?")
      mhc-guess/make-time-from-hhmm 1 2 5 7 6)
     (,(concat "\\([０-９0-9]+\\)[：:]\\([０-９0-9]+\\)"
-	      "\\([\n 　]*\\([〜−-]\\|から\\|より\\)[\n 　午前後]*"
-	      "\\([０-９0-9]+\\) *[：:時]\\(間\\)? *\\([０-９0-9]+\\|半\\)?\\)?")
+              "\\([\n 　]*\\([〜−-]\\|から\\|より\\)[\n 　午前後]*"
+              "\\([０-９0-9]+\\) *[：:時]\\(間\\)? *\\([０-９0-9]+\\|半\\)?\\)?")
      mhc-guess/make-time-from-hhmm 1 2 5 7 6)
     ))
 
@@ -248,7 +248,7 @@ You can specify following symbols as a list.
 
 (defun mhc-guess-date (&optional hint1)
   (let ((now (or (mhc-date-new-from-string3 (mhc-header-get-value "Date"))
-		 (mhc-date-now))))
+                 (mhc-date-now))))
     (mhc-guess/guess mhc-guess-date-regexp-list hint1 now)))
 
 (defun mhc-guess-time (&optional hint1)
@@ -257,14 +257,14 @@ You can specify following symbols as a list.
 (defun mhc-guess-location-setup ()
   (if mhc-guess-location-list
       (let ((list mhc-guess-location-list)
-	    regex)
-	(while list
-	  (setq regex (concat regex "\\(" (car list) "\\)"))
-	  (setq list (cdr list))
-	  (when list (setq regex (concat regex "\\|"))))
- 	(setq mhc-guess/location-regexp-list
- 	      (cons `(,regex mhc-guess/make-location-from-string 0)
- 		    mhc-guess-location-regexp-list)))
+            regex)
+        (while list
+          (setq regex (concat regex "\\(" (car list) "\\)"))
+          (setq list (cdr list))
+          (when list (setq regex (concat regex "\\|"))))
+        (setq mhc-guess/location-regexp-list
+              (cons `(,regex mhc-guess/make-location-from-string 0)
+                    mhc-guess-location-regexp-list)))
     (setq mhc-guess/location-regexp-list mhc-guess-location-regexp-list)))
 
 (defun mhc-guess-location (&optional hint1)
@@ -272,17 +272,17 @@ You can specify following symbols as a list.
 
 (defun mhc-guess/guess (control-regexp-lst &optional hint1 now)
   (let ((score-list
-	 (mhc-guess/score (mhc-guess/gather-candidate control-regexp-lst now)
-			  mhc-guess-keyword-score-alist
-			  hint1
-			  now)))
+         (mhc-guess/score (mhc-guess/gather-candidate control-regexp-lst now)
+                          mhc-guess-keyword-score-alist
+                          hint1
+                          now)))
     (sort score-list
-	  (function (lambda (a b)
-		      (if (= (mhc-guess-get-score a) (mhc-guess-get-score b))
-			  (< (- (mhc-guess-get-end b) (mhc-guess-get-begin b))
-			     (- (mhc-guess-get-end a) (mhc-guess-get-begin a)))
-			(< (mhc-guess-get-score b)
-			   (mhc-guess-get-score a))))))))
+          (function (lambda (a b)
+                      (if (= (mhc-guess-get-score a) (mhc-guess-get-score b))
+                          (< (- (mhc-guess-get-end b) (mhc-guess-get-begin b))
+                             (- (mhc-guess-get-end a) (mhc-guess-get-begin a)))
+                        (< (mhc-guess-get-score b)
+                           (mhc-guess-get-score a))))))))
 ;;
 ;; gather date/time.
 ;;
@@ -292,16 +292,16 @@ You can specify following symbols as a list.
     (while control-regexp-lst
       (cond
        ((listp (car control-regexp-lst))
- 	(if (setq cand-lst
- 		  (mhc-guess/gather-candidate2
- 		   (car (car control-regexp-lst))       ;; regexp
- 		   (car (cdr (car control-regexp-lst))) ;; convfunc
- 		   (cdr (cdr (car control-regexp-lst))) ;; posision list
- 		   now                          ;; current date
- 		   ))
- 	    (setq ret (nconc ret cand-lst))))
+        (if (setq cand-lst
+                  (mhc-guess/gather-candidate2
+                   (car (car control-regexp-lst))       ;; regexp
+                   (car (cdr (car control-regexp-lst))) ;; convfunc
+                   (cdr (cdr (car control-regexp-lst))) ;; posision list
+                   now                          ;; current date
+                   ))
+            (setq ret (nconc ret cand-lst))))
        ((and (string= "throw" (symbol-name (car control-regexp-lst))) ret)
- 	(setq control-regexp-lst nil)))
+        (setq control-regexp-lst nil)))
       (setq control-regexp-lst (cdr control-regexp-lst)))
     ret))
 
@@ -313,27 +313,27 @@ You can specify following symbols as a list.
       (re-search-forward "^-*$" nil t)
       ;; search candities.
       (while (re-search-forward regexp nil t)
- 	(setq  p pos-list
- 	       param-list nil)
- 	(while p
- 	  (setq param-list
- 		(cons
- 		 (if (and (car p) (match-beginning (car p)))
- 		     (buffer-substring (match-beginning (car p))
- 				       (match-end       (car p)))
- 		   nil)
- 		 param-list))
- 	  (setq p (cdr p)))
- 	(setq duration (apply 'funcall convfunc now (nreverse param-list)))
-	(if (car duration)
-	    (setq lst
-		  (cons
-		   (mhc-guess/new (car duration)
-				  (cdr duration)
-				  (match-beginning 0)
-				  (match-end 0)
-				  nil)
-		   lst)))))
+        (setq  p pos-list
+               param-list nil)
+        (while p
+          (setq param-list
+                (cons
+                 (if (and (car p) (match-beginning (car p)))
+                     (buffer-substring (match-beginning (car p))
+                                       (match-end       (car p)))
+                   nil)
+                 param-list))
+          (setq p (cdr p)))
+        (setq duration (apply 'funcall convfunc now (nreverse param-list)))
+        (if (car duration)
+            (setq lst
+                  (cons
+                   (mhc-guess/new (car duration)
+                                  (cdr duration)
+                                  (match-beginning 0)
+                                  (match-end 0)
+                                  nil)
+                   lst)))))
     (nreverse lst)))
 
 ;;
@@ -344,18 +344,18 @@ You can specify following symbols as a list.
 (defun mhc-guess/make-date-from-yyyymmdd (now yy-str mm-str dd-str)
   (let (date)
     (if (setq date (mhc-date-new
-		    (mhc-guess/string-to-int yy-str)
-		    (mhc-guess/string-to-int mm-str)
-		    (mhc-guess/string-to-int dd-str)
-		    t)) ; noerror is t.
-	(cons date nil))))
+                    (mhc-guess/string-to-int yy-str)
+                    (mhc-guess/string-to-int mm-str)
+                    (mhc-guess/string-to-int dd-str)
+                    t)) ; noerror is t.
+        (cons date nil))))
 
 (defun mhc-guess/make-date-from-mmdd
   (now mm-str dd-str &optional mm-str2 dd-str2 relative)
   (let* ((start nil) (end nil))
     (setq start (mhc-guess/make-date-from-mmdd2 now mm-str dd-str))
     (if start
-	(setq end (mhc-guess/make-date-from-mmdd2 start mm-str2 dd-str2)))
+        (setq end (mhc-guess/make-date-from-mmdd2 start mm-str2 dd-str2)))
     (cond
      ((null start)
       nil)
@@ -368,10 +368,10 @@ You can specify following symbols as a list.
 
 (defun mhc-guess/make-date-from-mmdd2 (now mm-str dd-str)
   (let ((data (match-data))
- 	(mm (if mm-str (mhc-guess/string-to-int mm-str) 0))
- 	(dd (if dd-str (mhc-guess/string-to-int dd-str) 0))
- 	(year-offset 0)
- 	date)
+        (mm (if mm-str (mhc-guess/string-to-int mm-str) 0))
+        (dd (if dd-str (mhc-guess/string-to-int dd-str) 0))
+        (year-offset 0)
+        date)
     (cond
      ((string= mm-str "来")
       (setq mm (mhc-date-mm (mhc-date-mm++ now))))
@@ -380,47 +380,47 @@ You can specify following symbols as a list.
      ((= mm 0)
       (setq mm (mhc-date-mm now))))
     (if (not
-	 (setq date
-	       (mhc-date-new (mhc-date-yy now) mm dd t))) ;; noerror is t
- 	()
+         (setq date
+               (mhc-date-new (mhc-date-yy now) mm dd t))) ;; noerror is t
+        ()
       ;; if date is past, assume the next year.
       (if (mhc-date< date now)
- 	  (setq year-offset (1+ year-offset)))
+          (setq year-offset (1+ year-offset)))
       ;; if date is far future, assume the last year.
       (if (< 300 (+ (mhc-date- date now) (* year-offset 365)))
- 	  (setq year-offset (1- year-offset)))
+          (setq year-offset (1- year-offset)))
       (setq date (mhc-date-yy+ date year-offset)))
     (store-match-data data)
     date))
 
 (defun mhc-guess/make-date-from-usa-style-date (now month-str dd-str yy-str)
   (if (and (null mhc-guess-ignore-english-date)
-	   (memq 'usa mhc-guess-english-date-format))
+           (memq 'usa mhc-guess-english-date-format))
       (mhc-guess/make-date-from-english-date now month-str dd-str yy-str)))
 
 (defun mhc-guess/make-date-from-british-style-date (now dd-str month-str yy-str)
   (if (and (null mhc-guess-ignore-english-date)
-	   (memq 'british mhc-guess-english-date-format))
+           (memq 'british mhc-guess-english-date-format))
       (mhc-guess/make-date-from-english-date now month-str dd-str yy-str)))
 
 (defun mhc-guess/make-date-from-english-date (now month-str dd-str yy-str)
   (let* ((month-alist
-	  '(("Jan" . "1") ("Feb" . "2") ("Mar" . "3") ("Apr" . "4")
-	    ("May" . "5") ("Jun" . "6") ("Jul" . "7") ("Aug" . "8")
-	    ("Sep" . "9") ("Oct" . "10") ("Nov" . "11") ("Dec" . "12")))
-	 (mm-str (cdr (assoc (capitalize (substring month-str 0 3))
-			     month-alist)))
-	 (yy-length (length yy-str)))
-    (cond ((= yy-length 4)		; "yyyy"
-	   (mhc-guess/make-date-from-yyyymmdd now yy-str mm-str dd-str))
-	  ((or (= yy-length 3) (= yy-length 2)) ; "'yy" or "yy"
-	   (mhc-guess/make-date-from-yyyymmdd
-	    now
-	    (concat (substring (format-time-string "%Y") 0 2)
-		    (substring yy-str -2))
-	    mm-str dd-str))
-	  (t
-	   (mhc-guess/make-date-from-mmdd now mm-str dd-str)))))
+          '(("Jan" . "1") ("Feb" . "2") ("Mar" . "3") ("Apr" . "4")
+            ("May" . "5") ("Jun" . "6") ("Jul" . "7") ("Aug" . "8")
+            ("Sep" . "9") ("Oct" . "10") ("Nov" . "11") ("Dec" . "12")))
+         (mm-str (cdr (assoc (capitalize (substring month-str 0 3))
+                             month-alist)))
+         (yy-length (length yy-str)))
+    (cond ((= yy-length 4)              ; "yyyy"
+           (mhc-guess/make-date-from-yyyymmdd now yy-str mm-str dd-str))
+          ((or (= yy-length 3) (= yy-length 2)) ; "'yy" or "yy"
+           (mhc-guess/make-date-from-yyyymmdd
+            now
+            (concat (substring (format-time-string "%Y") 0 2)
+                    (substring yy-str -2))
+            mm-str dd-str))
+          (t
+           (mhc-guess/make-date-from-mmdd now mm-str dd-str)))))
 
 (defun mhc-guess/make-date-from-relative-day (now rel-word)
   (cond
@@ -429,11 +429,11 @@ You can specify following symbols as a list.
    ((or (string= rel-word "今日") (string= rel-word "本日"))
     (cons now nil))
    ((or (string= rel-word "あす")
- 	(string= rel-word "あした")
- 	(string= rel-word "明日"))
+        (string= rel-word "あした")
+        (string= rel-word "明日"))
     (cons (mhc-date++ now) nil))
    ((or (string= rel-word "あさって")
- 	(string= rel-word "明後日"))
+        (string= rel-word "明後日"))
     (cons (mhc-date+ now 2) nil))))
 
 (defun mhc-guess/make-date-from-english-relative-day (now rel-word)
@@ -441,32 +441,32 @@ You can specify following symbols as a list.
     (let ((rel (downcase rel-word)))
       (cond
        ((null rel)
-	nil)
+        nil)
        ((string= rel "today")
-	(cons now nil))
+        (cons now nil))
        ((string= rel "tomorrow")
-	(cons (mhc-date++ now) nil))
+        (cons (mhc-date++ now) nil))
        (t ;; the day after tommorow.
-	(cons (mhc-date+ now 2) nil))))))
+        (cons (mhc-date+ now 2) nil))))))
 
 (defun mhc-guess/make-date-from-relative-week (now rel-word week)
   (let ((data (match-data))
- 	(ww (string-match week "日月火水木金土"))
- 	(date (or now (mhc-date-now)))
-	off)
+        (ww (string-match week "日月火水木金土"))
+        (date (or now (mhc-date-now)))
+        off)
     (setq off  (- ww (mhc-date-ww date)))
     (if (string= week "日") (setq off (+ 7 off)))
     (setq off
- 	  (cond
- 	   ((or (null rel-word)
- 		(string= rel-word "今度")
- 		(string= rel-word "次"))
- 	    (if (<= off 0) (+ 7 off) off))
- 	   ((string= rel-word "今週") off)
- 	   ((string= rel-word "来週")
- 	    (+ off 7))
- 	   ((string= rel-word "再来週")
- 	    (+ off 14))))
+          (cond
+           ((or (null rel-word)
+                (string= rel-word "今度")
+                (string= rel-word "次"))
+            (if (<= off 0) (+ 7 off) off))
+           ((string= rel-word "今週") off)
+           ((string= rel-word "来週")
+            (+ off 7))
+           ((string= rel-word "再来週")
+            (+ off 14))))
     (store-match-data data)
     (cons (mhc-date+ date off) nil)
     ))
@@ -474,25 +474,25 @@ You can specify following symbols as a list.
 (defun mhc-guess/make-date-from-english-relative-week (now dow rel-word week)
   (unless mhc-guess-ignore-english-date
     (let ((dow-alist '(("Monday" . "月") ("Tuesday" . "火")
-		       ("Wednesday" . "水") ("Thursday" . "木")
-		       ("Friday" . "金") ("Saturday" . "土")
-		       ("Sunday" . "日")))
-	  (rel (when (stringp rel-word)
-		 (downcase rel-word))))
+                       ("Wednesday" . "水") ("Thursday" . "木")
+                       ("Friday" . "金") ("Saturday" . "土")
+                       ("Sunday" . "日")))
+          (rel (when (stringp rel-word)
+                 (downcase rel-word))))
       (mhc-guess/make-date-from-relative-week
        now
        (if (null rel)
-	   nil
-	 (cond ((and (string= rel "this") (null week))
-		"今度")
-	       ((and (string= rel "this") week)
-		"今週")
-	       ((and (string= rel "next") (null week))
-		"今度")
-	       ((and (string= rel "next") week)
-		"来週")
-	       (t
-		nil)))
+           nil
+         (cond ((and (string= rel "this") (null week))
+                "今度")
+               ((and (string= rel "this") week)
+                "今週")
+               ((and (string= rel "next") (null week))
+                "今度")
+               ((and (string= rel "next") week)
+                "来週")
+               (t
+                nil)))
        (cdr (assoc-ignore-case dow dow-alist))))))
 
 ;;
@@ -502,7 +502,7 @@ You can specify following symbols as a list.
 (defun mhc-guess/make-time-from-hhmm
   (now hh-str mm-str hh-str2 mm-str2 &optional relative)
   (let ((start (mhc-guess/make-time-from-hhmm2 hh-str mm-str))
-	(end   (mhc-guess/make-time-from-hhmm2 hh-str2 mm-str2 relative)))
+        (end   (mhc-guess/make-time-from-hhmm2 hh-str2 mm-str2 relative)))
     (cond
      ((null start)
       nil)
@@ -516,16 +516,16 @@ You can specify following symbols as a list.
 (defun mhc-guess/make-time-from-hhmm2 (hh-str mm-str &optional relative)
   (let (xHH xMM)
     (if (null hh-str)
-	nil  ;; retun value
+        nil  ;; retun value
 
       (setq xHH (mhc-guess/string-to-int hh-str))
       (if (and (not relative) (< xHH 8)) ;; 8 depends on my life style.
-	  (setq xHH (+ xHH 12)))
+          (setq xHH (+ xHH 12)))
       (setq xMM
-	    (cond
-	     ((not mm-str)	     0)
-	   ((string= mm-str "半")    30)
-	   (t                        (mhc-guess/string-to-int mm-str))))
+            (cond
+             ((not mm-str)           0)
+           ((string= mm-str "半")    30)
+           (t                        (mhc-guess/string-to-int mm-str))))
       (mhc-time-new xHH xMM t))))
 
 ;;
@@ -541,35 +541,35 @@ You can specify following symbols as a list.
 
 (defun mhc-guess/score (candidate-lst score-alist &optional hint1 now)
   (let ((clist candidate-lst)
-	total-score candidate regexp boundary sameline score slist)
+        total-score candidate regexp boundary sameline score slist)
     (while clist
       (setq candidate   (car clist)
-	    slist       score-alist
-	    total-score 0)
+            slist       score-alist
+            total-score 0)
 
       ;; set score using score-alist
       (while slist
-	(setq regexp   (nth 0 (car slist))
-	      boundary (nth 1 (car slist))
-	      sameline (nth 2 (car slist))
-	      score    (nth 3 (car slist)))
-	(if (mhc-guess/search-in-boundary
-	     regexp
-	     (mhc-guess-get-begin candidate)
-	     boundary
-	     sameline)
-	    (setq total-score (+ total-score score)))
-	(setq slist (cdr slist)))
+        (setq regexp   (nth 0 (car slist))
+              boundary (nth 1 (car slist))
+              sameline (nth 2 (car slist))
+              score    (nth 3 (car slist)))
+        (if (mhc-guess/search-in-boundary
+             regexp
+             (mhc-guess-get-begin candidate)
+             boundary
+             sameline)
+            (setq total-score (+ total-score score)))
+        (setq slist (cdr slist)))
 
       ;; hint1 is a position hint to encourage the near one.
       (if (and hint1
-	       (<  hint1 (mhc-guess-get-begin candidate))
-	       (<  (- (mhc-guess-get-begin candidate) hint1) 100))
-	  (setq total-score (+ total-score 10)))
+               (<  hint1 (mhc-guess-get-begin candidate))
+               (<  (- (mhc-guess-get-begin candidate) hint1) 100))
+          (setq total-score (+ total-score 10)))
 
       ;; now is a date hint to discourage a past date.
       (if (and now (mhc-date<= (mhc-guess-get-date candidate) now))
-	  (setq total-score (- total-score 5)))
+          (setq total-score (- total-score 5)))
 
       (mhc-guess-set-score candidate total-score)
       (setq clist (cdr clist)))
@@ -597,10 +597,10 @@ You can specify following symbols as a list.
 
 (defun mhc-guess/string-to-int (str)
   (let ((chr "") (ret "") (data (match-data))
-	(z2h-alist
-	 '(("０" . "0") ("１" . "1") ("２" . "2") ("３" . "3") ("４" . "4")
-	   ("５" . "5") ("６" . "6") ("７" . "7") ("８" . "8") ("９" . "9")
-	   ("／" . "/") ("：" . ":"))))
+        (z2h-alist
+         '(("０" . "0") ("１" . "1") ("２" . "2") ("３" . "3") ("４" . "4")
+           ("５" . "5") ("６" . "6") ("７" . "7") ("８" . "8") ("９" . "9")
+           ("／" . "/") ("：" . ":"))))
     (while (string-match "^." str)
       (setq chr (substring str (match-beginning 0) (match-end 0)))
       (setq ret (concat ret (or (cdr (assoc chr z2h-alist)) chr)))

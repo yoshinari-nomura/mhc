@@ -21,13 +21,13 @@ require 'mhc-date'
 ## subject
 ##      get X-SC-Subject: value or ''
 ## set_subject(aString)
-##	set X-SC-Subject:
+##      set X-SC-Subject:
 ## location
 ##      get X-SC-Location: value or ''
 ## set_location(aString)
-##	set X-SC-Location:
+##      set X-SC-Location:
 ## day
-##	returns active dates exist in X-SC-Day: (means drop !yyyymmdd)
+##      returns active dates exist in X-SC-Day: (means drop !yyyymmdd)
 ##      The return value is  a array of MhcDate or []
 ##
 ## day_as_string
@@ -35,89 +35,89 @@ require 'mhc-date'
 ##     (means !yyyymmdd might be involved)
 ##
 ## add_day(aMhcDate)
-##	add active date to X-SC-Day:
+##      add active date to X-SC-Day:
 ##      add_day considers other X-SC-fields smartly.
 ##           if the date is designated for a exception, remove it.
 ##           if the date is encumbered by duration:, raise an error.
 ##           if the date is covered by cond:, do nothing.
 ##
 ## del_day(aMhcDate)
-##	inactivate aMhcDate.
+##      inactivate aMhcDate.
 ##      del day considers other X-SC-fields smartly.
 ##          if the schedule item does not occur on the date, do nothing.
 ##          if the date is covered by cond:, add a exception !yyyymmdd.
 ##
 ## exception
-##	return inactive dates exist in X-SC-Day: (means drop yyyymmdd)
+##      return inactive dates exist in X-SC-Day: (means drop yyyymmdd)
 ##      the return value is  a array of MhcDate.
 ##
 ## time
-## 	return a time range in a form of [aMhcTime_begin, aMhcTime_end] or nil
+##      return a time range in a form of [aMhcTime_begin, aMhcTime_end] or nil
 ##
 ## time_as_string
-## 	return a time range in a form of "xx:xx-xx:xx" or ''
+##      return a time range in a form of "xx:xx-xx:xx" or ''
 ##
 ## time_b
 ## time_e
 ##      get a begin/end time or nil
 ##
 ## set_time(aMhcTime_b = nil , aMhcTime_e = nil)
-## 	set begin and end times.
+##      set begin and end times.
 ##
 ## alarm
-## 	return X-SC-Alarm: value in second or nil.
+##      return X-SC-Alarm: value in second or nil.
 ##
 ## alarm_as_string
-## 	return X-SC-Alarm: in a form of "xx (minute|hour|day)" or ''
+##      return X-SC-Alarm: in a form of "xx (minute|hour|day)" or ''
 ##
 ## set_alarm(aInteger)
 ##      set alarm value in second.
 ##      nil means 'no alarm.'
 ##
 ## rec_id
-## 	return X-SC-Record-Id: value in string
+##      return X-SC-Record-Id: value in string
 ##
 ## set_rec_id
-## 	set record-id for schedule entry
+##      set record-id for schedule entry
 ##
 ################################################################
 ## category
-## 	return X-SC-Category: value as an array of String.
+##      return X-SC-Category: value as an array of String.
 ##
 ## category_as_string
-##	return a string same as X-SC-Category:
+##      return a string same as X-SC-Category:
 ##
 ## set_category(aString or [aString,..])
-## 	set X-SC-Category:
+##      set X-SC-Category:
 ##      A space separated string or an array of string is allowed as an arg.
 ##
 ## add_category(String)
 ## del_category(String)
-## 	add/remove a category.
+##      add/remove a category.
 ##
 ## cond
-## 	return X-SC-Cond: value as an array of String or []
+##      return X-SC-Cond: value as an array of String or []
 ##
 ## cond_as_string
-##	return a string same as X-SC-Cond:
+##      return a string same as X-SC-Cond:
 ##
 ## cond_mon
 ## cond_ord
 ## cond_wek
 ## cond_num
-## 	return specified value of X-SC-Cond: as an array of String.
+##      return specified value of X-SC-Cond: as an array of String.
 ##          mon stands for month  => Jan .. Dec
 ##          ord stands for order  => 1st .. Last
 ##          wek stands for week   => Sun .. Sat
 ##          num stands for number => 01 .. 31
 ##
 ## set_cond(String or [String,..])
-## 	set X-SC-Cond:
+##      set X-SC-Cond:
 ##      A space separated string or an array of string is allowed as an arg.
 ##
 ## add_cond(String)
 ## del_cond(String)
-## 	add/remove a cond.
+##      add/remove a cond.
 ##
 ## duration -> [aMhcDate_begin, aMhcDate_end] or nil
 ## duration_as_string -> aString "yyyymmdd-yyyymmdd" or ''
@@ -189,9 +189,9 @@ class MhcScheduleItem
     clear
     if path_or_string
       if is_path
-	init_by_path(path_or_string)
+        init_by_path(path_or_string)
       else
-	init_by_string(path_or_string)
+        init_by_string(path_or_string)
       end
     end
     set_rec_id(create_record_id) if ! rec_id
@@ -232,7 +232,7 @@ class MhcScheduleItem
 
   def day_as_string
     return (@day .collect{|x| x .to_s} +
-	    @exception .collect{|x| '!' + x .to_s}) .join(' ')
+            @exception .collect{|x| '!' + x .to_s}) .join(' ')
   end
 
   def add_day(date)
@@ -301,9 +301,9 @@ class MhcScheduleItem
     if @alarm
       alarm_str = "#{@alarm /60} minute"
       if @alarm > 60 * 99 || @alarm % 3600 == 0
-	alarm_str = "#{@alarm /3600} hour"
+        alarm_str = "#{@alarm /3600} hour"
       elsif @alarm > 3600 * 99 || @alarm % 84600 == 0
-	alarm_str = "#{@alarm /84600} day"
+        alarm_str = "#{@alarm /84600} day"
       end
     end
     return alarm_str
@@ -751,11 +751,11 @@ class MhcScheduleItem
     ## First, treat X-SC-Day: field.
     while day_cp .length > 0
       if day_cp .length > 1 && day_cp .length == day_cp .max - day_cp .min + 1
-	## repeat in a series of days -- make up as a daily.
-	ret << mk_palm_skel .set_daily(day_cp .min, day_cp .max, 1)
-	day_cp = []
+        ## repeat in a series of days -- make up as a daily.
+        ret << mk_palm_skel .set_daily(day_cp .min, day_cp .max, 1)
+        day_cp = []
       else
-	ret << mk_palm_skel .set_nonrepeat_date(day_cp .shift)
+        ret << mk_palm_skel .set_nonrepeat_date(day_cp .shift)
       end
     end
 
@@ -764,69 +764,69 @@ class MhcScheduleItem
       ## weekly
       weeks = []
       for w in 0 .. 6
-	weeks << cond_wek .include?(MhcDate::W_LABEL[w]) ? true : false
+        weeks << cond_wek .include?(MhcDate::W_LABEL[w]) ? true : false
       end
       ret << mk_palm_skel .set_weekly(beg, fin, 1, weeks)
 
     elsif  cond_ord .length >= 1  &&
-	  !cond_ord .include?('5th') &&
-	   cond_wek .length >= 1  &&
-	   cond_num .length == 0  &&
-	   cond_mon .length == 0
+          !cond_ord .include?('5th') &&
+           cond_wek .length >= 1  &&
+           cond_num .length == 0  &&
+           cond_mon .length == 0
       ## monthly by day
       cond_ord .each{|ord_str|
-	cond_wek .each{|wek_str|
-	  ord = MhcDate::O_LABEL .index(ord_str)
-	  wek = MhcDate::W_LABEL .index(wek_str)
-	  if ord == 5
-	    ord = 4
-	  end
-	  sch2 = MhcScheduleItem .new .add_cond(ord_str) .add_cond(wek_str)
-	  beg2 = beg .dup
-	  while !sch2 .occur_on?(beg2) ## xxx 多分これは不要?
-	    beg2 .succ!
-	  end
-	  ret << mk_palm_skel .set_monthly_by_day(beg2, fin, 1, ord, wek)
-	}
+        cond_wek .each{|wek_str|
+          ord = MhcDate::O_LABEL .index(ord_str)
+          wek = MhcDate::W_LABEL .index(wek_str)
+          if ord == 5
+            ord = 4
+          end
+          sch2 = MhcScheduleItem .new .add_cond(ord_str) .add_cond(wek_str)
+          beg2 = beg .dup
+          while !sch2 .occur_on?(beg2) ## xxx 多分これは不要?
+            beg2 .succ!
+          end
+          ret << mk_palm_skel .set_monthly_by_day(beg2, fin, 1, ord, wek)
+        }
       }
     elsif cond_num .length == 1 &&
-	  cond_num .length == cond .length
+          cond_num .length == cond .length
       ## monthly by date
       while !occur_on?(beg) ## xxx こっちは必要
-	beg .succ!
+        beg .succ!
       end
       ret << mk_palm_skel .set_monthly_by_date(beg, fin, 1)
 
     elsif cond_num .length == 1 &&
-	  cond_mon .length == 1 &&
-	  cond_wek .length == 0 &&
-	  cond_ord .length == 0
+          cond_mon .length == 1 &&
+          cond_wek .length == 0 &&
+          cond_ord .length == 0
       ## yearly by date
       y = beg .y
       m = MhcDate::M_LABEL .index(cond_mon[0]) + 1
       d = cond_num[0] .to_i
       date = MhcDate .new(y, m, d)
       if date < beg
-	date .y_succ!
+        date .y_succ!
       end
       ## 2/29 はどうする?
       ret << mk_palm_skel .set_yearly(date, fin, 1)
 
     elsif cond_ord .length == 1  &&
-	  cond_ord[0] != '5th'   &&
-	  cond_wek .length == 1  &&
-	  cond_num .length == 0  &&
-	  cond_mon .length == 1
+          cond_ord[0] != '5th'   &&
+          cond_wek .length == 1  &&
+          cond_num .length == 0  &&
+          cond_mon .length == 1
       ## yearly by day
       ord = MhcDate::O_LABEL .index(cond_ord[0])
       wek = MhcDate::W_LABEL .index(cond_wek[0])
       m   = MhcDate::M_LABEL .index(cond_mon[0]) + 1
       date = MhcDate .new(beg .y, m, 1)
       if date .m < beg .m
-	date .y_succ!
+        date .y_succ!
       end
       while !occur_on?(date)
-	date .succ!
+        date .succ!
       end
       ret << mk_palm_skel .set_monthly_by_day(date, fin, 12, ord, wek)
 
@@ -947,90 +947,90 @@ class MhcScheduleItem
     hash .each_pair{|key,val|
       case key
       when 'day:'
-	while (val != '')
-	  case val
-	  when /^!/
-	    is_exception = true
-	  when /^\d+/
-	    if is_exception
-	      @exception << MhcDate .new($&)
-	      is_exception = false
-	    else
-	      @day << MhcDate .new($&)
-	    end
-	  when /^[^!\d]+/
-	    # discard the word.
-	  else
-	    # never occured.
-	  end
-	  val = $'
-	end
+        while (val != '')
+          case val
+          when /^!/
+            is_exception = true
+          when /^\d+/
+            if is_exception
+              @exception << MhcDate .new($&)
+              is_exception = false
+            else
+              @day << MhcDate .new($&)
+            end
+          when /^[^!\d]+/
+            # discard the word.
+          else
+            # never occured.
+          end
+          val = $'
+        end
 
       when 'date:' ## backward compatibility
         if (val =~ /(\d+)\s+([A-Z][a-z][a-z])\s+(\d+)\s+(\d\d:\d\d)/)
-	  dd, mm, yy, hhmm = $1 .to_i, $2, $3 .to_i  + 1900 , $4
-	  mm = ("JanFebMarAprMayJunJulAugSepOctNovDec" .index(mm)) / 3 + 1
-	  @time_b = (hhmm == '00:00') ? nil : MhcTime .new(hhmm)
-	  @day << MhcDate .new(yy, mm, dd)
-	end
+          dd, mm, yy, hhmm = $1 .to_i, $2, $3 .to_i  + 1900 , $4
+          mm = ("JanFebMarAprMayJunJulAugSepOctNovDec" .index(mm)) / 3 + 1
+          @time_b = (hhmm == '00:00') ? nil : MhcTime .new(hhmm)
+          @day << MhcDate .new(yy, mm, dd)
+        end
 
       when 'subject:'
-	@subject = val
+        @subject = val
 
       when 'location:'
-	@location = val
+        @location = val
 
       when 'time:'
-	@time_b, @time_e = val .split('-')
-	@time_b = MhcTime .new(@time_b) if @time_b
-	@time_e = MhcTime .new(@time_e) if @time_e
+        @time_b, @time_e = val .split('-')
+        @time_b = MhcTime .new(@time_b) if @time_b
+        @time_e = MhcTime .new(@time_e) if @time_e
 
       when 'duration:'
-	b, e = val .split('-')
-	@duration_b = (b .nil? || b == '') ? nil : MhcDate .new(b)
-	@duration_e = (e .nil? || e == '') ? nil : MhcDate .new(e)
+        b, e = val .split('-')
+        @duration_b = (b .nil? || b == '') ? nil : MhcDate .new(b)
+        @duration_e = (e .nil? || e == '') ? nil : MhcDate .new(e)
 
       when 'category:'
-	val .split .each{|c| @category << c .capitalize}
+        val .split .each{|c| @category << c .capitalize}
 
       when 'cond:'
-	val .split .each{|d|
-	  case d
-	  when /^(#{MON_REGEX})$/oi
-	    @cond_mon << d .capitalize
-	  when /^(#{MON_LONG_REGEX})$/oi
-	    d = MhcDate::M_LABEL[ MhcDate::M_LONG_LABEL .index(d) ]
-	    @cond_mon << d .capitalize
-	  when /^(#{ORD_REGEX})$/oi
-	    @cond_ord << d .capitalize
-	  when /^(#{WEK_REGEX})$/oi
-	    @cond_wek << d .capitalize
-	  when /^(#{WEK_LONG_REGEX})$/oi
-	    d = MhcDate::W_LABEL[ MhcDate::W_LONG_LABEL. index(d) ]
-	    @cond_wek << d .capitalize
-	  when /^\d+$/
-	    @cond_num << format("%02d", d .to_i)
-	  end
-	}
+        val .split .each{|d|
+          case d
+          when /^(#{MON_REGEX})$/oi
+            @cond_mon << d .capitalize
+          when /^(#{MON_LONG_REGEX})$/oi
+            d = MhcDate::M_LABEL[ MhcDate::M_LONG_LABEL .index(d) ]
+            @cond_mon << d .capitalize
+          when /^(#{ORD_REGEX})$/oi
+            @cond_ord << d .capitalize
+          when /^(#{WEK_REGEX})$/oi
+            @cond_wek << d .capitalize
+          when /^(#{WEK_LONG_REGEX})$/oi
+            d = MhcDate::W_LABEL[ MhcDate::W_LONG_LABEL. index(d) ]
+            @cond_wek << d .capitalize
+          when /^\d+$/
+            @cond_num << format("%02d", d .to_i)
+          end
+        }
 
       when 'alarm:'
-	if val =~ /^(\d+)\s*(#{ALM_REGEX})$/i
-	  @alarm = ($1 .to_i) * ALM_UNITS[$2 .capitalize]
-	end
+        if val =~ /^(\d+)\s*(#{ALM_REGEX})$/i
+          @alarm = ($1 .to_i) * ALM_UNITS[$2 .capitalize]
+        end
 
       when 'record-id:'
-	@rec_id = val
+        @rec_id = val
 
       when 'priority:'
-	if val =~ /^(\d+)\s*$/i
-	  begin
-	    @priority = $1 .to_i
-	  rescue
-	    @priority = 0
-	  end
-	else
-	  @priority = 0
-	end
+        if val =~ /^(\d+)\s*$/i
+          begin
+            @priority = $1 .to_i
+          rescue
+            @priority = 0
+          end
+        else
+          @priority = 0
+        end
 
       end ## case ##
     }
@@ -1041,10 +1041,10 @@ class MhcScheduleItem
 #      hdr = {}
 #      if header
 #        header .gsub(/\n\s+/, ' ') .split("\n") .each{|line|
-#  	if (line =~ /^X-SC-([^:]+:)(.*)/ni)
-#  	  key, val = $1 .downcase, $2 .strip
-#  	  hdr[key] = val if (val != '')
-#  	end
+#       if (line =~ /^X-SC-([^:]+:)(.*)/ni)
+#         key, val = $1 .downcase, $2 .strip
+#         hdr[key] = val if (val != '')
+#       end
 #        }
 #      end
 #      return hdr
@@ -1057,22 +1057,22 @@ class MhcScheduleItem
     if header
 #      header .gsub(/\n\s+/, ' ') .split("\n") .each{|line|
       header .split("\n") .each{|line|
-	if line =~ /^\S/
-	  key, val = line .split(':', 2)
-	  if (key =~ /^X-SC-(.*)/ni)
-	    xsc_key = $1 .downcase + ':'
-	    xsc[xsc_key] = (val != '') ? val .strip : ''
-	  else
-	    xsc_key = nil
-	    non_xsc += line + "\n"
-	  end
-	elsif line =~ /^\s/
-	  if xsc_key
-	    xsc[xsc_key] += ' ' + line
-	  else
-	    non_xsc += line + "\n"
-	  end
-	end
+        if line =~ /^\S/
+          key, val = line .split(':', 2)
+          if (key =~ /^X-SC-(.*)/ni)
+            xsc_key = $1 .downcase + ':'
+            xsc[xsc_key] = (val != '') ? val .strip : ''
+          else
+            xsc_key = nil
+            non_xsc += line + "\n"
+          end
+        elsif line =~ /^\s/
+          if xsc_key
+            xsc[xsc_key] += ' ' + line
+          else
+            non_xsc += line + "\n"
+          end
+        end
       }
     end
     return non_xsc, xsc
@@ -1086,12 +1086,12 @@ class File
   def File.utime2(atime, mtime, obj)
     if File .directory?(obj)
       if File .file?(obj + '/' + MTIME_FILE)
-	File .utime(atime, mtime, obj + '/' + MTIME_FILE)
+        File .utime(atime, mtime, obj + '/' + MTIME_FILE)
       else
-	f = File .open(obj + '/' + MTIME_FILE, "w")
-	f .print 'x' # FreeBSD requires this.
-	f .fsync if f .respond_to?("fsync")
-	f .close
+        f = File .open(obj + '/' + MTIME_FILE, "w")
+        f .print 'x' # FreeBSD requires this.
+        f .fsync if f .respond_to?("fsync")
+        f .close
       end
     end
     File .utime(atime, mtime, obj)
@@ -1128,10 +1128,10 @@ class MhcScheduleDB
     if !@alarm
       @alarm = Alarm .new
       @alarm .signal_connect('sec-changed'){
-	if update_all
-	  print "MhcScheduleDB: emit updated signal\n" if $DEBUG
-	  @alarm .signal_emit('updated')
-	end
+        if update_all
+          print "MhcScheduleDB: emit updated signal\n" if $DEBUG
+          @alarm .signal_emit('updated')
+        end
       }
     end
     return @alarm .signal_connect(sig, &p)
@@ -1152,7 +1152,7 @@ class MhcScheduleDB
     end
     if add_log
       @log .add_entry(MhcLogEntry .new('D', Time .now,
-				       sch .rec_id, sch .path, sch .subject))
+                                       sch .rec_id, sch .path, sch .subject))
     end
     sch .set_path(nil)
     return self
@@ -1167,9 +1167,9 @@ class MhcScheduleDB
       old_path = sch .path
 
       if old_slot && new_slot == old_slot
-	new_path = old_path
+        new_path = old_path
       else
-	new_path = get_new_path(new_slot)
+        new_path = get_new_path(new_slot)
       end
 
       contents = sch .dump
@@ -1184,16 +1184,16 @@ class MhcScheduleDB
 
       trash_path = get_new_path(@basedir + '/trash')
       if old_path && File .exists?(old_path) && old_path != new_path
-	File .rename(old_path, trash_path)
-	File .utime2(now, now, old_slot)
-	print "#{old_path} -> #{trash_path}\n" if $DEBUG
+        File .rename(old_path, trash_path)
+        File .utime2(now, now, old_slot)
+        print "#{old_path} -> #{trash_path}\n" if $DEBUG
       end
     rescue
       raise("#{$!}\nWrite/Move #{old_path} -> #{new_path} failed.")
     end
     if add_log
       @log .add_entry(MhcLogEntry .new('M', Time .now,
-				       sch .rec_id, sch .path, sch .subject))
+                                       sch .rec_id, sch .path, sch .subject))
     end
     sch .set_modified(false, 'add_sch')
     return self
@@ -1208,10 +1208,10 @@ class MhcScheduleDB
     hash = {}
     search(from, to) .each{|d, sch_ary|
       sch_ary .each{|sch|
-	if !hash[sch]
-	  yield(sch)
-	  hash[sch] = true
-	end
+        if !hash[sch]
+          yield(sch)
+          hash[sch] = true
+        end
       }
     }
   end
@@ -1241,10 +1241,10 @@ class MhcScheduleDB
 
     if category
       if category =~ /!/
-	category_is_invert = true
-	category = category .delete('!')
+        category_is_invert = true
+        category = category .delete('!')
       else
-	category_is_invert = false
+        category_is_invert = false
       end
       category_ary = category .split .collect{|x| x .capitalize}
     end
@@ -1256,16 +1256,16 @@ class MhcScheduleDB
     update(d) if do_update
     to_slots(d) .each{|slot|
       search_key .each{|key|
- 	if @db[slot][key] .is_a?(Array)
- 	  @db[slot][key] .each{|item|
-	    if (item .in_duration?(date)) && !(item .in_exception?(date)) &&
-		(!category ||
-		 (!category_is_invert &&  item .in_category?(category_ary)) ||
-		 ( category_is_invert && !item .in_category?(category_ary)))
- 	      ret << item
- 	    end
- 	  }
- 	end
+        if @db[slot][key] .is_a?(Array)
+          @db[slot][key] .each{|item|
+            if (item .in_duration?(date)) && !(item .in_exception?(date)) &&
+                (!category ||
+                 (!category_is_invert &&  item .in_category?(category_ary)) ||
+                 ( category_is_invert && !item .in_category?(category_ary)))
+              ret << item
+            end
+          }
+        end
       }
     }
     return ret .sort{|a,b| a .time_b .to_s <=> b .time_b .to_s} .uniq
@@ -1286,12 +1286,12 @@ class MhcScheduleDB
 
     mon .each{|mon|
       ord .each{|ord|
-	wek .each{|wek|
-	  _regist(slot, mon+ord+wek, o)
-	}
+        wek .each{|wek|
+          _regist(slot, mon+ord+wek, o)
+        }
       }
       num .each{|num|
-	_regist(slot, mon + format("%02d", num .to_i), o)
+        _regist(slot, mon + format("%02d", num .to_i), o)
       }
       if (num.empty? && wek.empty? && (day.empty? || mon != ALL))
         _regist(slot, mon + ALL, o)
@@ -1315,8 +1315,8 @@ class MhcScheduleDB
     new = 1
     Dir .open(slot) .each{|file|
       if (file =~ /^\d+$/)
-	num = file .to_i
-	new = num + 1 if new <= num
+        num = file .to_i
+        new = num + 1 if new <= num
       end
     }
     return slot + '/' + new .to_s
@@ -1359,33 +1359,33 @@ class MhcScheduleDB
       file = File .open(slot, "r")
 
 #        while(header = file .gets("\n\n"))
-#  	regist(slot, MhcScheduleItem .new(header, false))
+#       regist(slot, MhcScheduleItem .new(header, false))
 #        end
 
       header = ''
       while (line = file .gets)
-	next if line =~ /^#/
-	if line == "\n"
-	  if  header != ''
-	    regist(slot, MhcScheduleItem .new(header, false))
-	    header = ''
-	  end
-	else
-	  header += line
-	end
+        next if line =~ /^#/
+        if line == "\n"
+          if  header != ''
+            regist(slot, MhcScheduleItem .new(header, false))
+            header = ''
+          end
+        else
+          header += line
+        end
       end
       file .close
       if  header != ''
-	regist(slot, MhcScheduleItem .new(header, false))
+        regist(slot, MhcScheduleItem .new(header, false))
       end
 
     elsif (File .directory?(slot))
       ## read as a yyyy/mm folder.
       Dir .open(slot) .each{|file|
-	if (file =~ /^\d+$/)
-	  path = slot + '/' + file
-	  regist(slot, sch = MhcScheduleItem .new(path))
-	end
+        if (file =~ /^\d+$/)
+          path = slot + '/' + file
+          regist(slot, sch = MhcScheduleItem .new(path))
+        end
       }
     end
     return true
@@ -1452,7 +1452,7 @@ class MhcLog
     begin
       file = File .open(@filename)
       while line = file .gets
-	yield(MhcLogEntry .new(line .chomp))
+        yield(MhcLogEntry .new(line .chomp))
       end
       file .close
     rescue
@@ -1471,9 +1471,9 @@ class MhcLog
     hash = {}
     each_entry{|e|
       if e .status == 'S' and e .rec_id == user_id
-	hash .clear
+        hash .clear
       else
-	hash[e .rec_id] = e
+        hash[e .rec_id] = e
       end
     }
     return hash .values
@@ -1493,7 +1493,7 @@ class MhcLogEntry
       init_from_string(status)
     else
       @status, @mtime, @rec_id, @path, @subject =
-	status, mtime, rec_id, path, subject
+        status, mtime, rec_id, path, subject
     end
   end
 
@@ -1517,7 +1517,7 @@ class MhcLogEntry
     h,  m,  s  = hhmmss .split(':')
 
     mtime = Time .local(yy .to_i, mm .to_i, dd .to_i,
-			h  .to_i, m  .to_i, s  .to_i)
+                        h  .to_i, m  .to_i, s  .to_i)
     @status, @mtime, @rec_id, @path, @subject =
       status, mtime, rec_id, path, subject
   end
@@ -1618,16 +1618,16 @@ class MhcAlarm
 
     for i in 1 .. ahead_days
       @db .search1(@date_begin) .each{|sch|
-	if (sch .alarm)
-	  xtime = @date_begin .to_t(sch .time_b || MhcTime .new(0, 0))
-	  atime = xtime - sch .alarm
+        if (sch .alarm)
+          xtime = @date_begin .to_t(sch .time_b || MhcTime .new(0, 0))
+          atime = xtime - sch .alarm
 
-	  if now <= atime
-	    @alarm_table << [atime, sch]
-	  elsif now <= xtime && is_initialize
-	    @alarm_table << [atime, sch]
-	  end
-	end
+          if now <= atime
+            @alarm_table << [atime, sch]
+          elsif now <= xtime && is_initialize
+            @alarm_table << [atime, sch]
+          end
+        end
       }
       @date_begin = @date_begin .succ
     end
@@ -1647,7 +1647,7 @@ class MhcAlarm
       xdate = time_to_date(atime + sch .alarm)
 
       printf("MhcAlarm: check_alarm_table emit !! %-8s     %s\n",
-	     atime .to_s, sch .subject)  if $DEBUG
+             atime .to_s, sch .subject)  if $DEBUG
 
       @sig_conduit .signal_emit('time-arrived', xdate , sch)
     end
@@ -1662,7 +1662,7 @@ class MhcAlarm
 
     if shortage > 0
       if $DEBUG
-	print "MhcAlarm: update_alarm_table in #{@date_begin} + #{shortage}\n"
+        print "MhcAlarm: update_alarm_table in #{@date_begin} + #{shortage}\n"
       end
       make_alarm_table(@date_begin, shortage)
     end

@@ -19,15 +19,15 @@
 (defun mhc-misc-sub (str regex replace)
   (if (and (stringp str) (string-match regex str))
       (concat (substring str 0 (match-beginning 0))
-	      replace
-	      (substring str (match-end 0)))
+              replace
+              (substring str (match-end 0)))
     str))
 
 (defun mhc-misc-gsub (str regex replace)
   (if (and (stringp str) (string-match regex str))
       (concat (substring str 0 (match-beginning 0))
-	      replace
-	      (mhc-misc-gsub (substring str (match-end 0)) regex replace))
+              replace
+              (mhc-misc-gsub (substring str (match-end 0)) regex replace))
     str))
 
 (defun mhc-misc-split (str &optional sep)
@@ -60,8 +60,8 @@
     (setq dirent (directory-files dir nil nil t))
     (while dirent
       (or (string-match "[^0-9]" (car dirent))
-	  (if (< max (setq num (string-to-number (car dirent))))
-	      (setq max num)))
+          (if (< max (setq num (string-to-number (car dirent))))
+              (setq max num)))
       (setq dirent (cdr dirent)))
     (expand-file-name (number-to-string (1+ max)) dir)))
 
@@ -86,8 +86,8 @@
 (defun mhc-misc-touch-directory (dir)
   (let ((mtime-file (expand-file-name mhc-mtime-file dir)))
     (if (file-writable-p mtime-file)
-	;; (write-region (point-min) (point-min) mtime-file nil 'silence))
-	(write-region 1 2 mtime-file nil 'silence))
+        ;; (write-region (point-min) (point-min) mtime-file nil 'silence))
+        (write-region 1 2 mtime-file nil 'silence))
     ))
 
 
@@ -109,9 +109,9 @@
       ()
     (beginning-of-line)
     (let* ((bol (point))
-	   (vis (if (get-char-property bol 'invisible)
-		    (next-single-property-change bol 'invisible)
-		  bol)))
+           (vis (if (get-char-property bol 'invisible)
+                    (next-single-property-change bol 'invisible)
+                  bol)))
       (setq column (+ column (- vis bol)))))
   (if (< column (move-to-column column t))
       (progn (delete-char -1) (insert ?\ ))))
@@ -121,9 +121,9 @@
   (if mhc-misc-column-count-visible-only
       (current-column)
     (let* ((bol (save-excursion (beginning-of-line) (point)))
-	   (vis (if (get-char-property bol 'invisible)
-		    (next-single-property-change bol 'invisible)
-		  bol)))
+           (vis (if (get-char-property bol 'invisible)
+                    (next-single-property-change bol 'invisible)
+                  bol)))
       (- (current-column) (- vis bol)))))
 
 (defun mhc-misc-insert-rectangle (rectangle)
@@ -134,23 +134,23 @@
     (while lines
       (or first
           (progn
-	    (forward-line 1)
-	    (or (bolp) (insert ?\n))
-	    (mhc-misc-move-to-column insertcolumn)))
+            (forward-line 1)
+            (or (bolp) (insert ?\n))
+            (mhc-misc-move-to-column insertcolumn)))
       (setq first nil)
       (if (looking-at "[^\r\n]+")
-	  (delete-region (point) (match-end 0)))
+          (delete-region (point) (match-end 0)))
       (insert (car lines))
       (setq lines (cdr lines)))))
 
 (defun mhc-misc-get-width ()
   (let ((dw (* mhc-calendar-width 2))
-	(ww (window-width))
-	(fw (frame-width)))
+        (ww (window-width))
+        (fw (frame-width)))
     (cond
      ((> ww dw) ww)
      ((and (< (* ww 2) fw)
-	   (> (* ww 2) dw)) (* ww 2))
+           (> (* ww 2) dw)) (* ww 2))
      ((> fw dw) fw)
      (t dw))))
 
@@ -159,44 +159,44 @@
 (defun mhc-misc-read-passwd (prompt)
   (let ((inhibit-input-event-recording t))
     (if (fboundp 'read-passwd)
-	(condition-case nil
-	    (read-passwd prompt)
-	  ;; If read-passwd causes an error, let's return "" so that
-	  ;; the password process will safely fail.
-	  (error ""))
+        (condition-case nil
+            (read-passwd prompt)
+          ;; If read-passwd causes an error, let's return "" so that
+          ;; the password process will safely fail.
+          (error ""))
       (let ((pass "")
-	    (c 0)
-	    (echo-keystrokes 0)
-	    (ociea cursor-in-echo-area))
-	(condition-case nil
-	    (progn
-	      (setq cursor-in-echo-area 1)
-	      (while (and (/= c ?\r) (/= c ?\n) (/= c ?\e) (/= c 7)) ;; ^G
-		(message "%s%s"
-			 prompt
-			 (make-string (length pass) ?.))
-		(setq c (read-char-exclusive))
-		(cond
-		 ((char-equal c ?\C-u)
-		  (setq pass ""))
-		 ((or (char-equal c ?\b) (char-equal c ?\177))  ;; BS DELL
-		  ;; delete one character in the end
-		  (if (not (equal pass ""))
-		      (setq pass (substring pass 0 -1))))
-		 ((< c 32) ()) ;; control, just ignore
-		 (t
-		  (setq pass (concat pass (char-to-string c))))))
-	      (setq cursor-in-echo-area -1))
-	  (quit
-	   (setq cursor-in-echo-area ociea)
-	   (signal 'quit nil))
-	  (error
-	   ;; Probably not happen. Just align to the code above.
-	   (setq pass "")))
-	(setq cursor-in-echo-area ociea)
-	(message "")
-	(sit-for 0)
-	pass))))
+            (c 0)
+            (echo-keystrokes 0)
+            (ociea cursor-in-echo-area))
+        (condition-case nil
+            (progn
+              (setq cursor-in-echo-area 1)
+              (while (and (/= c ?\r) (/= c ?\n) (/= c ?\e) (/= c 7)) ;; ^G
+                (message "%s%s"
+                         prompt
+                         (make-string (length pass) ?.))
+                (setq c (read-char-exclusive))
+                (cond
+                 ((char-equal c ?\C-u)
+                  (setq pass ""))
+                 ((or (char-equal c ?\b) (char-equal c ?\177))  ;; BS DELL
+                  ;; delete one character in the end
+                  (if (not (equal pass ""))
+                      (setq pass (substring pass 0 -1))))
+                 ((< c 32) ()) ;; control, just ignore
+                 (t
+                  (setq pass (concat pass (char-to-string c))))))
+              (setq cursor-in-echo-area -1))
+          (quit
+           (setq cursor-in-echo-area ociea)
+           (signal 'quit nil))
+          (error
+           ;; Probably not happen. Just align to the code above.
+           (setq pass "")))
+        (setq cursor-in-echo-area ociea)
+        (message "")
+        (sit-for 0)
+        pass))))
 
 (provide 'mhc-misc)
 

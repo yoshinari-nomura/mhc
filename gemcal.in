@@ -12,7 +12,7 @@
 # $DEBUG = 1
 
 LIB = File .expand_path(File .dirname(File .symlink?($0) &&
-				      File .readlink($0) || $0))
+                                      File .readlink($0) || $0))
 $LOAD_PATH .unshift(LIB + '/ruby-ext/lib')
 
 require 'gtk2'
@@ -36,7 +36,7 @@ class VDateListInput < Gtk::HBox
 
     @lst = Gtk::ListStore.new(String)
     @lsv = Gtk::TreeView.new(@lst).set_headers_visible(false) \
-		.set_rules_hint(true)
+                .set_rules_hint(true)
     @lsv.append_column(Gtk::TreeViewColumn.new("Date",
                                                Gtk::CellRendererText.new,
                                                :text => 0) \
@@ -48,14 +48,14 @@ class VDateListInput < Gtk::HBox
     # @lst .signal_connect('click_column'){|w, c|
     #  return if c != 0
     #  @lst .each_selection{|r|
-    #	date_str = @lst .get_text(r, 0)
-    #	exc = true if date_str =~ /!/
-    #	date_str .gsub!('[ !-]', '')
-    #	if exc
-    #	  @sch .del_exception(MhcDate .new(date_str))
-    #	else
-    #	  @sch .del_day(MhcDate .new(date_str))
-    #	end
+    #   date_str = @lst .get_text(r, 0)
+    #   exc = true if date_str =~ /!/
+    #   date_str .gsub!('[ !-]', '')
+    #   if exc
+    #     @sch .del_exception(MhcDate .new(date_str))
+    #   else
+    #     @sch .del_day(MhcDate .new(date_str))
+    #   end
     # }
     #  update
     #}
@@ -64,9 +64,9 @@ class VDateListInput < Gtk::HBox
     swin .add(@lsv)
 
     @cal = GtkCalendar .new(MhcDate .new, [['prev',  'prev month'],
-			                ['next',  'next month'],
-			               ['today', 'this month']],
-			    true, true, false)
+                                        ['next',  'next month'],
+                                       ['today', 'this month']],
+                            true, true, false)
 
     hbx .pack_start(swin, false, false, 0)
     # hbx .pack_start(@lsv, true,  true,  0)
@@ -81,9 +81,9 @@ class VDateListInput < Gtk::HBox
     @cal .signal_connect('today-btn-clicked'){@cal .this_month; update}
     @cal .signal_connect('day-btn-clicked'){|date|
       if !(@sch .occur_on?(date))
-	@sch .add_day(date)
+        @sch .add_day(date)
       else
-	@sch .del_day(date)
+        @sch .del_day(date)
       end
       update
     }
@@ -98,7 +98,7 @@ class VDateListInput < Gtk::HBox
 #     for i in 0 .. @lst .rows - 1
 #       s = @lst .get_text(i, 0) .gsub('[ -]', '')
 #       if s == ymd_str
-# 	@lst .remove_row(i)
+#       @lst .remove_row(i)
 #       end
 #     end
 #   end
@@ -127,16 +127,16 @@ class VDateListInput < Gtk::HBox
 
     @cal .date .m_each_day{|date|
       if @sch .occur_on?(date)
-	@cal .d(date .d) .set_style('busy')
+        @cal .d(date .d) .set_style('busy')
       else
-	case (date .w)
-	when 0
-	  @cal .d(date .d) .set_style('holiday')
-	when 6
-	  @cal .d(date .d) .set_style('saturday')
-	else
-	  @cal .d(date .d) .set_style('weekday')
-	end
+        case (date .w)
+        when 0
+          @cal .d(date .d) .set_style('holiday')
+        when 6
+          @cal .d(date .d) .set_style('saturday')
+        else
+          @cal .d(date .d) .set_style('weekday')
+        end
       end
     }
   end
@@ -169,9 +169,9 @@ class VCondInput < Gtk::HBox
   def set_schedule(sch)
     @tbl .each_button{|btn, lbl|
       if sch .cond .include?(lbl .capitalize)
-	btn .set_active(true)
+        btn .set_active(true)
       else
-	btn .set_active(false)
+        btn .set_active(false)
       end
     }
   end
@@ -192,9 +192,9 @@ class VDateEditor < Gtk::VBox
     @sch = sch
     @cond_box = VCondInput .new('Indirect Dates'){|b|
       if b .active?
-	@sch .add_cond(b .child .text)
+        @sch .add_cond(b .child .text)
       else
-	@sch .del_cond(b .child .text)
+        @sch .del_cond(b .child .text)
       end
       @date_box .update
     }
@@ -294,47 +294,47 @@ class MhcScheduleEdit < GtkToplevel
 
     btn_bar .signal_connect('delete-btn-clicked'){
       if !(@sch .path)
-	GtkConfirm .new("No file in DB. (no need to delete from DB)\n")
+        GtkConfirm .new("No file in DB. (no need to delete from DB)\n")
       else
-	msg = ''
-	msg = "This article has multiple occurences."  if @sch .occur_multiple?
-	GtkConfirm .new("#{msg} Delete it?\n", 2){|ans|
-	  if ans
-	    @db .del_sch(@sch)
-	    close
-	  end
-	}
+        msg = ''
+        msg = "This article has multiple occurences."  if @sch .occur_multiple?
+        GtkConfirm .new("#{msg} Delete it?\n", 2){|ans|
+          if ans
+            @db .del_sch(@sch)
+            close
+          end
+        }
       end
     }
     btn_bar .signal_connect('close-btn-clicked'){
       if modified_any?
-	GtkConfirm .new("Article is modified, close without save ?\n", 2){|ans|
-	  close if ans
-	}
+        GtkConfirm .new("Article is modified, close without save ?\n", 2){|ans|
+          close if ans
+        }
       else
-	close
+        close
       end
     }
     btn_bar .signal_connect('save-btn-clicked'){
       if modified_any?
-	if @sch .error?
-	  msg = @sch .error_message
-	  GtkConfirm .new("#{msg} (Nothing was done).\n")
-	else
-	  update_desc_box
+        if @sch .error?
+          msg = @sch .error_message
+          GtkConfirm .new("#{msg} (Nothing was done).\n")
+        else
+          update_desc_box
 
-	  header, body = conv_description(Kconv::tojis(@desc_box .dump))
-	  @sch .set_non_xsc_header(header .to_s)
-	  @sch .set_description(body .to_s)
+          header, body = conv_description(Kconv::tojis(@desc_box .dump))
+          @sch .set_non_xsc_header(header .to_s)
+          @sch .set_description(body .to_s)
 
-	  @desc_box .set_modified(false, 'saved')
-	  @db .add_sch(@sch)
-	  update_desc_box
-	  close
-	  ## xxx: rescue GtkConfirm .new("#{$!}\n(#{$@}).\n")
-	end
+          @desc_box .set_modified(false, 'saved')
+          @db .add_sch(@sch)
+          update_desc_box
+          close
+          ## xxx: rescue GtkConfirm .new("#{$!}\n(#{$@}).\n")
+        end
       else
-	GtkConfirm .new("Not modified (Nothing was done).\n")
+        GtkConfirm .new("Not modified (Nothing was done).\n")
       end
     }
     ################################################################
@@ -366,7 +366,7 @@ class MhcScheduleEdit < GtkToplevel
       @subj_ent .set_text(@sch .subject)
       @cat_ent  .set_text(@sch .category_as_string)
       @desc_box .replace_text(@sch .non_xsc_header + "\n" +
-			      @sch .description .to_s)
+                              @sch .description .to_s)
       @date_box .set_schedule(@sch)
       @note .set_page(0)
 
@@ -376,7 +376,7 @@ class MhcScheduleEdit < GtkToplevel
     }
     if modified_any?
       GtkConfirm .new('Open new schedule without saveing ?', 2){|ans|
-	p .call if ans
+        p .call if ans
       }
     else
       p .call
@@ -410,7 +410,7 @@ class MhcScheduleEdit < GtkToplevel
 
     part1 .split("\n") .each{|line|
       if !(string =~ /^[ \t]+/ or string =~ /^[A-Za-z0-9_-]+:/)
-	part1_is_header = false
+        part1_is_header = false
       end
     }
 
@@ -452,9 +452,9 @@ class MhcDayBook
     def set_style(*arg)        ; @vbx .set_style(*arg)        ; end
     def signal_connect(sig, &p)
       if sig == 'delete_event'
-	super
+        super
       else
-	@vbx .signal_connect(sig, &p)
+        @vbx .signal_connect(sig, &p)
       end
     end
   end
@@ -480,9 +480,9 @@ class MhcDayBook
     @vdl .signal_connect('close-btn-clicked'){@vdl .hide}
     @vdl .signal_connect("day-lst-clicked")  {|w, r|
       if @path[r] .nil?
-	GtkConfirm .new("Can not edit ``#{w .get_text(r, 1)}''.\n")
+        GtkConfirm .new("Can not edit ``#{w .get_text(r, 1)}''.\n")
       else
-	open_sch_edit(@path[r])
+        open_sch_edit(@path[r])
       end
     }
     scan
@@ -506,9 +506,9 @@ class MhcDayBook
       sch .add_day(@date) if path .nil?
 
       if (@sch_edit .nil? || @sch_edit .destroyed?)
-	@sch_edit = MhcScheduleEdit .new(@db, sch)
+        @sch_edit = MhcScheduleEdit .new(@db, sch)
       else
-	@sch_edit .open(sch)
+        @sch_edit .open(sch)
       end
     end
   end
@@ -538,7 +538,7 @@ class MhcCalendar
     BUTTONS = [['prev',  'prev month'], ['next',  'next month'],
                ['prev_year', 'prev year'], ['next_year', 'next year'],
                ['prev2', 'prev month'], ['next2', 'next month'],
-               ['today', 'this month'],	['close', 'close']]
+               ['today', 'this month'], ['close', 'close']]
     def initialize(date, x = nil, y = nil)
       @vbx = GtkCalendar .new(date, BUTTONS)
       super()
@@ -577,9 +577,9 @@ class MhcCalendar
     @vml .signal_connect("day-btn-clicked")  {|date| open_daybook(date)}
     @vml .signal_connect("day-lst-clicked")  {|w,d,r|
       if @path[d][r] .nil?
-	GtkConfirm .new("Can not edit ``#{w .get_text(r, 1)}''.\n")
+        GtkConfirm .new("Can not edit ``#{w .get_text(r, 1)}''.\n")
       else
-	open_sch_edit(@path[d][r])
+        open_sch_edit(@path[d][r])
       end
     }
     scan
@@ -607,9 +607,9 @@ class MhcCalendar
       sch .add_day(@date) if path .nil?
 
       if (@sch_edit .nil? || @sch_edit .destroyed?)
-	@sch_edit = MhcScheduleEdit .new(@db, sch)
+        @sch_edit = MhcScheduleEdit .new(@db, sch)
       else
-	@sch_edit .open(sch)
+        @sch_edit .open(sch)
       end
     end
   end
@@ -632,19 +632,19 @@ class MhcCalendar
 
       first = true
       item .each{|x|
-	@vml .d(dd) .append(x .subject, x .time_b .to_s)
-	s = (x .time_b .to_s + " " + x .subject) # .gsub("\s", "\x07")
+        @vml .d(dd) .append(x .subject, x .time_b .to_s)
+        s = (x .time_b .to_s + " " + x .subject) # .gsub("\s", "\x07")
         @vml .d(dd) .append_tip("\n" + MhcKconv::todisp(s))
-	@path[dd] << x .path
+        @path[dd] << x .path
 
-	if x .in_category?('Holiday')
-	  @vml .d(dd) .set_style('holiday')
-	  first = true
-	end
-	if first
-	  @vml .d(dd) .set_style('busy')
-	  first = false
-	end
+        if x .in_category?('Holiday')
+          @vml .d(dd) .set_style('holiday')
+          first = true
+        end
+        if first
+          @vml .d(dd) .set_style('busy')
+          first = false
+        end
       }
     }
   end
@@ -697,7 +697,7 @@ MhcCalendar .new(d, db, daybook, x, y)
 alarm = MhcAlarm .new(db)
 alarm .signal_connect('time-arrived'){|date, sch|
   GtkConfirm .new("#{date .to_js} #{sch .time_b} " +
-		  "#{MhcKconv::todisp(sch .subject)}\n")
+                  "#{MhcKconv::todisp(sch .subject)}\n")
 }
 alarm .check
 Gtk .main

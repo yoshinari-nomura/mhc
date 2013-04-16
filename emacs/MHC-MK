@@ -73,56 +73,56 @@
     ("mhc-vars"     . t)
     ("mhc-draft"    . t)
     ("mhc-e21"      . (and (not (featurep 'xemacs))
-			   (>= emacs-major-version 21)))
+                           (>= emacs-major-version 21)))
     ("mhc-bm"       . (locate-library "bitmap"))
     ("mhc-xmas"     . (featurep 'xemacs))
     ("mhc-mew"      . (and (locate-library "mew") make-mhc/with-mew))
     ("mhc-wl"       . (and (locate-library "wl") make-mhc/with-wl))
     ("mhc-gnus"     . (and (locate-library "gnus") make-mhc/with-gnus))
     ("mhc-mime"     . (or (and (locate-library "gnus") (locate-library "mime-edit") make-mhc/with-gnus)
-			  (and (locate-library "wl") make-mhc/with-wl)))
+                          (and (locate-library "wl") make-mhc/with-wl)))
     ("nnmhc"        . (and (locate-library "gnus") make-mhc/with-gnus))
     ))
 
 (defvar make-mhc/lisp-directory
   (expand-file-name
    (concat (cond
-	    ((featurep 'meadow) "")
-	    ((and (not (featurep 'xemacs))
-		  (or (>= emacs-major-version 20)
-		      (and (= emacs-major-version 19)
-			   (> emacs-minor-version 28))))
-	     "share/")
-	    (t "lib/"))
-	   (cond
-	    ((featurep 'xemacs) (if (featurep 'mule) "xmule/" "xemacs/"))
-	    ((boundp 'MULE) "mule/")
-	    ((featurep 'meadow) "")
-	    (t "emacs/"))
-	   "site-lisp/"
-	   make-mhc/module-prefix)
+            ((featurep 'meadow) "")
+            ((and (not (featurep 'xemacs))
+                  (or (>= emacs-major-version 20)
+                      (and (= emacs-major-version 19)
+                           (> emacs-minor-version 28))))
+             "share/")
+            (t "lib/"))
+           (cond
+            ((featurep 'xemacs) (if (featurep 'mule) "xmule/" "xemacs/"))
+            ((boundp 'MULE) "mule/")
+            ((featurep 'meadow) "")
+            (t "emacs/"))
+           "site-lisp/"
+           make-mhc/module-prefix)
    (cond
     ((featurep 'meadow)
      (expand-file-name "../.." exec-directory))
     ((or (<= emacs-major-version 18)
-	 (featurep 'xemacs)
-	 (and (boundp 'system-configuration-options) ; 19.29 or later
-	      (string= system-configuration-options "NT"))) ; for NTEmacs
+         (featurep 'xemacs)
+         (and (boundp 'system-configuration-options) ; 19.29 or later
+              (string= system-configuration-options "NT"))) ; for NTEmacs
      (expand-file-name "../../.." exec-directory))
     (t (expand-file-name "../../../.." data-directory)))))
 
 (defvar make-mhc/package-directory
   (if (boundp 'early-packages)
       (let ((dirs (append (if early-package-load-path
-			      early-packages)
-			  (if late-package-load-path
-			      late-packages)
-			  (if last-package-load-path
-			      last-packages)))
-	    dir)
-	(while (not (file-exists-p (setq dir (car dirs))))
-	  (setq dirs (cdr dirs)))
-	dir)))
+                              early-packages)
+                          (if late-package-load-path
+                              late-packages)
+                          (if last-package-load-path
+                              last-packages)))
+            dir)
+        (while (not (file-exists-p (setq dir (car dirs))))
+          (setq dirs (cdr dirs)))
+        dir)))
 
 (defvar make-mhc/source-directory default-directory)
 (defvar make-mhc/icon-source-directory
@@ -140,49 +140,49 @@
   (let (list (start 0))
     (while (string-match separators string start)
       (or (= start (match-beginning 0))
-	  (setq list (cons (substring string start (match-beginning 0)) list)))
+          (setq list (cons (substring string start (match-beginning 0)) list)))
       (setq start (match-end 0)))
     (nreverse (if (= start (length string)) list (cons (substring string start) list)))))
 
 (defun make-mhc/configure ()
-  (defvar command-line-args-left)	; Avoid 'free variable' warning
+  (defvar command-line-args-left)       ; Avoid 'free variable' warning
   (or make-mhc/configured-p
       (let (str)
-	(setq make-mhc/configured-p t)
-	(while (setq str (prog1 (car command-line-args-left)
-			   (setq command-line-args-left
-				 (cdr command-line-args-left))))
-	  (cond
-	   ((string= "-n" str)
-	    (setq make-mhc/debug t))
-	   ((string-match "^--with-lispdir=" str)
-	    (setq make-mhc/lisp-directory (substring str (match-end 0))))
-	   ((string-match "^--with-packagedir=" str)
-	    (setq make-mhc/package-directory (substring str (match-end 0))))
-	   ((string-equal "--with-mew" str)
-	    (setq make-mhc/with-mew t))
-	   ((string-equal "--with-wl" str)
-	    (setq make-mhc/with-wl t))
-	   ((string-equal "--with-gnus" str)
-	    (setq make-mhc/with-gnus t))
-	   ((string-match "^--with-addpath=" str)
-	    (mapcar (lambda (dir)
-		      (if (file-directory-p dir)
-			  (or (member dir load-path)
-			      (setq load-path (cons dir load-path)))))
-		    (make-mhc/split-string (substring str (match-end 0)) ":")))
-	   (t (error "Illegal option"))))
-;	(let ((gnus-path-file (expand-file-name "~/.lpath.el")))
-;	  (and make-mhc/with-gnus
-;	       (file-exists-p gnus-path-file)
-;	       (load-file (expand-file-name gnus-path-file))))
-	(setq load-path (cons make-mhc/source-directory load-path))
-	(or make-mhc/debug
-	    (setq make-mhc/debug
-		  (let ((flag (getenv "MAKEFLAGS"))
-			(case-fold-search nil))
-		    (if flag
-			(string-match "^\\(\\(--[^ ]+ \\)+-\\|[^ =-]\\)*n" flag))))))))
+        (setq make-mhc/configured-p t)
+        (while (setq str (prog1 (car command-line-args-left)
+                           (setq command-line-args-left
+                                 (cdr command-line-args-left))))
+          (cond
+           ((string= "-n" str)
+            (setq make-mhc/debug t))
+           ((string-match "^--with-lispdir=" str)
+            (setq make-mhc/lisp-directory (substring str (match-end 0))))
+           ((string-match "^--with-packagedir=" str)
+            (setq make-mhc/package-directory (substring str (match-end 0))))
+           ((string-equal "--with-mew" str)
+            (setq make-mhc/with-mew t))
+           ((string-equal "--with-wl" str)
+            (setq make-mhc/with-wl t))
+           ((string-equal "--with-gnus" str)
+            (setq make-mhc/with-gnus t))
+           ((string-match "^--with-addpath=" str)
+            (mapcar (lambda (dir)
+                      (if (file-directory-p dir)
+                          (or (member dir load-path)
+                              (setq load-path (cons dir load-path)))))
+                    (make-mhc/split-string (substring str (match-end 0)) ":")))
+           (t (error "Illegal option"))))
+;       (let ((gnus-path-file (expand-file-name "~/.lpath.el")))
+;         (and make-mhc/with-gnus
+;              (file-exists-p gnus-path-file)
+;              (load-file (expand-file-name gnus-path-file))))
+        (setq load-path (cons make-mhc/source-directory load-path))
+        (or make-mhc/debug
+            (setq make-mhc/debug
+                  (let ((flag (getenv "MAKEFLAGS"))
+                        (case-fold-search nil))
+                    (if flag
+                        (string-match "^\\(\\(--[^ ]+ \\)+-\\|[^ =-]\\)*n" flag))))))))
 
 (defun make-mhc-compile ()
   (make-mhc/configure)
@@ -190,53 +190,53 @@
   (mapcar
    (lambda (module)
      (let ((el-file  (expand-file-name (concat module ".el") make-mhc/source-directory))
-	   (elc-file (expand-file-name (concat module ".elc") make-mhc/source-directory)))
+           (elc-file (expand-file-name (concat module ".elc") make-mhc/source-directory)))
        (if (and (file-exists-p elc-file)
-		(file-newer-than-file-p el-file elc-file))
-	   (delete-file elc-file))))
+                (file-newer-than-file-p el-file elc-file))
+           (delete-file elc-file))))
    (mapcar 'car make-mhc/module-alist))
   ;; Byte compile all *.el files.
   (require 'mhc)
   (mapcar
    (lambda (module)
      (let ((el-file  (expand-file-name (concat module ".el") make-mhc/source-directory))
-	   (elc-file (expand-file-name (concat module ".elc") make-mhc/source-directory)))
+           (elc-file (expand-file-name (concat module ".elc") make-mhc/source-directory)))
        (if (or (not (file-exists-p elc-file))
-	       (if (file-newer-than-file-p el-file elc-file)
-		   (progn
-		     (delete-file elc-file)
-		     t)))
-	   (if make-mhc/debug
-	       (princ (format "Byte compile: %s -> %s.\n"
-			      (file-name-nondirectory el-file)
-			      (file-name-nondirectory elc-file)))
-	     (byte-compile-file el-file)))))
+               (if (file-newer-than-file-p el-file elc-file)
+                   (progn
+                     (delete-file elc-file)
+                     t)))
+           (if make-mhc/debug
+               (princ (format "Byte compile: %s -> %s.\n"
+                              (file-name-nondirectory el-file)
+                              (file-name-nondirectory elc-file)))
+             (byte-compile-file el-file)))))
    (delq nil
-	 (mapcar (lambda (pair)
-		   (if (eval (cdr pair))
-		       (car pair)))
-		 make-mhc/module-alist))))
+         (mapcar (lambda (pair)
+                   (if (eval (cdr pair))
+                       (car pair)))
+                 make-mhc/module-alist))))
 
 (defun make-mhc/make-directory (dirname)
   (if (file-directory-p dirname)
       t
     (if (make-mhc/make-directory
-	 (directory-file-name (file-name-directory (directory-file-name dirname))))
-	(progn
-	  (make-directory dirname)
-	  t))))
+         (directory-file-name (file-name-directory (directory-file-name dirname))))
+        (progn
+          (make-directory dirname)
+          t))))
 
 (defun make-mhc/install-file (in-file out-file)
   (if (file-exists-p in-file)
       (progn
-	(princ (format "%s%s -> %s\n"
-		       (if make-mhc/debug "Install: " "")
-		       (file-name-nondirectory in-file) out-file))
-	(or make-mhc/debug
-	    (progn
-	      (if (file-exists-p out-file)
-		  (delete-file out-file))
-	      (copy-file in-file out-file t t))))))
+        (princ (format "%s%s -> %s\n"
+                       (if make-mhc/debug "Install: " "")
+                       (file-name-nondirectory in-file) out-file))
+        (or make-mhc/debug
+            (progn
+              (if (file-exists-p out-file)
+                  (delete-file out-file))
+              (copy-file in-file out-file t t))))))
 
 (defun make-mhc-install ()
   (make-mhc-compile)
@@ -256,9 +256,9 @@
 (defun make-mhc-compile-package ()
   (make-mhc/configure)
   (setq make-mhc/lisp-directory
-	(expand-file-name
-	 make-mhc/module-prefix
-	 (expand-file-name "lisp" make-mhc/package-directory)))
+        (expand-file-name
+         make-mhc/module-prefix
+         (expand-file-name "lisp" make-mhc/package-directory)))
   (make-mhc-compile))
 
 (defun make-mhc/update-package-files (package dir)
@@ -268,13 +268,13 @@
     (princ (format "Processing %s\n" dir))
     (princ "Generating custom-load.el...\n\n")
     (princ (format "Compiling %s...\n"
-		   (expand-file-name "auto-autoloads.el" dir)))
+                   (expand-file-name "auto-autoloads.el" dir)))
     (princ (format "Wrote %s\n"
-		   (expand-file-name "auto-autoloads.elc" dir)))
+                   (expand-file-name "auto-autoloads.elc" dir)))
     (princ (format "Compiling %s...\n"
-		   (expand-file-name "custom-load.el" dir)))
+                   (expand-file-name "custom-load.el" dir)))
     (princ (format "Wrote %s\n"
-		   (expand-file-name "custom-load.elc" dir))))
+                   (expand-file-name "custom-load.elc" dir))))
    (t
     (setq autoload-package-name package)
     (let ((command-line-args-left (list dir)))
@@ -301,21 +301,21 @@
     (mapcar 'car make-mhc/module-alist)
     ;; Add XEmacs package stuff.
     (list "auto-autoloads"
-	  "custom-load")))
+          "custom-load")))
   ;; Install icons.
   (let ((icon-dir (expand-file-name
-		   make-mhc/module-prefix
-		   (expand-file-name
-		    "etc"
-		    make-mhc/package-directory))))
+                   make-mhc/module-prefix
+                   (expand-file-name
+                    "etc"
+                    make-mhc/package-directory))))
     (or make-mhc/debug
-	(make-mhc/make-directory icon-dir))
+        (make-mhc/make-directory icon-dir))
     (mapcar
      (lambda (icon)
        (make-mhc/install-file
-	icon
-	(expand-file-name
-	 (file-name-nondirectory icon) icon-dir)))
+        icon
+        (expand-file-name
+         (file-name-nondirectory icon) icon-dir)))
      (directory-files make-mhc/icon-source-directory t "^.*\\.xpm$"))))
 
 

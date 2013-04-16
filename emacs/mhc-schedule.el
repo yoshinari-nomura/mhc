@@ -37,14 +37,14 @@
   (record &optional condition subject location time alarm categories priority region recurrence-tag)
   "Constructor of MHC-SCHEDULE structure."
   (let ((new (vector record
-		     (or condition (mhc-logic-new))
-		     subject
-		     location
-		     time
-		     alarm
-		     categories
-		     priority
-		     (or region (cons nil nil))
+                     (or condition (mhc-logic-new))
+                     subject
+                     location
+                     time
+                     alarm
+                     categories
+                     priority
+                     (or region (cons nil nil))
                      recurrence-tag)))
     (mhc-record-set-schedules record (cons new (mhc-record-schedules record)))
     new))
@@ -87,14 +87,14 @@
 (defsubst mhc-schedule-todo-deadline (schedule)
   (and schedule
        (or (car (mhc-logic/day (mhc-schedule-condition schedule)))
-	   (nth 2 (assq
-		   'mhc-logic/condition-duration
-		   (mhc-logic/and
-		    (mhc-schedule-condition schedule))))
-	   (cadr (assq
-		  'mhc-logic/condition-duration-end
-		  (mhc-logic/and
-		   (mhc-schedule-condition schedule)))))))
+           (nth 2 (assq
+                   'mhc-logic/condition-duration
+                   (mhc-logic/and
+                    (mhc-schedule-condition schedule))))
+           (cadr (assq
+                  'mhc-logic/condition-duration-end
+                  (mhc-logic/and
+                   (mhc-schedule-condition schedule)))))))
 
 (defmacro mhc-schedule/set-subject (schedule subject)
   `(aset ,schedule 2 ,subject))
@@ -124,8 +124,8 @@
   (or (mhc-schedule-time schedule)
       (not (mhc-schedule-time default))
       (mhc-schedule/set-time schedule
-			     (mhc-schedule-time-begin default)
-			     (mhc-schedule-time-end default)))
+                             (mhc-schedule-time-begin default)
+                             (mhc-schedule-time-end default)))
   (or (mhc-schedule-alarm schedule)
       (mhc-schedule/set-alarm schedule (mhc-schedule-alarm default)))
   (or (mhc-schedule-categories schedule)
@@ -143,8 +143,8 @@
     (cond
      ((and (car time) (cdr time))
       (concat (mhc-schedule/time-to-string (car time))
-	      "-"
-	      (mhc-schedule/time-to-string (cdr time))))
+              "-"
+              (mhc-schedule/time-to-string (cdr time))))
      ((car time)
       (mhc-schedule/time-to-string (car time)))
      ((cdr time)
@@ -159,19 +159,19 @@
 (defun mhc-schedule-categories-as-string (schedule)
   (let ((categories (mhc-schedule-categories schedule)))
     (if categories
-	(mapconcat (function identity) categories " ")
+        (mapconcat (function identity) categories " ")
       "")))
 
 
 (defun mhc-schedule-in-category-p (schedule category)
   (and schedule
        (if (listp category)
-	   (catch 'found
-	     (while category
-	       (if (member (downcase (car category)) (mhc-schedule-categories schedule))
-		   (throw 'found t))
-	       (setq category (cdr category))))
-	 (member (downcase category) (mhc-schedule-categories schedule)))))
+           (catch 'found
+             (while category
+               (if (member (downcase (car category)) (mhc-schedule-categories schedule))
+                   (throw 'found t))
+               (setq category (cdr category))))
+         (member (downcase category) (mhc-schedule-categories schedule)))))
 
 
 (defun mhc-schedule-recurrence-tag-as-string (schedule)

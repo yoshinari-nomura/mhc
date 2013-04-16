@@ -38,10 +38,10 @@ today には次のようなオプションが使えます。
     string に指定できるのは、 today, tomorrow, sun ... sat, yyyymmdd, yymm
     です。以下によく使われると思われる date の指定を挙げておきます。
 
-	 --date=today+1    今日から明日まで
-	 --date=200007     2000年 7月の一ヶ月分
-			 --format=ps の場合は、これを指定したいでしょう
-	 --date=mon+6      今週一週間のスケジュール
+         --date=today+1    今日から明日まで
+         --date=200007     2000年 7月の一ヶ月分
+                         --format=ps の場合は、これを指定したいでしょう
+         --date=mon+6      今週一週間のスケジュール
 
 
   --mail=ADDRESS
@@ -167,9 +167,9 @@ while path = ARGV .shift
     print "add  X-SC-Record-Id: to #{path}.\n"
 
     contents .sub!(/^/np, "X-SC-Record-Id: " +
-		   create_message_id() + "\n")
+                   create_message_id() + "\n")
     ##  contents .sub!(/\n\n/np, "\nX-SC-Record-Id: " +
-    ##		 create_message_id() + "\n\n")
+    ##           create_message_id() + "\n\n")
 
     file = File .open(path, "w")
     file << contents
@@ -189,12 +189,12 @@ pilot-link の libpisock を必要とします。
 
     -v        verbose mode. 実行時に色々な表示を行います。
     -a        Palm に MHC のデータを追加 (Append) します。
-	      つまり全ての Palm 上のデータは保存されます。
+              つまり全ての Palm 上のデータは保存されます。
 
     -i        Palm に MHC のデータを導入 (Install) します。
-	      つまり全ての Palm 上のデータは消去されます。
-	      MHC を主に使っているユーザであれば、
-	      通常はこれを利用するでしょう。
+              つまり全ての Palm 上のデータは消去されます。
+              MHC を主に使っているユーザであれば、
+              通常はこれを利用するでしょう。
 
     -n        実行の過程を示すだけで、実際の転送は行いません。
               mhc2palm が何をするのかを見るのに有効でしょう。
@@ -217,10 +217,10 @@ pilot-link の libpisock を必要とします。
  usage: palm2mhc [-a | -u] [-n] [-i] [-d dev] [-r dir]
 
     -a       全ての Palm のデータを MHC に追加します。
-	     Palm ユーザが最初に MHC を使い初めるときに有効でしょう。
+             Palm ユーザが最初に MHC を使い初めるときに有効でしょう。
 
     -u       Palm のデータのうち、更新されたデータのみを MHC に
-	     追加します。
+             追加します。
 
     -n       実行の過程を示すだけで、実際の転送は行いません。
              palm2mhc が何をするのかを見るのに有効でしょう。
@@ -259,10 +259,10 @@ usage: mhc2ol [-a | -i | -N] [-n] [-r dir] [-c category] [YYYYMMDD-yyyymmdd]
     -v        verbose mode. 実行時に色々な表示を行います。
 
     -a        Outlook に MHC のデータを追加 (Append) します。
-	      つまり全ての Outlook 上のデータは保存されます。
+              つまり全ての Outlook 上のデータは保存されます。
 
     -i        Outlook に MHC のデータを導入 (Install) します。
-	      つまり全ての Outlook 上のデータは消去されます。
+              つまり全ての Outlook 上のデータは消去されます。
 
     -N        スケジュールのタイムスタンプを比較して、必要最小限
               のスケジュールを Outlook に転送します。通常はこの

@@ -45,7 +45,7 @@ class SignalConduit
     @proc_table .each_key{|sig|
       print "(#{self}) #{sig} -> "  # if $DEBUG
       @proc_table[sig] .each_key{|sd|
-	print @proc_table[sig][sd], " "
+        print @proc_table[sig][sd], " "
       }
       print "\n" # if $DEBUG
     }
@@ -62,8 +62,8 @@ class Alarm < SignalConduit
     @now = Time .now .localtime
     @th  = Thread .new {
       while true
- 	tick
- 	sleep 3
+        tick
+        sleep 3
       end
     }
     @th .abort_on_exception= true

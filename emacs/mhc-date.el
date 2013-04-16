@@ -45,24 +45,24 @@
   (if (mhc-time/check HH MM)
       (+ (* HH 60) MM)
     (if noerror
-	nil
+        nil
       (error "mhc-time-new: arg error (%s,%s)" HH MM))))
 
 (defsubst mhc-time-new-from-string (str &optional noerror regexp)
   (let (ret (match (match-data)))
     (if (string-match (or regexp "^\\([0-9][0-9]\\):\\([0-9][0-9]\\)$") str)
-	(setq ret (mhc-time-new (mhc-date/substring-to-int str 1)
-				(mhc-date/substring-to-int str 2)
-				t)))
+        (setq ret (mhc-time-new (mhc-date/substring-to-int str 1)
+                                (mhc-date/substring-to-int str 2)
+                                t)))
     (store-match-data match)
     (if (or noerror ret)
-	ret
+        ret
       (error "mhc-time-new-from-string: format error (%s)" str))))
 
 (defsubst mhc-time-now ()
   (let* ((now (decode-time (current-time)))
-	 (HH (nth 2 now))
-	 (MM (nth 1 now)))
+         (HH (nth 2 now))
+         (MM (nth 1 now)))
     (mhc-time-new HH MM)))
 
 ;; xxx: use defmacro for speed !!
@@ -80,8 +80,8 @@
 (defmacro mhc-time-let (time &rest form)
   (let ((tempvar (make-symbol "tempvar")))
     `(let* ((,tempvar ,time)
- 	    (hh (mhc-time-HH ,tempvar))
- 	    (mm (mhc-time-MM ,tempvar)))
+            (hh (mhc-time-HH ,tempvar))
+            (mm (mhc-time-MM ,tempvar)))
        ,@form)))
 (put 'mhc-time-let 'lisp-indent-function 1)
 (put 'mhc-time-let 'edebug-form-spec '(form body))
@@ -91,7 +91,7 @@
 
 (defsubst mhc-time-to-list (time)
   (list (mhc-time-HH time)
-	(mhc-time-MM time)))
+        (mhc-time-MM time)))
 
 (defalias 'mhc-time+  '+)
 (defalias 'mhc-time-  '-)
@@ -115,10 +115,10 @@
  "
   (let ((tempvar (make-symbol "tempvar")))
     `(let* ((,tempvar (mhc-date-to-list ,date))
- 	    (yy (nth 0 ,tempvar))
- 	    (mm (nth 1 ,tempvar))
- 	    (dd (nth 2 ,tempvar))
- 	    (ww (nth 3 ,tempvar)))
+            (yy (nth 0 ,tempvar))
+            (mm (nth 1 ,tempvar))
+            (dd (nth 2 ,tempvar))
+            (ww (nth 3 ,tempvar)))
        ,@form)))
 (put 'mhc-date-let 'lisp-indent-function 1)
 (put 'mhc-date-let 'edebug-form-spec '(form body))
@@ -138,20 +138,20 @@
  "
   (let ((tempvar (make-symbol "tempvar")))
     `(let* ((,tempvar (mhc-date-to-list ,date))
- 	    (yy (nth 0 ,tempvar))
- 	    (mm (nth 1 ,tempvar))
- 	    (dd 1)
- 	    (ww (nth 3 ,tempvar))
-	    (end (mhc-date/last-day-of-month yy mm))
-	    (days ,date)
-	    (last-p nil))
+            (yy (nth 0 ,tempvar))
+            (mm (nth 1 ,tempvar))
+            (dd 1)
+            (ww (nth 3 ,tempvar))
+            (end (mhc-date/last-day-of-month yy mm))
+            (days ,date)
+            (last-p nil))
        (while (<= dd end)
-	 ,@form
-	 (setq days   (mhc-date++ days)
-	       dd     (1+ dd)
-	       oo     (/ (1- dd) 7)
-	       ww     (% (1+ ww) 7)
-	       last-p (< (- end 7) dd))))))
+         ,@form
+         (setq days   (mhc-date++ days)
+               dd     (1+ dd)
+               oo     (/ (1- dd) 7)
+               ww     (% (1+ ww) 7)
+               last-p (< (- end 7) dd))))))
 (put 'mhc-date-let-for-month 'lisp-indent-function 1)
 (put 'mhc-date-let-for-month 'edebug-form-spec '(form body))
 
@@ -204,27 +204,27 @@
 ;;   convert "GMT" or "+0000" into 540.
 (defun mhc-date/string-to-timezone-offset (timezone)
   (let ((tz (or (cdr (assoc timezone
- 			    '(("PST" . "-0800") ("PDT" . "-0700")
- 			      ("MST" . "-0700") ("MDT" . "-0600")
- 			      ("CST" . "-0600") ("CDT" . "-0500")
- 			      ("EST" . "-0500") ("EDT" . "-0400")
- 			      ("AST" . "-0400") ("NST" . "-0300")
- 			      ("UT"  . "+0000") ("GMT" . "+0000")
- 			      ("BST" . "+0100") ("MET" . "+0100")
- 			      ("EET" . "+0200") ("JST" . "+0900"))))
- 		timezone))
- 	min
- 	offset)
+                            '(("PST" . "-0800") ("PDT" . "-0700")
+                              ("MST" . "-0700") ("MDT" . "-0600")
+                              ("CST" . "-0600") ("CDT" . "-0500")
+                              ("EST" . "-0500") ("EDT" . "-0400")
+                              ("AST" . "-0400") ("NST" . "-0300")
+                              ("UT"  . "+0000") ("GMT" . "+0000")
+                              ("BST" . "+0100") ("MET" . "+0100")
+                              ("EET" . "+0200") ("JST" . "+0900"))))
+                timezone))
+        min
+        offset)
     (if (string-match "\\([-+]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)" tz)
- 	(progn
- 	  (setq min (* (+ (* 60 (mhc-date/substring-to-int tz 2))
- 			  (mhc-date/substring-to-int tz 3))
- 		       (if (string= "+"
- 				    (substring tz
- 					       (match-beginning 1)
- 					       (match-end 1)))
- 			   1 -1))
- 		offset (- (/ (car (current-time-zone)) 60) min))))))
+        (progn
+          (setq min (* (+ (* 60 (mhc-date/substring-to-int tz 2))
+                          (mhc-date/substring-to-int tz 3))
+                       (if (string= "+"
+                                    (substring tz
+                                               (match-beginning 1)
+                                               (match-end 1)))
+                           1 -1))
+                offset (- (/ (car (current-time-zone)) 60) min))))))
 
 ;;
 ;; conversion.
@@ -234,19 +234,19 @@
   ;; It has workaround in case of 28 bit integer.
   (let (high low)
     (setq low  (* (+ date (if (< (nth 0 (current-time-zone)) 0) 1 0)) 240)
-	  high (/ low 65536)
-	  low  (* (% low 65536) 360)
-	  high (+ (* high 360) (/ low 65536))
-	  low  (% low 65536))
+          high (/ low 65536)
+          low  (* (% low 65536) 360)
+          high (+ (* high 360) (/ low 65536))
+          low  (% low 65536))
     (list high low 0)))
 
 
 (defsubst mhc-date/to-list1 (date)
   (let ((lst (decode-time (mhc-date-to-second date))))
     (list (nth 5 lst)
-	  (nth 4 lst)
-	  (nth 3 lst)
-	  (nth 6 lst))))
+          (nth 4 lst)
+          (nth 3 lst)
+          (nth 6 lst))))
 
 (defsubst mhc-date/to-list2 (date)
   (let (x b c d e w dom)
@@ -279,7 +279,7 @@
   (if (mhc-date/check yy mm dd)
       (mhc-date/absolute-from-epoch yy mm dd)
     (if noerror
-	nil
+        nil
       (error "mhc-date-new: arg error (%s,%s,%s)" yy mm dd))))
 
 
@@ -298,14 +298,14 @@
 (defsubst mhc-date-new-from-string (str &optional noerror)
   (let (ret (match (match-data)))
     (if (string-match
-	 "^\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)$" str)
-	(setq ret (mhc-date-new (mhc-date/substring-to-int str 1)
-				(mhc-date/substring-to-int str 2)
-				(mhc-date/substring-to-int str 3)
-				t)))
+         "^\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)$" str)
+        (setq ret (mhc-date-new (mhc-date/substring-to-int str 1)
+                                (mhc-date/substring-to-int str 2)
+                                (mhc-date/substring-to-int str 3)
+                                t)))
     (store-match-data match)
     (if (or noerror ret)
-	ret
+        ret
       (error "mhc-date-new-from-string: format error (%s)" str))))
 
 ;; new from string. [[yyyy/]mm]/dd
@@ -314,26 +314,26 @@
     (let ((match (match-data)) fail ret)
       (cond
        ((string-match
-	 "^\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)$" str)
-	(setq yy (mhc-date/substring-to-int str 1)
-	      mm (mhc-date/substring-to-int str 2)
-	      dd (mhc-date/substring-to-int str 3)))
+         "^\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)$" str)
+        (setq yy (mhc-date/substring-to-int str 1)
+              mm (mhc-date/substring-to-int str 2)
+              dd (mhc-date/substring-to-int str 3)))
        ((string-match "^\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)$" str)
-	(setq yy (mhc-date/substring-to-int str 1)
-	      mm (mhc-date/substring-to-int str 2)
-	      dd (mhc-date/substring-to-int str 3)))
+        (setq yy (mhc-date/substring-to-int str 1)
+              mm (mhc-date/substring-to-int str 2)
+              dd (mhc-date/substring-to-int str 3)))
        ((string-match "^\\([0-9]+\\)/\\([0-9]+\\)$" str)
-	(setq mm (mhc-date/substring-to-int str 1)
-	      dd (mhc-date/substring-to-int str 2)))
+        (setq mm (mhc-date/substring-to-int str 1)
+              dd (mhc-date/substring-to-int str 2)))
        ((string-match "^\\([0-9]+\\)$" str)
-	(setq dd (mhc-date/substring-to-int str 1)))
+        (setq dd (mhc-date/substring-to-int str 1)))
        (t
-	(setq fail t)))
+        (setq fail t)))
       (store-match-data match)
       (if (not fail) (setq ret (mhc-date-new yy mm dd t)))
       (if (or noerror ret)
-	  ret
-	(error "mhc-date-new-from-string2: format error (%s)" str)))))
+          ret
+        (error "mhc-date-new-from-string2: format error (%s)" str)))))
 
 ;; regexp for rfc822 Date: field.
 (defconst mhc-date/rfc822-date-regex
@@ -351,38 +351,38 @@
 (defun mhc-date-new-from-string3 (string)
   (if (and (stringp string) (string-match mhc-date/rfc822-date-regex string))
       (let ((dd  (mhc-date/substring-to-int string 1))
-	    (mm  nil)
- 	    (mon (substring string (match-beginning 2) (match-end 2)))
- 	    (yy  (mhc-date/substring-to-int string 3))
- 	    (MM  (+ (* 60 (mhc-date/substring-to-int string 4))
- 		    (mhc-date/substring-to-int string 5)))
- 	    (tz  (substring string (match-beginning 8) (match-end 8)))
- 	    tz-offset)
- 	(setq
- 	 yy (cond
-	     ((< yy 50)  (+ yy 2000))
-	     ((< yy 100) (+ yy 1900))
-	     (t            yy))
- 	 mm (1+ (/ (string-match mon
-				 "JanFebMarAprMayJunJulAugSepOctNovDec") 3))
- 	 tz-offset (mhc-date/string-to-timezone-offset tz)
- 	 MM (+ MM tz-offset))
- 	(car
-	 (cond
-	  ((< MM 0)
-	   (setq MM (+ MM 1440))
-	   (list (mhc-date--  (mhc-date-new yy mm dd))
-		 (mhc-time-new (/ MM 60) (% MM 60))
-		 tz-offset))
-	  ((>= MM 1440)
-	   (setq MM (- MM 1440))
-	   (list (mhc-date++ (mhc-date-new yy mm dd))
-		 (mhc-time-new (/ MM 60) (% MM 60))
-		 tz-offset))
-	  (t
-	   (list (mhc-date-new yy mm dd)
-		 (mhc-time-new (/ MM 60) (% MM 60))
-		 tz-offset)))))))
+            (mm  nil)
+            (mon (substring string (match-beginning 2) (match-end 2)))
+            (yy  (mhc-date/substring-to-int string 3))
+            (MM  (+ (* 60 (mhc-date/substring-to-int string 4))
+                    (mhc-date/substring-to-int string 5)))
+            (tz  (substring string (match-beginning 8) (match-end 8)))
+            tz-offset)
+        (setq
+         yy (cond
+             ((< yy 50)  (+ yy 2000))
+             ((< yy 100) (+ yy 1900))
+             (t            yy))
+         mm (1+ (/ (string-match mon
+                                 "JanFebMarAprMayJunJulAugSepOctNovDec") 3))
+         tz-offset (mhc-date/string-to-timezone-offset tz)
+         MM (+ MM tz-offset))
+        (car
+         (cond
+          ((< MM 0)
+           (setq MM (+ MM 1440))
+           (list (mhc-date--  (mhc-date-new yy mm dd))
+                 (mhc-time-new (/ MM 60) (% MM 60))
+                 tz-offset))
+          ((>= MM 1440)
+           (setq MM (- MM 1440))
+           (list (mhc-date++ (mhc-date-new yy mm dd))
+                 (mhc-time-new (/ MM 60) (% MM 60))
+                 tz-offset))
+          (t
+           (list (mhc-date-new yy mm dd)
+                 (mhc-time-new (/ MM 60) (% MM 60))
+                 tz-offset)))))))
 
 ;;
 ;; manipulate yy, mm, dd.
@@ -406,14 +406,14 @@
 (defsubst mhc-date-cw (date)
   (mhc-date-let date
     (let* ((yday (mhc-date/day-number yy mm dd))
-	   (days (mhc-date/iso-week-days yday ww))
-	   (d))
+           (days (mhc-date/iso-week-days yday ww))
+           (d))
       (if (< days 0)
-	  (setq days (mhc-date/iso-week-days
-		      (+ yday 365 (if (mhc-date/leap-year-p (1- yy)) 1 0)) ww))
-	(setq d (mhc-date/iso-week-days
-		 (- yday 365 (if (mhc-date/leap-year-p yy) 1 0)) ww))
-	(if (<= 0 d) (setq days d)))
+          (setq days (mhc-date/iso-week-days
+                      (+ yday 365 (if (mhc-date/leap-year-p (1- yy)) 1 0)) ww))
+        (setq d (mhc-date/iso-week-days
+                 (- yday 365 (if (mhc-date/leap-year-p yy) 1 0)) ww))
+        (if (<= 0 d) (setq days d)))
       (1+ (/ days 7)))))
 
 ;;
@@ -444,7 +444,7 @@
 (defsubst mhc-date-yymm<  (d1 d2)
   (or (mhc-date-yy< d1 d2)
       (and (mhc-date-yy= d1 d2)
-	   (< (mhc-date-mm d1) (mhc-date-mm d2)))))
+           (< (mhc-date-mm d1) (mhc-date-mm d2)))))
 
 (defmacro mhc-date-yymm>  (d1 d2)      `(mhc-date-yymm<  ,d2 ,d1))
 (defmacro mhc-date-yymm<= (d1 d2) `(not (mhc-date-yymm>  ,d1 ,d2)))
@@ -466,8 +466,8 @@
       (setq pp (if (< 0 xx ) (/ (- xx  1) 12) (/ (- xx 12) 12)))
       (setq yy (+ yy pp) mm (- xx (* 12 pp)))
       (if (mhc-date/check yy mm dd)
-	  (mhc-date-new yy mm dd)
-	(mhc-date-new yy mm (mhc-date/last-day-of-month yy mm))))))
+          (mhc-date-new yy mm dd)
+        (mhc-date-new yy mm (mhc-date/last-day-of-month yy mm))))))
 
 (defmacro mhc-date-mm-  (date c) `(mhc-date-mm+ ,date (- ,c)))
 (defmacro mhc-date-mm++ (date)   `(mhc-date-mm+ ,date 1))
@@ -477,7 +477,7 @@
   (mhc-date-let date
     (setq yy (+ yy c))
     (if (mhc-date/check yy mm dd)
-	(mhc-date-new yy mm dd)
+        (mhc-date-new yy mm dd)
       (mhc-date-new yy mm (mhc-date/last-day-of-month yy mm)))))
 
 (defmacro mhc-date-yy-  (date c) `(mhc-date-yy+ ,date (- ,c)))
@@ -504,8 +504,8 @@
 ;; check if the date is in the last week of a month.
 (defsubst mhc-date-oo-last-p (date)
   (< (- (mhc-date/last-day-of-month
-	 (mhc-date-yy date)
-	 (mhc-date-mm date)) 7) (mhc-date-dd date)))
+         (mhc-date-yy date)
+         (mhc-date-mm date)) 7) (mhc-date-dd date)))
 
 
 (defalias 'mhc-date-p 'integerp)
@@ -531,23 +531,23 @@
   (if long
       (aref
        '[nil "January" "February" "March"     "April"   "May"      "June"
-	     "July"    "August"   "September" "October" "November" "December"]
+             "July"    "August"   "September" "October" "November" "December"]
        mm)
     (aref
      [nil "Jan" "Feb" "Mar" "Apr" "May" "Jun"
-	  "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
+          "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
      mm)))
 
 (defun mhc-date-digit-to-ww-string (ww &optional long)
   (if long
       (aref ["Sunday" "Monday" "Tuesday" "Wednesday"
-	     "Thursday" "Friday" "Saturday"] ww)
+             "Thursday" "Friday" "Saturday"] ww)
     (aref ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"] ww)))
 
 (defun mhc-date-digit-to-ww-japanese-string (ww &optional long)
   (if long
       (aref ["日曜日" "月曜日" "火曜日" "水曜日"
-	     "木曜日" "金曜日" "土曜日"] ww)
+             "木曜日" "金曜日" "土曜日"] ww)
     (aref ["日" "月" "火" "水" "木" "金" "土"] ww)))
 
 (defun mhc-date-digit-to-oo-string (oo &optional long)
@@ -558,39 +558,39 @@
   (mhc-date-let date
     (let (head match (ret "") char)
       (while (string-match "%." format)
-	(setq head   (substring format 0 (match-beginning 0))
-	      match  (match-string 0 format)
-	      format (substring format (match-end 0))
-	      char   (aref match 1))
-	(cond
-	 ((eq char ?Y) ;; 100年単位の年
-	  (setq match (format "%d" yy)))
+        (setq head   (substring format 0 (match-beginning 0))
+              match  (match-string 0 format)
+              format (substring format (match-end 0))
+              char   (aref match 1))
+        (cond
+         ((eq char ?Y) ;; 100年単位の年
+          (setq match (format "%d" yy)))
 
-	 ((eq char ?y)  ;; 年の下2桁 (00-99)
-	  (setq match (format "%02d"  (% yy 100))))
+         ((eq char ?y)  ;; 年の下2桁 (00-99)
+          (setq match (format "%02d"  (% yy 100))))
 
-	 ((or (eq char ?b) (eq char ?h)) ;; 月   略称
-	  (setq match (mhc-date-digit-to-mm-string mm)))
+         ((or (eq char ?b) (eq char ?h)) ;; 月   略称
+          (setq match (mhc-date-digit-to-mm-string mm)))
 
-	 ((eq char ?B) ;; 月   名称
-	  (setq match (mhc-date-digit-to-mm-string mm t)))
+         ((eq char ?B) ;; 月   名称
+          (setq match (mhc-date-digit-to-mm-string mm t)))
 
-	 ((eq char ?m) ;; 月 (01-12)
-	  (setq match (format "%02d" mm)))
+         ((eq char ?m) ;; 月 (01-12)
+          (setq match (format "%02d" mm)))
 
-	 ((eq char ?d) ;; 日 (ゼロ padding)
-	  (setq match (format "%02d" dd)))
+         ((eq char ?d) ;; 日 (ゼロ padding)
+          (setq match (format "%02d" dd)))
 
-	 ((eq char ?e) ;; 日 (空白 padding)
-	  (setq match (format "%2d" dd)))
+         ((eq char ?e) ;; 日 (空白 padding)
+          (setq match (format "%2d" dd)))
 
-	 ((eq char ?a) ;; 曜日 略称
-	  (setq match (mhc-date-digit-to-ww-string ww)))
+         ((eq char ?a) ;; 曜日 略称
+          (setq match (mhc-date-digit-to-ww-string ww)))
 
-	 ((eq char ?A) ;; 曜日 名称
-	  (setq match (mhc-date-digit-to-ww-string ww t))))
+         ((eq char ?A) ;; 曜日 名称
+          (setq match (mhc-date-digit-to-ww-string ww t))))
 
-	(setq ret (concat ret head match)))
+        (setq ret (concat ret head match)))
       (concat ret format))))
 
 (provide 'mhc-date)

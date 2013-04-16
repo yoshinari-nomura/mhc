@@ -1,12 +1,12 @@
 /* XPM */
 static char * CheckedBox_xpm[] = {
 "16 16 6 1",
-" 	s backgroundColor c None",
-".	c #000000000000",
-"X	c #FFFF00000000",
-"o	c #71C671C671C6",
-"O	c #E79DE79DE79D",
-"+	c #BEFBBEFBBEFB",
+"       s backgroundColor c None",
+".      c #000000000000",
+"X      c #FFFF00000000",
+"o      c #71C671C671C6",
+"O      c #E79DE79DE79D",
+"+      c #BEFBBEFBBEFB",
 "                ",
 " ...........XX. ",
 " .oooooooooXXoO ",

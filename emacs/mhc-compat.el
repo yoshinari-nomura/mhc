@@ -22,7 +22,7 @@
     "Like `insert-file-contents', q.v., but CODING-SYSTEM the first arg will
 be applied to `coding-system-for-read'."
     (let ((coding-system-for-read coding-system)
-	  (file-coding-system-for-read coding-system))
+          (file-coding-system-for-read coding-system))
       (insert-file-contents filename visit beg end replace))))
 
 
@@ -34,11 +34,11 @@ be applied to `coding-system-for-read'."
     "Like `write-region', q.v., but CODING-SYSTEM the first arg will be
 applied to `coding-system-for-write'."
     (let ((coding-system-for-write coding-system)
-	  (file-coding-system coding-system))
+          (file-coding-system coding-system))
       (write-region start end filename append visit))))
 
 (if (and (fboundp 'regexp-opt)
-	 (not (featurep 'xemacs)))
+         (not (featurep 'xemacs)))
     (defalias 'mhc-regexp-opt 'regexp-opt)
   (defun mhc-regexp-opt (strings &optional paren)
     "Return a regexp to match a string in STRINGS.

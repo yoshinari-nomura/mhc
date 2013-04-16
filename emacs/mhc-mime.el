@@ -30,18 +30,18 @@
 (defvar mhc-mime-import-buffer " *MHC MIME import*")
 (defun mhc-mime-get-import-buffer (get-original)
   (let* ((structure (mhc-mime-get-mime-structure))
-	 (raw-buffer (when (or get-original (not structure))
-		       (mhc-mime-get-raw-buffer)))
-	 mime-view-ignored-field-list)
+         (raw-buffer (when (or get-original (not structure))
+                       (mhc-mime-get-raw-buffer)))
+         mime-view-ignored-field-list)
     (with-current-buffer (get-buffer-create mhc-mime-import-buffer)
       (if structure
-	  (mime-display-message structure (current-buffer))
-	(mime-view-buffer raw-buffer (current-buffer)))
+          (mime-display-message structure (current-buffer))
+        (mime-view-buffer raw-buffer (current-buffer)))
       (let (buffer-read-only)
-	(mhc-highlight-message))
+        (mhc-highlight-message))
       (if get-original
-	  (cons raw-buffer (current-buffer))
-	(current-buffer)))))
+          (cons raw-buffer (current-buffer))
+        (current-buffer)))))
 
 
 (defalias 'mhc-mime-eword-decode-string 'eword-decode-string)
@@ -50,29 +50,29 @@
   (mhc-header-narrowing
     (while (not (eobp))
       (if (looking-at "X-SC-Schedule:")
-	  (save-restriction
-	    (narrow-to-region (point) (progn (mhc-header-goto-end) (point)))
-	    (goto-char (point-min))
-	    (while (search-forward "\\" nil t)
-	      (insert "\\"))
-	    (goto-char (point-min))
-	    (while (search-forward "\n" nil t)
-	      (goto-char (match-beginning 0))
-	      (delete-region (match-beginning 0) (match-end 0))
-	      (insert "\\n"))
-	    (goto-char (point-max)))
-	(mhc-header-goto-end)))
+          (save-restriction
+            (narrow-to-region (point) (progn (mhc-header-goto-end) (point)))
+            (goto-char (point-min))
+            (while (search-forward "\\" nil t)
+              (insert "\\"))
+            (goto-char (point-min))
+            (while (search-forward "\n" nil t)
+              (goto-char (match-beginning 0))
+              (delete-region (match-beginning 0) (match-end 0))
+              (insert "\\n"))
+            (goto-char (point-max)))
+        (mhc-header-goto-end)))
     (mime-decode-header-in-region (point-min) (point-max) 'decode)
     (goto-char (point-min))
     (while (not (eobp))
       (when (looking-at "X-SC-Schedule:")
-	(save-restriction
-	  (narrow-to-region (point) (progn (end-of-line) (point)))
-	  (goto-char (point-min))
-	  (while (re-search-forward "\\(\\\\\\\\\\)\\|\\\\n" nil t)
-	    (goto-char (match-beginning 0))
-	    (delete-region (match-beginning 0) (match-end 0))
-	    (insert (if (match-beginning 1) "\\" "\n")))))
+        (save-restriction
+          (narrow-to-region (point) (progn (end-of-line) (point)))
+          (goto-char (point-min))
+          (while (re-search-forward "\\(\\\\\\\\\\)\\|\\\\n" nil t)
+            (goto-char (match-beginning 0))
+            (delete-region (match-beginning 0) (match-end 0))
+            (insert (if (match-beginning 1) "\\" "\n")))))
       (forward-line 1))))
 
 (defun mhc-mime-draft-translate ()
@@ -81,9 +81,9 @@
     (save-excursion
       (goto-char (point-min))
       (if (re-search-forward
-	   (concat "^" (regexp-quote mail-header-separator) "$")
-	   nil t)
-	  (replace-match "")))))
+           (concat "^" (regexp-quote mail-header-separator) "$")
+           nil t)
+          (replace-match "")))))
 
 
 (defun mhc-mime-draft-setup-new ()
@@ -95,34 +95,34 @@
   (save-excursion
     (let (ct cte start)
       (save-excursion
-	(goto-char (point-min))
-	(if (re-search-forward
-	     (concat "^" (regexp-quote mail-header-separator) "$")
-	     nil t)
-	    (replace-match "")))
+        (goto-char (point-min))
+        (if (re-search-forward
+             (concat "^" (regexp-quote mail-header-separator) "$")
+             nil t)
+            (replace-match "")))
       (mhc-header-narrowing
-	(mhc-header-delete-header
-	 (concat "^\\("
-		 (mhc-regexp-opt mhc-draft-unuse-hdr-list)
-		 "\\)")
-	 'regexp)
-	(mhc-mime-decode-header)
-	(setq ct (std11-fetch-field "content-type")
-	      cte (std11-fetch-field "content-transfer-encoding"))
-	(mhc-header-delete-header
-	 mime-edit-again-ignored-field-regexp
-	 'regexp))
+        (mhc-header-delete-header
+         (concat "^\\("
+                 (mhc-regexp-opt mhc-draft-unuse-hdr-list)
+                 "\\)")
+         'regexp)
+        (mhc-mime-decode-header)
+        (setq ct (std11-fetch-field "content-type")
+              cte (std11-fetch-field "content-transfer-encoding"))
+        (mhc-header-delete-header
+         mime-edit-again-ignored-field-regexp
+         'regexp))
       (goto-char (point-min))
       (when (re-search-forward "^$" nil t)
-	(setq start (point))
-	(insert "Content-type: " (or ct "text/plain") "\n")
-	(and cte (insert "Content-Transfer-Encoding: " cte "\n")))
+        (setq start (point))
+        (insert "Content-type: " (or ct "text/plain") "\n")
+        (and cte (insert "Content-Transfer-Encoding: " cte "\n")))
       (save-restriction
-	(narrow-to-region (or start (point-min)) (point-max))
-	(mime-edit-decode-message-in-buffer)
-	(widen)
-	(goto-char (or start (point-min)))
-	(insert mail-header-separator "\n")))))
+        (narrow-to-region (or start (point-min)) (point-max))
+        (mime-edit-decode-message-in-buffer)
+        (widen)
+        (goto-char (or start (point-min)))
+        (insert mail-header-separator "\n")))))
 
 
 (defun mhc-mime-draft-reedit-buffer (buffer original)

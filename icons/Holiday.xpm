@@ -1,12 +1,12 @@
 /* XPM */
 static char * Holiday_xpm[] = {
 "16 16 6 1",
-" 	s backgroundColor c None",
-".	c #000000000000",
-"X	c #FFFFFFFFFFFF",
-"o	c #FFFF96589658",
-"O	c #FFFF4D344924",
-"+	c #FFFF00000000",
+"       s backgroundColor c None",
+".      c #000000000000",
+"X      c #FFFFFFFFFFFF",
+"o      c #FFFF96589658",
+"O      c #FFFF4D344924",
+"+      c #FFFF00000000",
 "                ",
 "                ",
 "                ",

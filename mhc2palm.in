@@ -146,10 +146,10 @@ mdb .each_sch($flag_from, $flag_to){|sch|
     if !$flag_noharm
       print " sending to palm ...\n    " if $flag_verbose
       if (! (send_to_palm(pdb, p_rec_array) .nil?))
-	sent += 1
-	print "#{sent}/#{sch_count}\r"
+        sent += 1
+        print "#{sent}/#{sch_count}\r"
       else
-	print MhcKconv::todisp("\n(#{sch .subject}) write_error\n")
+        print MhcKconv::todisp("\n(#{sch .subject}) write_error\n")
       end
     else
       print " not sent.\n" if $flag_verbose

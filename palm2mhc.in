@@ -109,16 +109,16 @@ pdb .each_record{|rec|
       print "***************************************************************\n"
 
       if !$flag_noharm
-	if $flag_interactive
-	  if yes_no("Do you install this artice to mhc ")
-	    mdb .add_sch(x)
-	    print "Installed.\n"
-	  else
-	    print "Ignored.\n"
-	  end
-	else
-	  mdb .add_sch(x)
-	end
+        if $flag_interactive
+          if yes_no("Do you install this artice to mhc ")
+            mdb .add_sch(x)
+            print "Installed.\n"
+          else
+            print "Ignored.\n"
+          end
+        else
+          mdb .add_sch(x)
+        end
       end
     end
   end

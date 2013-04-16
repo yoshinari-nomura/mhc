@@ -73,10 +73,10 @@ class MhcDate
       @y, @m, @d = $1 .to_i, $2 .to_i, $3 .to_i
     else
       if (y == -1)
-	t = Time .now
-	@y, @m, @d = t .year, t .month, t .day
+        t = Time .now
+        @y, @m, @d = t .year, t .month, t .day
       else
-	@y, @m, @d = y, m, d
+        @y, @m, @d = y, m, d
       end
     end
   end
@@ -124,7 +124,7 @@ class MhcDate
     end
     def to_js
       MhcKconv::todisp(format("%04d年%02d月%02d日(%s)",
-			      @y, @m, @d, W_JLABEL[w]))
+                              @y, @m, @d, W_JLABEL[w]))
     end
   else
     def ym_js; format("%s %d", m_s, @y)                             ; end
@@ -233,12 +233,12 @@ class MhcDate
       dec!(- n)
     else
       for i in (1 .. n)
-	if @d == m_days
-	  @d = 1
-	  m_succ!(1)
-	else
-	  @d += 1
-	end
+        if @d == m_days
+          @d = 1
+          m_succ!(1)
+        else
+          @d += 1
+        end
       end
     end
     return self
@@ -253,12 +253,12 @@ class MhcDate
       succ!(- n)
     else
       for i in (1 .. n)
-	if @d == 1
-	  m_succ!(-1)
-	  @d = m_days
-	else
-	  @d -= 1
-	end
+        if @d == 1
+          m_succ!(-1)
+          @d = m_days
+        else
+          @d -= 1
+        end
       end
     end
     return self

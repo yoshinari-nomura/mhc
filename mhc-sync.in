@@ -77,8 +77,8 @@ class MhcScheduleDB
       header = file .gets("\n\n")
       file .close
       if header =~ /^X-SC-Record-Id:\s*(\S+)/i
-	@record_id_to_path_hash[$1] = filename
-	STDERR .print "#{filename} -> #{$1}\n" if $DEBUG
+        @record_id_to_path_hash[$1] = filename
+        STDERR .print "#{filename} -> #{$1}\n" if $DEBUG
       end
 
     }
@@ -203,9 +203,9 @@ if $flag_serverp
       print $DELIMITER
       sch = db .get_record_by_id(e .rec_id)
       if sch
-	print sch .dump
+        print sch .dump
       else
-	STDERR .print "#{e .rec_id} missing\n"
+        STDERR .print "#{e .rec_id} missing\n"
       end
     end
   }
@@ -225,27 +225,27 @@ if $flag_serverp
     commands = lines .split($DELIMITER)
     commands .each{|command|
       if command =~ /^DELETE\s+(\S+)/
-	rec_id = $1
-	sch = db .get_record_by_id(rec_id)
-	if sch
-	  STDERR .print "server: deleting #{sch .info}\n"
-	  if !$flag_noharm
-	    db .del_sch(sch)
-	  else
-	    STDERR .print "S:deleting #{sch .info}\n"
-	  end
-	end
+        rec_id = $1
+        sch = db .get_record_by_id(rec_id)
+        if sch
+          STDERR .print "server: deleting #{sch .info}\n"
+          if !$flag_noharm
+            db .del_sch(sch)
+          else
+            STDERR .print "S:deleting #{sch .info}\n"
+          end
+        end
       elsif command =~ /^MODIFY/
-	dummy, sch_string = command .split("\n", 2)
-	sch = MhcScheduleItem .new(sch_string, false)
-	if !$flag_noharm
-	  db .modify_sch(sch)
-	else
-	  STDERR .print "S:modifiying #{sch .info}\n"
-	  STDERR .print "*" * 70, "\n"
-	  STDERR .print sch .dump
-	  STDERR .print "*" * 70, "\n"
-	end
+        dummy, sch_string = command .split("\n", 2)
+        sch = MhcScheduleItem .new(sch_string, false)
+        if !$flag_noharm
+          db .modify_sch(sch)
+        else
+          STDERR .print "S:modifiying #{sch .info}\n"
+          STDERR .print "*" * 70, "\n"
+          STDERR .print sch .dump
+          STDERR .print "*" * 70, "\n"
+        end
       end
     }
     logent = MhcLogEntry .new('S', Time .now, $flag_syncid)
@@ -347,12 +347,12 @@ else
       STDERR .print "But you deleted it in local at the same time.\n"
       STDERR .print "I tranferred it from remote to local again.\n"
       if !$flag_noharm
-	db .add_sch(r_sch)
+        db .add_sch(r_sch)
       else
-	STDERR .print "C:adding #{r_sch .info}\n"
-	STDERR .print "*" * 70, "\n"
-	STDERR .print r_sch .dump
-	STDERR .print "*" * 70, "\n"
+        STDERR .print "C:adding #{r_sch .info}\n"
+        STDERR .print "*" * 70, "\n"
+        STDERR .print r_sch .dump
+        STDERR .print "*" * 70, "\n"
       end
 
     when 'D-' # delete remote
@@ -378,12 +378,12 @@ else
       STDERR .print "Please reedit the local one and do sync again.\n"
       l_sch .set_description(l_sch .description .to_s + $CONFLICT_INFO + r_sch .dump)
       if !$flag_noharm
-	db .modify_sch(l_sch)
+        db .modify_sch(l_sch)
       else
-	STDERR .print "C:modifiying #{l_sch .info}\n"
-	STDERR .print "*" * 70, "\n"
-	STDERR .print l_sch .dump
-	STDERR .print "*" * 70, "\n"
+        STDERR .print "C:modifiying #{l_sch .info}\n"
+        STDERR .print "*" * 70, "\n"
+        STDERR .print l_sch .dump
+        STDERR .print "*" * 70, "\n"
       end
 
 
@@ -396,21 +396,21 @@ else
 
     when '-D' # delete local
       if l_sch
-	STDERR .print "---------------------------------------------------\n"
-	STDERR .print "Delete local #{l_sch .info}\n"
-	db .del_sch(l_sch) if !$flag_noharm
+        STDERR .print "---------------------------------------------------\n"
+        STDERR .print "Delete local #{l_sch .info}\n"
+        db .del_sch(l_sch) if !$flag_noharm
       end
 
     when '-M' # transfer remote to local
       STDERR .print "---------------------------------------------------\n"
       STDERR .print "Transfer  remote to local #{r_sch .info}\n"
       if !$flag_noharm
-	db .modify_sch(r_sch)
+        db .modify_sch(r_sch)
       else
-	STDERR .print "C:modifiying #{r_sch .info}\n"
-	STDERR .print "*" * 70, "\n"
-	STDERR .print r_sch .dump
-	STDERR .print "*" * 70, "\n"
+        STDERR .print "C:modifiying #{r_sch .info}\n"
+        STDERR .print "*" * 70, "\n"
+        STDERR .print r_sch .dump
+        STDERR .print "*" * 70, "\n"
       end
 
     when '--' # peaceful

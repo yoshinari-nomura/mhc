@@ -47,11 +47,11 @@
 (defun mhc-sync/backup-and-remove (file &optional offline)
   "Backend function to remove FILE."
   (let ((file (expand-file-name file))
-	(new-path (expand-file-name
-		   "trash"
-		   (mhc-summary-folder-to-path mhc-base-folder))))
+        (new-path (expand-file-name
+                   "trash"
+                   (mhc-summary-folder-to-path mhc-base-folder))))
     (or (file-directory-p new-path)
-	(make-directory new-path))
+        (make-directory new-path))
     (rename-file file (mhc-misc-get-new-path new-path))))
 
 (defun mhc-sync/start-process (&optional full)
@@ -64,7 +64,7 @@
     nil)
    (t
     (let ((buf (mhc-get-buffer-create " *mhc-sync*"))
-	  (ldir (expand-file-name (or mhc-sync-localdir "~/Mail/schedule"))))
+          (ldir (expand-file-name (or mhc-sync-localdir "~/Mail/schedule"))))
       (mhc-window-push)
       (pop-to-buffer buf)
       (setq buffer-read-only nil)
@@ -73,44 +73,44 @@
       (message "mhc-sync...")
       (setq mhc-sync/req-passwd t)
       (setq mhc-sync/process
-	    (apply (function start-process)
-		   "mhc-sync" buf "mhc-sync"
-		   (list "-x" mhc-sync-id "-r" ldir mhc-sync-remote)))
+            (apply (function start-process)
+                   "mhc-sync" buf "mhc-sync"
+                   (list "-x" mhc-sync-id "-r" ldir mhc-sync-remote)))
       (set-process-coding-system mhc-sync/process mhc-sync-coding-system)
       (set-process-filter mhc-sync/process 'mhc-sync/filter)
       (set-process-sentinel mhc-sync/process 'mhc-sync/sentinel)
       (if (featurep 'xemacs)
-	  (while mhc-sync/process
-	    (accept-process-output))
-	(while mhc-sync/process
-	  (sit-for 0.1)
-	  (discard-input)))
+          (while mhc-sync/process
+            (accept-process-output))
+        (while mhc-sync/process
+          (sit-for 0.1)
+          (discard-input)))
       (sit-for 1)
       (mhc-window-pop)
       (or (and (mhc-summary-buffer-p)
-	       (mhc-rescan-month mhc-default-hide-private-schedules))
-	  (and (mhc-calendar-p) (mhc-calendar-rescan)))
+               (mhc-rescan-month mhc-default-hide-private-schedules))
+          (and (mhc-calendar-p) (mhc-calendar-rescan)))
       t))))
 
 (defun mhc-sync/filter (process string)
   (if (bufferp (process-buffer process))
       (let ((obuf (buffer-name)))
-	(unwind-protect
-	    (progn
-	      (set-buffer (process-buffer process))
-	      (let ((buffer-read-only nil)
-		    passwd)
-		(goto-char (point-max))
-		(insert string)
-		(cond
-		 ((and mhc-sync/req-passwd
-		       (string-match mhc-sync/passwd-regexp string))
-		  (setq passwd (mhc-misc-read-passwd string))
-		  (process-send-string process (concat passwd "\n")))
-		 ((string-match "---------------------" string)
-		  (setq mhc-sync/req-passwd nil)))))
-	  (if (get-buffer obuf)
-	      (set-buffer obuf))))))
+        (unwind-protect
+            (progn
+              (set-buffer (process-buffer process))
+              (let ((buffer-read-only nil)
+                    passwd)
+                (goto-char (point-max))
+                (insert string)
+                (cond
+                 ((and mhc-sync/req-passwd
+                       (string-match mhc-sync/passwd-regexp string))
+                  (setq passwd (mhc-misc-read-passwd string))
+                  (process-send-string process (concat passwd "\n")))
+                 ((string-match "---------------------" string)
+                  (setq mhc-sync/req-passwd nil)))))
+          (if (get-buffer obuf)
+              (set-buffer obuf))))))
 
 (defun mhc-sync/sentinel (process event)
   (when (bufferp (process-buffer process))

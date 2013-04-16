@@ -285,7 +285,7 @@ $ ./make.rb install
 
    `ruby configure.rb --with-emacs=/usr/local/Meadow/1.15/bin/meadownt\
                       --with-lispdir=/usr/local/Meadow/site-lisp/mhc\
-		      --with-gnus'
+                      --with-gnus'
 
 *** mhc2palm, palm2mhc のインストール
 

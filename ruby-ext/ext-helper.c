@@ -41,7 +41,7 @@ VALUE TM2TIME(struct tm *tp)
   time_t sec;
 
   dprintf(("%d-%d-%d  %d:%d:%d\n", tp->tm_year, tp->tm_mon, tp->tm_mday,
-	 tp->tm_hour, tp->tm_min, tp->tm_sec));
+         tp->tm_hour, tp->tm_min, tp->tm_sec));
 
   /* check -- sometimes, mktime() takes long time with a messy tm */
   if ((0  <= tp->tm_sec  && tp->tm_sec  <= 60) &&
@@ -222,8 +222,8 @@ int cp_get1(VALUE obj, char *fmt, char *ivname, void *cval)
   }
 
   dprintf(("converting name:%s class:%s\n",
-	   at_name == NULL ? "???" : at_name,
-	   rb_class2name(CLASS_OF(val))));
+           at_name == NULL ? "???" : at_name,
+           rb_class2name(CLASS_OF(val))));
 
   switch (TYPE(val)){
   case T_TRUE:

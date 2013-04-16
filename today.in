@@ -119,13 +119,13 @@ formatter_normal = Proc .new{|date, items|
   items .each{|sch|
     heading = heading .gsub(/./, ' ') if !first
     ret += heading + format("%-11s %s%s\n",
-			    sch .time_as_string,
-			    sch .subject,
-			    if sch .location and sch .location != ''
-			      ' [' + sch .location + ']'
-			    else
-			      ''
-			    end)
+                            sch .time_as_string,
+                            sch .subject,
+                            if sch .location and sch .location != ''
+                              ' [' + sch .location + ']'
+                            else
+                              ''
+                            end)
     first = false
   }
   MhcKconv::todisp(ret)
@@ -141,8 +141,8 @@ formatter_ps = Proc .new{|date, items|
     end
     ret += heading +
       format(" (%-5s %s)__XXX__",
-	     sch .time_b .to_s,
-	     sch .subject .digest(15) .gsub(/([()])/, '\\\\\1'))
+             sch .time_b .to_s,
+             sch .subject .digest(15) .gsub(/([()])/, '\\\\\1'))
   }
   MhcKconv::tops(ret)
 }
@@ -476,84 +476,84 @@ def
 
 /days_month [ 31 28 31 30 31 30 31 31 30 31 30 31 ] def
 
-/isleap {				% is this a leap year?
-	year 4 mod 0 eq			% multiple of 4
-	year 100 mod 0 ne 		% not century
-	year 1000 mod 0 eq or and	% unless it's a millenia
+/isleap {                               % is this a leap year?
+        year 4 mod 0 eq                 % multiple of 4
+        year 100 mod 0 ne               % not century
+        year 1000 mod 0 eq or and       % unless it's a millenia
 } def
 
-/ndays {				% number of days in this month
-	days_month month 1 sub get
-	month 2 eq			% February
-	isleap and
-	{
-		1 add
-	} if
+/ndays {                                % number of days in this month
+        days_month month 1 sub get
+        month 2 eq                      % February
+        isleap and
+        {
+                1 add
+        } if
 } def
 
-/weekday {				% weekday (range 0-6) for integer date
-	days_week mod
+/weekday {                              % weekday (range 0-6) for integer date
+        days_week mod
 } def
 
-/startday {				% starting day-of-week for this month
-	/off year 2032 sub def		% offset from start of "epoch"
-	off
-	off 4 idiv add			% number of leap years
-	off 100 idiv sub		% number of centuries
-	off 1000 idiv add		% number of millenia
-	4 add weekday days_week add 	% offset from Jan 1 2032
-	/off exch def
-	1 1 month 1 sub {
-		/idx exch def
-		days_month idx 1 sub get
-		idx 2 eq
-		isleap and
-		{
-			1 add
-		} if
-		/off exch off add def
-	} for
-	off weekday			% 0--Sunday, 1--monday, etc.
+/startday {                             % starting day-of-week for this month
+        /off year 2032 sub def          % offset from start of "epoch"
+        off
+        off 4 idiv add                  % number of leap years
+        off 100 idiv sub                % number of centuries
+        off 1000 idiv add               % number of millenia
+        4 add weekday days_week add     % offset from Jan 1 2032
+        /off exch def
+        1 1 month 1 sub {
+                /idx exch def
+                days_month idx 1 sub get
+                idx 2 eq
+                isleap and
+                {
+                        1 add
+                } if
+                /off exch off add def
+        } for
+        off weekday                     % 0--Sunday, 1--monday, etc.
 } def
 
-/prtevent {		% event-string day prtevent
-			%  print out an event
-	/start startday def
-	/day 2 1 roll def
-	day start add 1 sub 7 mod daywidth mul
-	day start add 1 sub 7 div truncate dayheight neg mul
-	-5
-	numevents day start add get -10 mul add
-	numevents
-	day start add
-	numevents day start add get 1 add
-	put
-	add moveto
-	show
+/prtevent {             % event-string day prtevent
+                        %  print out an event
+        /start startday def
+        /day 2 1 roll def
+        day start add 1 sub 7 mod daywidth mul
+        day start add 1 sub 7 div truncate dayheight neg mul
+        -5
+        numevents day start add get -10 mul add
+        numevents
+        day start add
+        numevents day start add get 1 add
+        put
+        add moveto
+        show
 } def
 
-/drawevents {		% read in a file full of events; print
-			%  the events for this month
-	/numevents
-	[0 0 0 0 0 0 0
-	 0 0 0 0 0 0 0
-	 0 0 0 0 0 0 0
-	 0 0 0 0 0 0 0
-	 0 0 0 0 0 0 0
-	 0 0 0 0 0 0 0] def
-	 eventfont findfont 9 scalefont setfont
-	 0 2 holidays length 2 sub { % for the "Holidays"
-		dup
-		1 add holidays 2 1 roll get
-		2 1 roll holidays 2 1 roll get
-		prtevent
-	} for
-	 0 2 schedules length 2 sub { % for the "Schedules"
-		dup
-		1 add schedules 2 1 roll get
-		2 1 roll schedules 2 1 roll get
-		prtevent
-	} for
+/drawevents {           % read in a file full of events; print
+                        %  the events for this month
+        /numevents
+        [0 0 0 0 0 0 0
+         0 0 0 0 0 0 0
+         0 0 0 0 0 0 0
+         0 0 0 0 0 0 0
+         0 0 0 0 0 0 0
+         0 0 0 0 0 0 0] def
+         eventfont findfont 9 scalefont setfont
+         0 2 holidays length 2 sub { % for the "Holidays"
+                dup
+                1 add holidays 2 1 roll get
+                2 1 roll holidays 2 1 roll get
+                prtevent
+        } for
+         0 2 schedules length 2 sub { % for the "Schedules"
+                dup
+                1 add schedules 2 1 roll get
+                2 1 roll schedules 2 1 roll get
+                prtevent
+        } for
 
 } def
 
@@ -561,79 +561,79 @@ def
 
 /prtnum { 3 string cvs show } def
 
-/center {				% center string in given width
-	/width exch def
-	/str exch def width str
-	stringwidth pop sub 2 div 0 rmoveto str show
+/center {                               % center string in given width
+        /width exch def
+        /str exch def width str
+        stringwidth pop sub 2 div 0 rmoveto str show
 } def
 
 /centernum { exch 3 string cvs exch center } def
 
-/drawgrid {				% draw calendar boxes
-	titlefont findfont weekdayfontsize scalefont setfont
-	currentpoint /y0 exch def /x0 exch def
-	0 1 days_week 1 sub {
-		submonth 0 eq
-		{
-			x0 y0 moveto
-			dup dup daywidth mul 40 rmoveto
-			day_names exch get
-			daywidth center
-		} if
-		x0 y0 moveto
-		daywidth mul topgridmarg rmoveto
-		1.0 setlinewidth
-		submonth 0 eq
-		{
-			/rowsused rows 1 sub def
-		}
-		{
-			/rowsused rows def
-		}
-		ifelse
-		0 1 rowsused {
-			gsave
-			daywidth 0 rlineto
-			0 dayheight neg rlineto
-			daywidth neg 0 rlineto
-			closepath stroke
-			grestore
-			0 dayheight neg rmoveto
-		} for
-	} for
+/drawgrid {                             % draw calendar boxes
+        titlefont findfont weekdayfontsize scalefont setfont
+        currentpoint /y0 exch def /x0 exch def
+        0 1 days_week 1 sub {
+                submonth 0 eq
+                {
+                        x0 y0 moveto
+                        dup dup daywidth mul 40 rmoveto
+                        day_names exch get
+                        daywidth center
+                } if
+                x0 y0 moveto
+                daywidth mul topgridmarg rmoveto
+                1.0 setlinewidth
+                submonth 0 eq
+                {
+                        /rowsused rows 1 sub def
+                }
+                {
+                        /rowsused rows def
+                }
+                ifelse
+                0 1 rowsused {
+                        gsave
+                        daywidth 0 rlineto
+                        0 dayheight neg rlineto
+                        daywidth neg 0 rlineto
+                        closepath stroke
+                        grestore
+                        0 dayheight neg rmoveto
+                } for
+        } for
 } def
 
-/drawnums {				% place day numbers on calendar
-	dayfont findfont datefontsize
-	submonth 0 ne
-	{
-		2.5 mul
-	} if scalefont setfont
-	/start startday def
-	/days ndays def
-	start daywidth mul dayleftmarg add daytopmarg rmoveto
-	submonth 0 ne
-	{
-		dayleftmarg neg dayheight -2 div rmoveto
-	} if
-	1 1 days {
-		/day exch def
-		gsave
-		day start add weekday 0 eq
-		{
-			submonth 0 eq
-			{
-				.7 setgray
-			} if
-		} if
-		day start add weekday 1 eq
-		{
-			submonth 0 eq
-			{
-				.7 setgray
-			} if
-		} if
-		%% Added by ichimal, 2000.2
+/drawnums {                             % place day numbers on calendar
+        dayfont findfont datefontsize
+        submonth 0 ne
+        {
+                2.5 mul
+        } if scalefont setfont
+        /start startday def
+        /days ndays def
+        start daywidth mul dayleftmarg add daytopmarg rmoveto
+        submonth 0 ne
+        {
+                dayleftmarg neg dayheight -2 div rmoveto
+        } if
+        1 1 days {
+                /day exch def
+                gsave
+                day start add weekday 0 eq
+                {
+                        submonth 0 eq
+                        {
+                                .7 setgray
+                        } if
+                } if
+                day start add weekday 1 eq
+                {
+                        submonth 0 eq
+                        {
+                                .7 setgray
+                        } if
+                } if
+                %% Added by ichimal, 2000.2
         submonth 0 eq {
             0 2 holidays length 2 sub {
                 holidays 2 1 roll get day eq {
@@ -642,193 +642,193 @@ def
                 } if
             } for
         } if
-		submonth 0 eq
-		{
-			isdouble
-			{
-				day prtdouble
-			}
-			{
-				day prtnum
-			} ifelse
-		}
-		{
-			day daywidth centernum
-		} ifelse
-		grestore
-		day start add weekday 0 eq
-		{
-			currentpoint exch pop dayheight sub 0 exch moveto
-			submonth 0 eq
-			{
-				dayleftmarg 0 rmoveto
-			} if
-		}
-		{
-			daywidth 0 rmoveto
-		} ifelse
-	} for
+                submonth 0 eq
+                {
+                        isdouble
+                        {
+                                day prtdouble
+                        }
+                        {
+                                day prtnum
+                        } ifelse
+                }
+                {
+                        day daywidth centernum
+                } ifelse
+                grestore
+                day start add weekday 0 eq
+                {
+                        currentpoint exch pop dayheight sub 0 exch moveto
+                        submonth 0 eq
+                        {
+                                dayleftmarg 0 rmoveto
+                        } if
+                }
+                {
+                        daywidth 0 rmoveto
+                } ifelse
+        } for
 } def
-/isdouble {				% overlay today with next/last week?
-	days start add rows days_week mul gt
-	{
-		day start add rows days_week mul gt
-		{
-			true true
-		}
-		{
-			day start add rows 1 sub days_week mul gt
-			day days_week add days le and
-			{
-				false true
-			}
-			{
-				false
-			} ifelse
-		} ifelse
-	}
-	{
-		false
-	} ifelse
+/isdouble {                             % overlay today with next/last week?
+        days start add rows days_week mul gt
+        {
+                day start add rows days_week mul gt
+                {
+                        true true
+                }
+                {
+                        day start add rows 1 sub days_week mul gt
+                        day days_week add days le and
+                        {
+                                false true
+                        }
+                        {
+                                false
+                        } ifelse
+                } ifelse
+        }
+        {
+                false
+        } ifelse
 } def
 
 /prtdouble {
-	gsave
-	  dayfont findfont datefontsize 2 mul 3 div scalefont setfont
-	  exch
-	  {
-		(23/) stringwidth pop dayheight rmoveto
-		prtnum
-	  }
-	  {
-		0 datefontsize 5 div rmoveto
-		prtnum
-		0 datefontsize -5 div rmoveto
-		gsave
-		  dayfont findfont datefontsize scalefont setfont
-		  (/) show
-		grestore
-	  } ifelse
-	grestore
+        gsave
+          dayfont findfont datefontsize 2 mul 3 div scalefont setfont
+          exch
+          {
+                (23/) stringwidth pop dayheight rmoveto
+                prtnum
+          }
+          {
+                0 datefontsize 5 div rmoveto
+                prtnum
+                0 datefontsize -5 div rmoveto
+                gsave
+                  dayfont findfont datefontsize scalefont setfont
+                  (/) show
+                grestore
+          } ifelse
+        grestore
 } def
 
-/drawfill {				% place fill squares on calendar
-	/start startday def
-	/days ndays def
-	currentpoint /y0 exch def /x0 exch def
-	submonth 0 eq
-	{
-		usefirst
-		{
-			/fillstart 2 def
-		}
-		{
-			/fillstart 0 def
-		}
-		ifelse
-	}
-	{
-		/fillstart 0 def
-	}
-	ifelse
-	fillstart daywidth mul topgridmarg rmoveto
-	1.0 setlinewidth
-	fillstart 1 start 1 sub {
-		gsave
-		.9 setgray
-		daywidth 0 rlineto
-		0 dayheight neg rlineto
-		daywidth neg 0 rlineto
-		closepath fill
-		grestore
-		daywidth 0 rmoveto
-	} for
-	x0 y0 moveto
-	submonth 0 ne
-	{
-		/lastday rows 1 add days_week mul def
-		days_week 1 sub daywidth mul -440 rmoveto
-	}
-	{
-		/lastday rows days_week mul 2 sub fillstart add def
-		days_week 3 sub fillstart add daywidth mul
-		-440 dayheight add rmoveto
-	} ifelse
-	lastday -1 ndays start 1 add add
-	{
-		/day exch def
-		gsave
-		.9 setgray
-		daywidth 0 rlineto
-		0 dayheight neg rlineto
-		daywidth neg 0 rlineto
-		closepath fill
-		grestore
-		day weekday 1 eq
-		{
-			x0 y0 moveto
-			days_week 1 sub daywidth mul -440 dayheight add rmoveto
-		}
-		{
-			daywidth neg 0 rmoveto
-		} ifelse
-	} for
+/drawfill {                             % place fill squares on calendar
+        /start startday def
+        /days ndays def
+        currentpoint /y0 exch def /x0 exch def
+        submonth 0 eq
+        {
+                usefirst
+                {
+                        /fillstart 2 def
+                }
+                {
+                        /fillstart 0 def
+                }
+                ifelse
+        }
+        {
+                /fillstart 0 def
+        }
+        ifelse
+        fillstart daywidth mul topgridmarg rmoveto
+        1.0 setlinewidth
+        fillstart 1 start 1 sub {
+                gsave
+                .9 setgray
+                daywidth 0 rlineto
+                0 dayheight neg rlineto
+                daywidth neg 0 rlineto
+                closepath fill
+                grestore
+                daywidth 0 rmoveto
+        } for
+        x0 y0 moveto
+        submonth 0 ne
+        {
+                /lastday rows 1 add days_week mul def
+                days_week 1 sub daywidth mul -440 rmoveto
+        }
+        {
+                /lastday rows days_week mul 2 sub fillstart add def
+                days_week 3 sub fillstart add daywidth mul
+                -440 dayheight add rmoveto
+        } ifelse
+        lastday -1 ndays start 1 add add
+        {
+                /day exch def
+                gsave
+                .9 setgray
+                daywidth 0 rlineto
+                0 dayheight neg rlineto
+                daywidth neg 0 rlineto
+                closepath fill
+                grestore
+                day weekday 1 eq
+                {
+                        x0 y0 moveto
+                        days_week 1 sub daywidth mul -440 dayheight add rmoveto
+                }
+                {
+                        daywidth neg 0 rmoveto
+                } ifelse
+        } for
 } def
 
-/usefirst {				% are last two boxes used by days?
-	start ndays add rows days_week mul 3 sub gt
-	start 2 ge and
+/usefirst {                             % are last two boxes used by days?
+        start ndays add rows days_week mul 3 sub gt
+        start 2 ge and
 
 } def
 
 /calendar
 {
-	titlefont findfont titlefontsize scalefont setfont
-	0 60 moveto
-	/month_name month_names month 1 sub get def
-	month_name show
-	/yearstring year 10 string cvs def
-	daywidth days_week mul yearstring stringwidth pop sub 60 moveto
-	yearstring show
+        titlefont findfont titlefontsize scalefont setfont
+        0 60 moveto
+        /month_name month_names month 1 sub get def
+        month_name show
+        /yearstring year 10 string cvs def
+        daywidth days_week mul yearstring stringwidth pop sub 60 moveto
+        yearstring show
 
-	eventflag {
-		% Show a centered Banner if any at the Top
-		daywidth days_week mul 2 div
-		Bannerstring stringwidth pop 2 div sub
-		60 moveto
-		Bannerstring show
-		% Show footnotes left-center-right
-		eventfont findfont footfontsize scalefont setfont
-		/bottomrow { dayheight rows mul 5 sub neg } def
-		0 bottomrow moveto
-		Lfootstring show
-		daywidth days_week mul Rfootstring stringwidth pop sub
-		bottomrow moveto
-		Rfootstring show
-		daywidth days_week mul Cfootstring stringwidth pop sub 2 div
-		bottomrow moveto
-		Cfootstring show
+        eventflag {
+                % Show a centered Banner if any at the Top
+                daywidth days_week mul 2 div
+                Bannerstring stringwidth pop 2 div sub
+                60 moveto
+                Bannerstring show
+                % Show footnotes left-center-right
+                eventfont findfont footfontsize scalefont setfont
+                /bottomrow { dayheight rows mul 5 sub neg } def
+                0 bottomrow moveto
+                Lfootstring show
+                daywidth days_week mul Rfootstring stringwidth pop sub
+                bottomrow moveto
+                Rfootstring show
+                daywidth days_week mul Cfootstring stringwidth pop sub 2 div
+                bottomrow moveto
+                Cfootstring show
 
-	} if
+        } if
 
-	0 -5 moveto
-	drawnums
+        0 -5 moveto
+        drawnums
 
-	0 -5 moveto
-	drawfill
+        0 -5 moveto
+        drawfill
 
-	eventflag {
-		0 0 moveto
-		drawevents
-	} if
+        eventflag {
+                0 0 moveto
+                drawevents
+        } if
 
-	0 -5 moveto
-	drawgrid
+        0 -5 moveto
+        drawgrid
 } def
 
 /eventflag true def
 
-@SCALE@	scale
+@SCALE@ scale
 @ROTATE@ rotate
 @TRANSLATE@ translate
 /submonth 0 def
@@ -836,28 +836,28 @@ calendar
 /eventflag false def
 month 1 sub 0 eq
 {
-	/lmonth 12 def
-	/lyear year 1 sub def
+        /lmonth 12 def
+        /lyear year 1 sub def
 }
 {
-	/lmonth month 1 sub def
-	/lyear year def
+        /lmonth month 1 sub def
+        /lyear year def
 } ifelse
 month 1 add 13 eq
 {
-	/nmonth 1 def
-	/nyear year 1 add def
+        /nmonth 1 def
+        /nyear year 1 add def
 }
 {
-	/nmonth month 1 add def
-	/nyear year def
+        /nmonth month 1 add def
+        /nyear year def
 } ifelse
 usefirst
 {
-	0 30 translate
+        0 30 translate
 }
 {
-	days_week 2 sub daywidth mul -350 translate
+        days_week 2 sub daywidth mul -350 translate
 }
 ifelse
 /submonth 1 def

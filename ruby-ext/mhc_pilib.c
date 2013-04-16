@@ -210,7 +210,7 @@ static VALUE rdlp_ReadRecordByIndex(VALUE obj, VALUE sd, VALUE db, VALUE i)
 
   ary = ary_new();
   len = dlp_ReadRecordByIndex(FIX2INT(sd), FIX2INT(db), FIX2INT(i),
-			      buffer, &id, &attr, &category);
+                              buffer, &id, &attr, &category);
 
   if (len <= 0) {
     pi_buffer_free (buffer);
@@ -245,7 +245,7 @@ static VALUE rdlp_ReadRecordById(VALUE obj, VALUE sd, VALUE db, VALUE vid)
 
   ary = ary_new();
   len = dlp_ReadRecordById(FIX2INT(sd), FIX2INT(db), id,
-			   buffer, &index, &attr, &category);
+                           buffer, &index, &attr, &category);
 
   if (len <= 0) {
     pi_buffer_free (buffer);
@@ -298,10 +298,10 @@ static VALUE rdlp_WriteRecord(VALUE obj, VALUE sd, VALUE db, VALUE ary)
   dprintf(("beg_year %d\n", app.begin.tm_year));
   dprintf(("Subject: %s\n", app.description));
   dprintf(("id: %d  attr: %d  cat: %d  buf_len: %d\n",
-	   id, attr, category, len));
+           id, attr, category, len));
 
   ret = dlp_WriteRecord(FIX2INT(sd), FIX2INT(db), attr,
-			id, category, buffer->data, len, &new_id);
+                        id, category, buffer->data, len, &new_id);
   pi_buffer_free(buffer);
 
   if (ret < 0){
@@ -592,7 +592,7 @@ static VALUE rpi_file_read_record(VALUE obj, VALUE i)
   Data_Get_Struct(obj, struct pi_file, pf);
 
   if (pi_file_read_record(pf, FIX2INT(i),
-			  &ptr, &len, &attr, &category, &id) < 0){
+                          &ptr, &len, &attr, &category, &id) < 0){
     return Qnil;
   }
 

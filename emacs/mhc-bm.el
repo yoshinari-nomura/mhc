@@ -33,13 +33,13 @@ Example:
     (\"Conflict\"    . (\"Conflict.xbm\" \"Yellow\")))"
   :group 'mhc
   :type '(repeat
-	  :inline t
-	  (cons (string :tag "Icon Name")
-		(list (string :tag "XBM File Name")
-		      (choice (string :tag "Set FG Color")
-			      (const :tag "Default FG Color" nil))
-		      (choice (string :tag "Set BG Color")
-			      (const :tag "Default BG Color" nil))))))
+          :inline t
+          (cons (string :tag "Icon Name")
+                (list (string :tag "XBM File Name")
+                      (choice (string :tag "Set FG Color")
+                              (const :tag "Default FG Color" nil))
+                      (choice (string :tag "Set BG Color")
+                              (const :tag "Default BG Color" nil))))))
 
 (defcustom mhc-icon-function-alist
   '(("Todo" . mhc-todo-set-as-done)
@@ -52,9 +52,9 @@ If the icon named NAME is clicked, then FUNCTION is invoked at
 icon line."
   :group 'mhc
   :type '(repeat
-	  :inline t
-	  (cons (string :tag "Icon Name")
-		(function :tag "Function"))))
+          :inline t
+          (cons (string :tag "Icon Name")
+                (function :tag "Function"))))
 
 ;; internal variable.
 (defvar mhc-bm/icon-bmstr-alist nil)
@@ -71,49 +71,49 @@ icon line."
   (save-excursion
     (mouse-set-point event)
     (if (get-text-property (point) 'mhc-bm-icon-function)
-	(call-interactively
-	 (get-text-property (point) 'mhc-bm-icon-function)))))
+        (call-interactively
+         (get-text-property (point) 'mhc-bm-icon-function)))))
 
 (defun mhc-bm/create-rectangle (file)
   (with-temp-buffer
     (insert-file-contents file)
     (let* ((cmp (bitmap-decode-xbm (bitmap-read-xbm-buffer (current-buffer))))
-	   (len (length cmp))
-	   (i 0)
-	   bitmap)
+           (len (length cmp))
+           (i 0)
+           bitmap)
       (while (< i len)
-	(setq bitmap (cons (bitmap-compose (aref cmp i)) bitmap))
-	(setq i (+ i 1)))
+        (setq bitmap (cons (bitmap-compose (aref cmp i)) bitmap))
+        (setq i (+ i 1)))
       (nreverse bitmap))))
 
 (defsubst mhc-bm/setup-icons ()
   (let ((alist mhc-bm-icon-alist)
-	bmstr)
+        bmstr)
     (while alist
       ;; Only the first element of the rectangle is used.
       (setq bmstr (car (mhc-bm/create-rectangle
-			(expand-file-name (car (cdr (car alist)))
-					  mhc-icon-path))))
+                        (expand-file-name (car (cdr (car alist)))
+                                          mhc-icon-path))))
       (put-text-property 0 (length bmstr)
-			 'face
-			 (mhc-face-make-face-from-string
-			  (concat "mhc-bm-icon-"
-				  (downcase (car (car alist)))
-				  "-face")
-			  (list nil
-				(nth 0 (cdr (cdr (car alist))))
-				(nth 1 (cdr (cdr (car alist))))))
-			 bmstr)
+                         'face
+                         (mhc-face-make-face-from-string
+                          (concat "mhc-bm-icon-"
+                                  (downcase (car (car alist)))
+                                  "-face")
+                          (list nil
+                                (nth 0 (cdr (cdr (car alist))))
+                                (nth 1 (cdr (cdr (car alist))))))
+                         bmstr)
       (setq mhc-bm/icon-bmstr-alist
-	    (cons
-	     (cons (downcase (car (car alist)))
-		   bmstr)
-	     mhc-bm/icon-bmstr-alist))
+            (cons
+             (cons (downcase (car (car alist)))
+                   bmstr)
+             mhc-bm/icon-bmstr-alist))
       (setq alist (cdr alist)))
     (setq mhc-bm/icon-function-alist
-	  (mapcar (lambda (pair)
-		    (cons (downcase (car pair)) (cdr pair)))
-		  mhc-icon-function-alist))))
+          (mapcar (lambda (pair)
+                    (cons (downcase (car pair)) (cdr pair)))
+                  mhc-icon-function-alist))))
 
 ;; Icon interface
 (defun mhc-icon-setup ()
@@ -123,10 +123,10 @@ icon line."
       (setq mhc-bm/icon-bmstr-alist nil))
   (or mhc-bm/icon-bmstr-alist
       (progn
-	(message "Initializing MHC icons...")
-	(mhc-bm/setup-icons)
-	(run-hooks 'mhc-icon-setup-hook)
-	(message "Initializing MHC icons...done"))))
+        (message "Initializing MHC icons...")
+        (mhc-bm/setup-icons)
+        (run-hooks 'mhc-icon-setup-hook)
+        (message "Initializing MHC icons...done"))))
 
 (defun mhc-use-icon-p ()
   "Returns t if MHC displays icon."
@@ -142,17 +142,17 @@ Icon is defined by `mhc-bm-icon-alist'."
   (let (icon pos func overlay)
     (while icons
       (setq icon (cdr (assoc (downcase (car icons))
-			     mhc-bm/icon-bmstr-alist)))
+                             mhc-bm/icon-bmstr-alist)))
       (setq pos (point))
       (and icon (insert icon))
       (when (setq func (cdr (assoc (downcase (car icons))
-				   mhc-bm/icon-function-alist)))
-	(put-text-property pos (point)
-			   'mhc-bm-icon-function func)
-	(put-text-property pos (point) 'local-map mhc-bm-icon-keymap)
-	(setq overlay (make-overlay pos (point)))
-	(overlay-put overlay 'face (get-text-property 0 'face icon))
-	(overlay-put overlay 'mouse-face 'highlight))
+                                   mhc-bm/icon-function-alist)))
+        (put-text-property pos (point)
+                           'mhc-bm-icon-function func)
+        (put-text-property pos (point) 'local-map mhc-bm-icon-keymap)
+        (setq overlay (make-overlay pos (point)))
+        (overlay-put overlay 'face (get-text-property 0 'face icon))
+        (overlay-put overlay 'mouse-face 'highlight))
       (setq icons (cdr icons)))))
 
 (provide 'mhc-bm)

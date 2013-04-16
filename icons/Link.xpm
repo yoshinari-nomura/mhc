@@ -1,12 +1,12 @@
 /* XPM */
 static char * Link_xpm[] = {
 "16 16 6 1",
-" 	s backgroundColor c None",
-".	c #30C230C26185",
-"X	c #E79DE79DE79D",
-"o	c #C71BC30BEFBE",
-"O	c #8E388A288E38",
-"+	c #BEFBBEFBBEFB",
+"       s backgroundColor c None",
+".      c #30C230C26185",
+"X      c #E79DE79DE79D",
+"o      c #C71BC30BEFBE",
+"O      c #8E388A288E38",
+"+      c #BEFBBEFBBEFB",
 "                ",
 "            ..  ",
 "           .Xo. ",
