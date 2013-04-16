@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ### mhc-signal.rb
 ##
 ## Author:  Yoshinari Nomura <nom@quickhack.net>

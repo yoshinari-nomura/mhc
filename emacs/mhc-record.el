@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -36,7 +36,7 @@
 
 (defcustom mhc-record-log-file
   (expand-file-name ".mhc-db-log" (mhc-summary-folder-to-path mhc-base-folder))
-  "*¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤ÎÁàºîÍúÎò¥í¥°"
+  "*ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®æ“ä½œå±¥æ­´ãƒ­ã‚°"
   :group 'mhc
   :type 'file)
 

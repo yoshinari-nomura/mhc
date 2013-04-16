@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ### mhc-palm.rb
 ##
 ## Author:  Yoshinari Nomura <nom@quickhack.net>
@@ -344,36 +345,36 @@ class PilotApptRecord < PilotRecord
     return ary .join(' ')
   end
 
-  ## b 	@event                 	»ş´Ö»ØÄê¤¬¤Ê¤¤¥¤¥Ù¥ó¥È¤«¤É¤¦¤«
-  ## t 	@beg	           	³«»ÏÆüÉÕ¡¢»ş´Ö¡£
-  ## 		           	(repeat ¤Î¾ì¹ç¤Ï¡¢duration ¤Î³«»Ï¤Ç¤â¤¢¤ë)
-  ## t 	@fin                   	½ª¤ï¤ê¤Î»ş´Ö (date ÉôÊ¬¤Ï beg ¤ÈÆ±¤¸¤Ë¤¹¤ë)
-  ## 			   	event == 1 ¤Î¤È¤­¤Ï¡¢time ÉôÊ¬¤ÏÁ´Éô 0
+  ## b 	@event                 	æ™‚é–“æŒ‡å®šãŒãªã„ã‚¤ãƒ™ãƒ³ãƒˆã‹ã©ã†ã‹
+  ## t 	@beg	           	é–‹å§‹æ—¥ä»˜ã€æ™‚é–“ã€‚
+  ## 		           	(repeat ã®å ´åˆã¯ã€duration ã®é–‹å§‹ã§ã‚‚ã‚ã‚‹)
+  ## t 	@fin                   	çµ‚ã‚ã‚Šã®æ™‚é–“ (date éƒ¨åˆ†ã¯ beg ã¨åŒã˜ã«ã™ã‚‹)
+  ## 			   	event == 1 ã®ã¨ãã¯ã€time éƒ¨åˆ†ã¯å…¨éƒ¨ 0
   ## b 	@alarm                	1 or 0
   ## i 	@advance		0-99
   ## i 	@advanceUnits		units = ['minute', 'hour', 'day'];
 
   ## i     @repeatType           	None,Daily Weekly MonthlyByDay,
   ##				MonthlyByDate,Yearly
-  ## 				byday -> cond (@repeatDay ¤ò¿®ÍÑ)
-  ## 				bydate -> num @beg .day ¤ò¿®ÍÑ¡£
-  ## b     @repeatForever		repeatEnd ¤ò¿®ÍÑ¤·¤Æ¤¤¤¤¤«¤É¤¦¤«¡£
-  ## 				repeatEnd ¤Ï¿®ÍÑ¤·¤Æ¤Ï¤Ê¤é¤Ê¤¤¡£
-  ## t     @repeatEnd		Duration end (date ÉôÊ¬¤À¤±)
+  ## 				byday -> cond (@repeatDay ã‚’ä¿¡ç”¨)
+  ## 				bydate -> num @beg .day ã‚’ä¿¡ç”¨ã€‚
+  ## b     @repeatForever		repeatEnd ã‚’ä¿¡ç”¨ã—ã¦ã„ã„ã‹ã©ã†ã‹ã€‚
+  ## 				repeatEnd ã¯ä¿¡ç”¨ã—ã¦ã¯ãªã‚‰ãªã„ã€‚
+  ## t     @repeatEnd		Duration end (date éƒ¨åˆ†ã ã‘)
   ## i     @repeatFrequency		int
   ## i     @repeatDay		o = repeatDay /7, w = repeatDay % 7
-  ## 				5th ¤¬¤Ê¤¤¤Î¤Ï¤Ê¤¼?
+  ## 				5th ãŒãªã„ã®ã¯ãªãœ?
   ## b[7]  @repeatDays		Sun, Mon, Tue, 1 or 0
-  ## i     @repeatWeekstart		¤¤¤Ä¤â 0
+  ## i     @repeatWeekstart		ã„ã¤ã‚‚ 0
 
   ## i     @exceptions, 	0?
   ## t[x]  @exception		[]
   ## s     @description		NULL  or Subject:
-  ## s     @note		NULL  or ËÜÊ¸
+  ## s     @note		NULL  or æœ¬æ–‡
 
 
   ################################################################
-  ## ¥¹¥±¥¸¥å¡¼¥ë¥¿¥¤¥×¤Ë¤è¤é¤Ê¤¤
+  ## ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ—ã«ã‚ˆã‚‰ãªã„
   ##
 
   ## set alarm in second.
@@ -407,7 +408,7 @@ class PilotApptRecord < PilotRecord
     raise "Type error: requires MhcTime\n" if e && !e .is_a?(MhcTime)
     if b
       @event = false
-      e = b if !e ## ½ªÎ»»ş´Ö¤ò»ØÄê¤·¤Æ¤¤¤Ê¤«¤Ã¤¿¤é¡¢³«»Ï¤ÈÆ±¤¸¤Ë
+      e = b if !e ## çµ‚äº†æ™‚é–“ã‚’æŒ‡å®šã—ã¦ã„ãªã‹ã£ãŸã‚‰ã€é–‹å§‹ã¨åŒã˜ã«
       @beg = replace_time(@beg, b .hh, b .mm)
       @fin = replace_time(@fin, e .hh, e .mm)
     else
@@ -418,7 +419,7 @@ class PilotApptRecord < PilotRecord
   end
 
   def add_exception(date)
-    ## repeatType = None ¤Î¤È¤­¤Ï¡¢exception ¤òÀßÄê¤·¤Æ¤â°ÕÌ£¤¬¤Ê¤¤?
+    ## repeatType = None ã®ã¨ãã¯ã€exception ã‚’è¨­å®šã—ã¦ã‚‚æ„å‘³ãŒãªã„?
     raise "Type error: requires MhcDate\n" if !date .is_a?(MhcDate)
     @exception << date .to_t
     @exceptions = @exception .length
@@ -438,10 +439,10 @@ class PilotApptRecord < PilotRecord
   end
 
   ################################################################
-  ## ¥¹¥±¥¸¥å¡¼¥ë¥¿¥¤¥×ÊÌ
+  ## ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ—åˆ¥
   ##
 
-  ## ÉáÄÌ¤Î ¥ê¥Ô¡¼¥È¤·¤Ê¤¤¤ä¤Ä
+  ## æ™®é€šã® ãƒªãƒ”ãƒ¼ãƒˆã—ãªã„ã‚„ã¤
   ##
   def set_nonrepeat_date(date)
     raise "Type error: requires MhcDate\n" if !date .is_a?(MhcDate)
@@ -453,33 +454,33 @@ class PilotApptRecord < PilotRecord
 
   ## repeatType -> Daily
   ##
-  ## x-sc-day ¤ò sort ¤·¤Æ¡¢ 1Æü´Ö³Ö¤ËÊÂ¤ó¤Ç¤¤¤ë &&
-  ## x-sc-cond ¤Ï¶õ
+  ## x-sc-day ã‚’ sort ã—ã¦ã€ 1æ—¥é–“éš”ã«ä¸¦ã‚“ã§ã„ã‚‹ &&
+  ## x-sc-cond ã¯ç©º
   ##
-  ## n ÆüËè
-  ## duration_b - duration_e ¤Ş¤Ç
+  ## n æ—¥æ¯
+  ## duration_b - duration_e ã¾ã§
   def set_daily(beg, fin, freq)
-    set_duration(beg, fin) ## beg, fin ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
-    set_frequency(freq)    ## freq     ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
-    ## xxx: Àè¤ËÁ´Éô¥Á¥§¥Ã¥¯¤·¤Æ¤«¤é¤Ç¤Ê¤¤¤È rollback ¤Ç¤­¤Ê¤¤¡£¡£
+    set_duration(beg, fin) ## beg, fin ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
+    set_frequency(freq)    ## freq     ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
+    ## xxx: å…ˆã«å…¨éƒ¨ãƒã‚§ãƒƒã‚¯ã—ã¦ã‹ã‚‰ã§ãªã„ã¨ rollback ã§ããªã„ã€‚ã€‚
     @repeatType = 1
     return self
   end
 
   ## repeatType -> Weekly
   ##
-  ## x-sc-day ¤Ï¶õ && 
-  ## x-sc-cond ¤Ï wek ¤À¤±(Ê£¿ô²Ä)
+  ## x-sc-day ã¯ç©º && 
+  ## x-sc-cond ã¯ wek ã ã‘(è¤‡æ•°å¯)
   ##
   ## Sun Mon Tue
-  ## duration_b - duration_e ¤Ş¤Ç
+  ## duration_b - duration_e ã¾ã§
   ##
   ## weeks = [false, true, true, false, false, false, false]
   ##     -> Mon, Tue
   ##
   def set_weekly(beg, fin, freq, weeks)
-    set_duration(beg, fin) ## beg, fin ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
-    set_frequency(freq)    ## freq     ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
+    set_duration(beg, fin) ## beg, fin ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
+    set_frequency(freq)    ## freq     ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
     w = []
 
     if weeks .is_a?(Array) && weeks .length == 7
@@ -501,22 +502,22 @@ class PilotApptRecord < PilotRecord
     
   ## repatType -> Monthly
   ##
-  ## x-sc-day ¤Ï¶õ &&
-  ## ((x-sc-cond ¤Ï ord ¤¬ 1¸Ä && ord != 5th && wek ¤¬°ì¸Ä¤À¤±) ||
-  ##  x-sc-cond ¤Ï num ¤¬ 1¸Ä¤À¤±)
+  ## x-sc-day ã¯ç©º &&
+  ## ((x-sc-cond ã¯ ord ãŒ 1å€‹ && ord != 5th && wek ãŒä¸€å€‹ã ã‘) ||
+  ##  x-sc-cond ã¯ num ãŒ 1å€‹ã ã‘)
   ##
   ## 1st Sun  -- by day
   ## 01       -- by date
-  ## duration_b - duration_e ¤Ş¤Ç
+  ## duration_b - duration_e ã¾ã§
   ##
-  ## ord  .. 0 - 4 ¤ÎÀ°¿ô 1st, 2nd, 3rd, 4th, Last ¤ËÂĞ±ş
-  ## wek  .. 0 - 6 ¤ÎÀ°¿ô Sun, ... ,Sat            ¤ËÂĞ±ş
+  ## ord  .. 0 - 4 ã®æ•´æ•° 1st, 2nd, 3rd, 4th, Last ã«å¯¾å¿œ
+  ## wek  .. 0 - 6 ã®æ•´æ•° Sun, ... ,Sat            ã«å¯¾å¿œ
   ##
   def set_monthly_by_day(beg, fin, freq, ord, wek)
-    set_duration(beg, fin) ## beg, fin ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
-    set_frequency(freq)    ## freq     ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
+    set_duration(beg, fin) ## beg, fin ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
+    set_frequency(freq)    ## freq     ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
 
-    ## beg ¤ÎÆüÉÕ¤¬ ord, week ¤òËş¤¿¤·¤Æ¤¤¤ë¤«¤Î¥Á¥§¥Ã¥¯¤¬É¬Í×
+    ## beg ã®æ—¥ä»˜ãŒ ord, week ã‚’æº€ãŸã—ã¦ã„ã‚‹ã‹ã®ãƒã‚§ãƒƒã‚¯ãŒå¿…è¦
     msg = "Type/Range error: (0< ord <4, 0< wek <6) required. (#{ord}, #{wek})"
     raise msg if !(ord .is_a?(Integer) && 0 <= ord && ord <= 4)
     raise msg if !(wek .is_a?(Integer) && 0 <= wek && wek <= 6)
@@ -528,32 +529,32 @@ class PilotApptRecord < PilotRecord
   end
 
   def set_monthly_by_date(beg, fin, freq)
-    set_duration(beg, fin) ## beg, fin ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
-    set_frequency(freq)    ## freq     ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
+    set_duration(beg, fin) ## beg, fin ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
+    set_frequency(freq)    ## freq     ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
 
-    ## beg ¤Î ÆüÉÕ¤ÎÉôÊ¬¤Î ¡ÖÆü¡× ¤¬¤½¤Î¤Ş¤Ş»È¤ï¤ì¤ë
+    ## beg ã® æ—¥ä»˜ã®éƒ¨åˆ†ã® ã€Œæ—¥ã€ ãŒãã®ã¾ã¾ä½¿ã‚ã‚Œã‚‹
     @repeatType = 4
     return self
   end
 
   ## repeatType -> yearly
   ##
-  ## x-sc-day ¤Ï¶õ &&
-  ## x-sc-cond ¤Ï mon ¤¬ 1¸Ä¤È num ¤¬1¸Ä¤À¤±
+  ## x-sc-day ã¯ç©º &&
+  ## x-sc-cond ã¯ mon ãŒ 1å€‹ã¨ num ãŒ1å€‹ã ã‘
   ##
   ## Jan 01
-  ## duration_b - duration_e ¤Ş¤Ç
+  ## duration_b - duration_e ã¾ã§
   def set_yearly(beg, fin, freq)
-    set_duration(beg, fin) ## beg, fin ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
-    set_frequency(freq)    ## freq     ¤Î·¿¥Á¥§¥Ã¥¯¤â¤¹¤ë
+    set_duration(beg, fin) ## beg, fin ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
+    set_frequency(freq)    ## freq     ã®å‹ãƒã‚§ãƒƒã‚¯ã‚‚ã™ã‚‹
 
-    ## beg ¤Î ÆüÉÕ¤ÎÉôÊ¬¤Î ¡Ö·î¡¦Æü¡× ¤¬¤½¤Î¤Ş¤Ş»È¤ï¤ì¤ë
+    ## beg ã® æ—¥ä»˜ã®éƒ¨åˆ†ã® ã€Œæœˆãƒ»æ—¥ã€ ãŒãã®ã¾ã¾ä½¿ã‚ã‚Œã‚‹
     @repeatType = 5
     return self
   end
 
   ################################################################
-  ## mhc ¤¬»È¤¦ MhcScheduleItem ¤Ø¤ÎÊÑ´¹
+  ## mhc ãŒä½¿ã† MhcScheduleItem ã¸ã®å¤‰æ›
 
   $last_mid_rand = 'AAAA'
   $last_mid_time = nil
@@ -654,7 +655,7 @@ class PilotApptRecord < PilotRecord
   ################################################################
   ## private
 
-  ## Palm ¤Î¥Î¡¼¥È -> mhc ¤Î body ¤È X-SC-* °Ê³°¤Î¥Ø¥Ã¥ÀÉôÊ¬¤ËÊÑ´¹
+  ## Palm ã®ãƒãƒ¼ãƒˆ -> mhc ã® body ã¨ X-SC-* ä»¥å¤–ã®ãƒ˜ãƒƒãƒ€éƒ¨åˆ†ã«å¤‰æ›
   def conv_note(string)
     if string =~ /\A(\#\#@@@.@@@)\n([^\z]*)\z/n
       datebk3_icon, string = $1, $2
@@ -683,12 +684,12 @@ class PilotApptRecord < PilotRecord
     return header, body, datebk3_icon
   end
     
-  ## Time ¥¯¥é¥¹¥¤¥ó¥¹¥¿¥ó¥¹¤Î »ş´ÖÉôÊ¬¤À¤±¤òÃÖ¤­´¹¤¨¤ë
+  ## Time ã‚¯ãƒ©ã‚¹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã® æ™‚é–“éƒ¨åˆ†ã ã‘ã‚’ç½®ãæ›ãˆã‚‹
   def replace_time(time, hour, min)
     return Time .local(*time .to_a .indexes(5, 4, 3) + [hour, min])
   end
 
-  ## Time ¥¯¥é¥¹¥¤¥ó¥¹¥¿¥ó¥¹¤Î ÆüÉÕÉôÊ¬¤À¤±¤òÃÖ¤­´¹¤¨¤ë
+  ## Time ã‚¯ãƒ©ã‚¹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã® æ—¥ä»˜éƒ¨åˆ†ã ã‘ã‚’ç½®ãæ›ãˆã‚‹
   def replace_date(time, y, m, d)
     return Time .local(y, m, d, *time .to_a .indexes(2, 1))
   end
@@ -699,14 +700,14 @@ class PilotApptRecord < PilotRecord
     @repeatFrequency = freq
   end
 
-  ## ·«¤êÊÖ¤·¤Î duration ÉôÊ¬¤òÀßÄê¤¹¤ë e == nil ¤Ï forever
+  ## ç¹°ã‚Šè¿”ã—ã® duration éƒ¨åˆ†ã‚’è¨­å®šã™ã‚‹ e == nil ã¯ forever
   def set_duration(beg, fin)
     raise "Type error: begin must be MhcDate\n"  if !beg .is_a?(MhcDate)
     raise "Type error: end   must be MhcDate\n"  if fin && !fin .is_a?(MhcDate)
 
     @beg = replace_date(@beg, beg .y, beg .m, beg .d)
-    ## @fin ¤ÎÆüÉÕÉôÊ¬¤Ï¡¢¾ï¤Ë @beg ¤ÈÆ±¤¸¤Ë¤Ê¤ë
-    ## duration end ¤Ï @repeatEnd ¤ÇÀßÄê
+    ## @fin ã®æ—¥ä»˜éƒ¨åˆ†ã¯ã€å¸¸ã« @beg ã¨åŒã˜ã«ãªã‚‹
+    ## duration end ã¯ @repeatEnd ã§è¨­å®š
     @fin = replace_date(@fin, beg .y, beg .m, beg .d)
 
     if fin
@@ -787,7 +788,7 @@ class PilotAddressDB < PilotDB
     ##
 
     ## @phoneLabels[0..7] = 
-    ##      [²ñ¼Ò, ¼«Âğ, Fax, ¤½¤ÎÂ¾, E-mail, ÂåÉ½, ¥İ¥±¥Ù¥ë, ·ÈÂÓ]
+    ##      [ä¼šç¤¾, è‡ªå®…, Fax, ãã®ä»–, E-mail, ä»£è¡¨, ãƒã‚±ãƒ™ãƒ«, æºå¸¯]
 
     @recClass = PilotAddRecord
   end
@@ -798,11 +799,11 @@ class PilotAddressRecord < PilotRecord
 
   def to_s(labels, ren, phonelabels)
     ret = ''
-    # 00-03   labels[i]  ¤ËÂĞ±ş
-    # 04-11   phoneLabels[@phoneLabel[i - 4]] ¤ËÂĞ±ş
-    # 12-16   labels[i]  ¤ËÂĞ±ş
-    # 17-20   labels[i]  ¤ËÂĞ±ş (¥«¥¹¥¿¥à)
-    # 21      labels[i]  ¤ËÂĞ±ş
+    # 00-03   labels[i]  ã«å¯¾å¿œ
+    # 04-11   phoneLabels[@phoneLabel[i - 4]] ã«å¯¾å¿œ
+    # 12-16   labels[i]  ã«å¯¾å¿œ
+    # 17-20   labels[i]  ã«å¯¾å¿œ (ã‚«ã‚¹ã‚¿ãƒ )
+    # 21      labels[i]  ã«å¯¾å¿œ
 
     for i in (0 .. 2)
       ret += "#{labels[i]}: #{@entry[i]}\n"

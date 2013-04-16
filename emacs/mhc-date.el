@@ -546,9 +546,9 @@
 
 (defun mhc-date-digit-to-ww-japanese-string (ww &optional long)
   (if long
-      (aref ["$BF|MKF|(B" "$B7nMKF|(B" "$B2PMKF|(B" "$B?eMKF|(B"
-	     "$BLZMKF|(B" "$B6bMKF|(B" "$BEZMKF|(B"] ww)
-    (aref ["$BF|(B" "$B7n(B" "$B2P(B" "$B?e(B" "$BLZ(B" "$B6b(B" "$BEZ(B"] ww)))
+      (aref ["日曜日" "月曜日" "火曜日" "水曜日"
+	     "木曜日" "金曜日" "土曜日"] ww)
+    (aref ["日" "月" "火" "水" "木" "金" "土"] ww)))
 
 (defun mhc-date-digit-to-oo-string (oo &optional long)
   (aref  ["1st" "2nd" "3rd" "4th" "5th"] oo))
@@ -563,31 +563,31 @@
 	      format (substring format (match-end 0))
 	      char   (aref match 1))
 	(cond
-	 ((eq char ?Y) ;; 100$BG/C10L$NG/(B
+	 ((eq char ?Y) ;; 100年単位の年
 	  (setq match (format "%d" yy)))
 
-	 ((eq char ?y)  ;; $BG/$N2<(B2$B7e(B (00-99)
+	 ((eq char ?y)  ;; 年の下2桁 (00-99)
 	  (setq match (format "%02d"  (% yy 100))))
 
-	 ((or (eq char ?b) (eq char ?h)) ;; $B7n(B   $BN,>N(B
+	 ((or (eq char ?b) (eq char ?h)) ;; 月   略称
 	  (setq match (mhc-date-digit-to-mm-string mm)))
 
-	 ((eq char ?B) ;; $B7n(B   $BL>>N(B
+	 ((eq char ?B) ;; 月   名称
 	  (setq match (mhc-date-digit-to-mm-string mm t)))
 
-	 ((eq char ?m) ;; $B7n(B (01-12)
+	 ((eq char ?m) ;; 月 (01-12)
 	  (setq match (format "%02d" mm)))
 
-	 ((eq char ?d) ;; $BF|(B ($B%<%m(B padding)
+	 ((eq char ?d) ;; 日 (ゼロ padding)
 	  (setq match (format "%02d" dd)))
 
-	 ((eq char ?e) ;; $BF|(B ($B6uGr(B padding)
+	 ((eq char ?e) ;; 日 (空白 padding)
 	  (setq match (format "%2d" dd)))
 
-	 ((eq char ?a) ;; $BMKF|(B $BN,>N(B
+	 ((eq char ?a) ;; 曜日 略称
 	  (setq match (mhc-date-digit-to-ww-string ww)))
 
-	 ((eq char ?A) ;; $BMKF|(B $BL>>N(B
+	 ((eq char ?A) ;; 曜日 名称
 	  (setq match (mhc-date-digit-to-ww-string ww t))))
 
 	(setq ret (concat ret head match)))

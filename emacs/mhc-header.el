@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -32,7 +32,7 @@
     ("x-sc-schedule"	"X-SC-Schdule:"		mhc-parse/schedule)
     ;; For backward compatibility
     ("x-sc-date"	"X-SC-Date:"		mhc-parse/old-style-date)
-    ;; FIXME: อืบ๏ฝü
+    ;; FIXME: ่ฆๅ้ค
     ("x-sc-next"	"X-SC-Next:"		mhc-parse/next)))
 
 

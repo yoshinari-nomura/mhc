@@ -28,14 +28,14 @@
 		 (const :tag "Week" week)))
 
 (defcustom mhc-calendar-cw-indicator
-  (if (eq mhc-calendar-language 'japanese) "$B=5(B" "Cw")
+  (if (eq mhc-calendar-language 'japanese) "週" "Cw")
   "*Indicator of Calendar week."
   :group 'mhc
   :type 'string)
 
 (defcustom mhc-calendar-day-strings
   (if (eq mhc-calendar-language 'japanese)
-      '["$BF|(B" "$B7n(B" "$B2P(B" "$B?e(B" "$BLZ(B" "$B6b(B" "$BEZ(B"]
+      '["日" "月" "火" "水" "木" "金" "土"]
     '["Su" "Mo" "Tu" "We" "Th" "Fr" "Sa"])
   "*Vector of \"day of week\" for 3-month calendar header."
   :group 'mhc
@@ -62,16 +62,16 @@ and must return string like \"   December 2000\"."
     ((yy "-" mm02 "-" dd02 "(" ww-string ")") . " - ")
     ((dd02 "-" mm-string "-" yy "(" ww-string ")") . " - ")
     ((ww-string ", " dd02 " " mm-string " " yy) . " - ")
-    ((yy "$BG/(B" mm2 "$B7n(B" dd2 "$BF|(B(" ww-japanese ")") . ("$B!A(B" " - "))
-    ((mm "$B7n(B" dd2 "$BF|(B(" ww-japanese ")") . ("$B!A(B" " - "))
-    ((nengo mm2 "$B7n(B" dd2 "$BF|(B(" ww-japanese ")") . ("$B!A(B" " - ")))
+    ((yy "年" mm2 "月" dd2 "日(" ww-japanese ")") . ("〜" " - "))
+    ((mm "月" dd2 "日(" ww-japanese ")") . ("〜" " - "))
+    ((nengo mm2 "月" dd2 "日(" ww-japanese ")") . ("〜" " - ")))
   "*List of date inserters.
 Each cell has a cons cell, car slot has a format of 'date modifier funcitons'
 and cdr slot has a which 'concatenate string' or its list for the duration.
 E.g., if date equal \"Mon, 01 May 2000\", symbol return a string described below,
 
 yy               => \"2000\"
-nengo            => \"$BJ?@.(B12$BG/(B\"
+nengo            => \"平成12年\"
 mm               => \"7\"
 mm2              => \" 7\"
 mm02             => \"07\"
@@ -83,8 +83,8 @@ dd02             => \"01\"
 ww               => \"6\"
 ww-string        => \"Sat\"
 ww-string-long   => \"Saturday\"
-ww-japanese      => \"$BEZ(B\"
-ww-japanese-long => \"$BEZMKF|(B\"
+ww-japanese      => \"土\"
+ww-japanese-long => \"土曜日\"
 ")
 
 (defcustom mhc-calendar-mode-hook nil
@@ -431,7 +431,7 @@ ww-japanese-long => \"$BEZMKF|(B\"
 	    ret cw)))
 
 (defun mhc-calendar-make-header-ja (date)
-  (let ((ret (mhc-date-format date "%04d$BG/(B%2d$B7n(B" yy mm))
+  (let ((ret (mhc-date-format date "%04d年%2d月" yy mm))
 	(cw ""))
     (when (eq mhc-calendar-use-cw 'month)
       (setq cw (mhc-calendar/cw-string
@@ -747,7 +747,7 @@ The keys that are defined for mhc-calendar-mode are:
   (unless mhc-calendar/date-format
     (setq mhc-calendar/date-format
 	  (if (eq mhc-calendar-language 'japanese)
-	      "%04d$BG/(B%2d$B7n(B%2d$BF|(B(%s)\n"
+	      "%04d年%2d月%2d日(%s)\n"
 	    "%04d-%02d-%02d (%s)\n")))
   (with-temp-buffer
     (let* ((dayinfo (car (mhc-db-scan date date)))
@@ -1057,10 +1057,10 @@ The keys that are defined for mhc-calendar-mode are:
 
 (defun mhc-calendar/inserter-nengo ()
   (if (> yy 1987)
-      (format "$BJ?@.(B%2d$BG/(B" (- yy 1988))
+      (format "平成%2d年" (- yy 1988))
     (if (> yy 1924)
-	(format "$B><OB(B%2d$BG/(B" (- yy 1925))
-      "$B@N!9(B")))
+	(format "昭和%2d年" (- yy 1925))
+      "昔々")))
 
 (defun mhc-calendar/inserter-mm ()
   (format "%d" mm))
@@ -1585,7 +1585,7 @@ The keys that are defined for mhc-calendar-mode are:
 (defun mhc-calendar/hnf-summary-insert ()
   (let ((fname (mhc-calendar/hnf-get-filename mhc-calendar-view-date))
 	(buffer-read-only nil)
-	(newmark "#") (sub "$B!w(B") (cat "")
+	(newmark "#") (sub "＠") (cat "")
 	(count 1) (ncount 1)
 	new summary str uri)
     (if (not (file-readable-p fname))

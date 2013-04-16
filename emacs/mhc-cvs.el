@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Hideyuki SHIRAI <shirai@quickhack.net>
@@ -11,22 +11,22 @@
 ;; This file is a part of MHC, includes backend functions to
 ;; manipulate schedule files with CVS.
 
-;; ¤³¤ì¤Ï¡¢¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤ò CVS ¤òÄÌ¤·¤Æ´ÉÍı¤¹¤ë¤¿¤á¤Î¥Ğ¥Ã¥¯¥¨¥ó
-;; ¥É¤Ç¤¢¤ë¡£CVS ¤òÄÌ¤·¤Æ´ÉÍı¤¹¤ë¤³¤È¤Ë¤è¤Ã¤Æ¡¢Ê£¿ô¤Î PC ¤ËÊ¬»¶¤·¤Æ¤¤
-;; ¤ë¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤ÎÆ±´ü¤òÍÆ°×¤Ë¼è¤ë¤³¤È½ĞÍè¤ë¡£
+;; ã“ã‚Œã¯ã€ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ CVS ã‚’é€šã—ã¦ç®¡ç†ã™ã‚‹ãŸã‚ã®ãƒãƒƒã‚¯ã‚¨ãƒ³
+;; ãƒ‰ã§ã‚ã‚‹ã€‚CVS ã‚’é€šã—ã¦ç®¡ç†ã™ã‚‹ã“ã¨ã«ã‚ˆã£ã¦ã€è¤‡æ•°ã® PC ã«åˆ†æ•£ã—ã¦ã„
+;; ã‚‹ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®åŒæœŸã‚’å®¹æ˜“ã«å–ã‚‹ã“ã¨å‡ºæ¥ã‚‹ã€‚
 
 ;;; Usage:
 
-;; ¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤¬´û¤ËÂ¸ºß¤·¤Æ¤¤¤ë¾ì¹ç¤Ï¡¢´ûÂ¸¤Î¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡
-;; ¥¤¥ë¤ò´ÉÍı¤¹¤ë¥×¥í¥¸¥§¥¯¥È¤òºîÀ®¤·¡¢¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤òºï½ü¤·¤Æ
-;; ¤ª¤¯¡£
+;; ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ã‚‹å ´åˆã¯ã€æ—¢å­˜ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡
+;; ã‚¤ãƒ«ã‚’ç®¡ç†ã™ã‚‹ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã€ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã—ã¦
+;; ãŠãã€‚
 ;;
 ;;     % cd ~/Mail/schedule
 ;;     % cvs import -m 'Initial Schdule' -I '.*' -I trash schedule name start
 ;;     % cd ..
 ;;     % rm -rf schedule
 ;;
-;; ¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤¬Â¸ºß¤·¤Ê¤¤¾ì¹ç¤Ï¡¢¶õ¤Î¥×¥í¥¸¥§¥¯¥È¤òºî¤Ã¤Æ¤ª¤¯¡£
+;; ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯ã€ç©ºã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œã£ã¦ãŠãã€‚
 ;;
 ;;     % mkdir schedule
 ;;     % cd schedule
@@ -34,23 +34,23 @@
 ;;     % cd ..
 ;;     % rmdir schedule
 ;;
-;; ¹¹¤Ë¡¢°Ê²¼¤ÎÀßÄê¤ò ~/.emacs ¤Ê¤É¤ÎÅ¬Åö¤Ê¾ì½ê¤ËÄÉ²Ã¤·¤Æ¤ª¤¯¡£
+;; æ›´ã«ã€ä»¥ä¸‹ã®è¨­å®šã‚’ ~/.emacs ãªã©ã®é©å½“ãªå ´æ‰€ã«è¿½åŠ ã—ã¦ãŠãã€‚
 ;;
 ;;     (setq mhc-file-method 'mhc-cvs)
 ;;
-;; ¤³¤ì¤é¤Î½àÈ÷¤ò¹Ô¤Ã¤Æ¤«¤é¡¢ÉáÄÌ¤Ë mhc ¤ò¸Æ¤Ó½Ğ¤¹¡£¤½¤¦¤¹¤ë¤È¡¢½é²óµ¯
-;; Æ°»ş¤Ë CVS ¥ì¥İ¥¸¥È¥ê¤Î½êºß¤òÌä¤¤¹ç¤ï¤»¤ë¤Î¤Ç¡¢Å¬ÀÚ¤ËÆşÎÏ¤¹¤ë¤È¡¢¥¹
-;; ¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤ò CVS ¤òÄÌ¤·¤Æ´ÉÍı¤¹¤ë¤è¤¦¤Ë¤Ê¤ë¡£
-;; ¤â¤·¡¢·è¤Ş¤Ã¤¿ CVS ¥ì¥İ¥¸¥È¥ê¤¬¤¢¤ê¡¢É¸½àÅª¤Ê¾ì½ê¤Ç¤Ê¤¤¤Î¤Ê¤é
+;; ã“ã‚Œã‚‰ã®æº–å‚™ã‚’è¡Œã£ã¦ã‹ã‚‰ã€æ™®é€šã« mhc ã‚’å‘¼ã³å‡ºã™ã€‚ãã†ã™ã‚‹ã¨ã€åˆå›èµ·
+;; å‹•æ™‚ã« CVS ãƒ¬ãƒã‚¸ãƒˆãƒªã®æ‰€åœ¨ã‚’å•ã„åˆã‚ã›ã‚‹ã®ã§ã€é©åˆ‡ã«å…¥åŠ›ã™ã‚‹ã¨ã€ã‚¹
+;; ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ CVS ã‚’é€šã—ã¦ç®¡ç†ã™ã‚‹ã‚ˆã†ã«ãªã‚‹ã€‚
+;; ã‚‚ã—ã€æ±ºã¾ã£ãŸ CVS ãƒ¬ãƒã‚¸ãƒˆãƒªãŒã‚ã‚Šã€æ¨™æº–çš„ãªå ´æ‰€ã§ãªã„ã®ãªã‚‰
 ;;
 ;;     (setq mhc-cvs-repository-path ":ext:user@server:/cvsroot")
 ;;
-;; ¤Î¤è¤¦¤Ë ~/.emacs ¤Ë½ñ¤¤¤Æ¤ª¤±¤Ğ¡¢¤½¤Á¤é¤¬Í¥Àè¤¹¤ë¡£¤Ş¤¿¡¢CVS ¤Î
-;; module Ì¾¤¬ "schedule" (mhc-base-folder »²¾È) ¤Ç¤Ê¤¤¤Î¤Ê¤é¡¢¤½¤ÎÌ¾Á°¤ò
+;; ã®ã‚ˆã†ã« ~/.emacs ã«æ›¸ã„ã¦ãŠã‘ã°ã€ãã¡ã‚‰ãŒå„ªå…ˆã™ã‚‹ã€‚ã¾ãŸã€CVS ã®
+;; module åãŒ "schedule" (mhc-base-folder å‚ç…§) ã§ãªã„ã®ãªã‚‰ã€ãã®åå‰ã‚’
 ;;
 ;;     (setq mhc-cvs-module-name "foo/schedule")
 ;;
-;; ¤Î¤è¤¦¤ËÀßÄê¤·¤Æ¤ª¤¯¤È¤è¤¤¡£
+;; ã®ã‚ˆã†ã«è¨­å®šã—ã¦ãŠãã¨ã‚ˆã„ã€‚
 
 ;;; Customize Variables:
 (defcustom mhc-cvs-rsh
@@ -107,7 +107,7 @@ from 'month before last' to 'this month next year'."
 (defconst mhc-cvs/tmp-buffer-name " *mhc-cvs*")
 
 (defsubst mhc-cvs/backend (options)
-  "»ØÄê¤µ¤ì¤¿¥ª¥×¥·¥ç¥ó¤òÉÕ¤±²Ã¤¨¤Æ CVS ¤ò¼Â¹Ô¤¹¤ë´Ø¿ô"
+  "æŒ‡å®šã•ã‚ŒãŸã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ä»˜ã‘åŠ ãˆã¦ CVS ã‚’å®Ÿè¡Œã™ã‚‹é–¢æ•°"
   (let* ((buffer (mhc-get-buffer-create mhc-cvs/tmp-buffer-name))
 	 (current-buffer (current-buffer))
 	 (ret
@@ -128,7 +128,7 @@ from 'month before last' to 'this month next year'."
       -1)))
 
 (defun mhc-cvs/open (&optional offline)
-  "¥Í¥Ã¥È¥ï¡¼¥¯¤Î¾õÂÖ¤Ë°ÍÂ¸¤¹¤ë³«»Ï½èÍı´Ø¿ô"
+  "ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®çŠ¶æ…‹ã«ä¾å­˜ã™ã‚‹é–‹å§‹å‡¦ç†é–¢æ•°"
   (setq mhc-cvs/default-directory (mhc-summary-folder-to-path mhc-base-folder))
   (if offline
       (and (file-directory-p mhc-cvs/default-directory)
@@ -145,7 +145,7 @@ from 'month before last' to 'this month next year'."
 	   (list "-d" (mhc-cvs/read-repository-path) "checkout" module)))))))
 
 (defun mhc-cvs/read-repository-path ()
-  "CVS¥ì¥İ¥¸¥È¥ê¤Î¥Ñ¥¹Ì¾¤òÆşÎÏ¤¹¤ë´Ø¿ô"
+  "CVSãƒ¬ãƒã‚¸ãƒˆãƒªã®ãƒ‘ã‚¹åã‚’å…¥åŠ›ã™ã‚‹é–¢æ•°"
   (or mhc-cvs-repository-path
       (let* ((default (catch 'found
 			(mapcar (lambda (dir)
@@ -155,7 +155,7 @@ from 'month before last' to 'this month next year'."
 				 (getenv "CVSROOT")
 				 (expand-file-name "~/cvsroot")
 				 (expand-file-name "~/CVS")))
-			nil)) ; ¸õÊä¤¬¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿¾ì¹ç
+			nil)) ; å€™è£œãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆ
 	     (dir (read-from-minibuffer
 		   (if default
 		       (format "Input CVS repository path (default %s): " default)
@@ -165,17 +165,17 @@ from 'month before last' to 'this month next year'."
 	  dir))))
 
 (defun mhc-cvs/shrink-file-name (file)
-  "¥Õ¥¡¥¤¥ëÌ¾¤ÎÁêÂĞ¥Ñ¥¹¤òÆÀ¤ë´Ø¿ô"
+  "ãƒ•ã‚¡ã‚¤ãƒ«åã®ç›¸å¯¾ãƒ‘ã‚¹ã‚’å¾—ã‚‹é–¢æ•°"
   (file-relative-name
    (expand-file-name file)
    (mhc-summary-folder-to-path mhc-base-folder)))
 
 (defun mhc-cvs/close (&optional offline)
-  "¥Í¥Ã¥È¥ï¡¼¥¯¤Î¾õÂÖ¤Ë°ÍÂ¸¤¹¤ë½ªÎ»½èÍı´Ø¿ô"
+  "ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®çŠ¶æ…‹ã«ä¾å­˜ã™ã‚‹çµ‚äº†å‡¦ç†é–¢æ•°"
   (or offline (= 0 (mhc-cvs/backend (list "commit" "-m" "")))))
 
 (defun mhc-cvs/sync (&optional full)
-  "¥ê¥â¡¼¥È¤Î¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤È¥í¡¼¥«¥ë¤Î¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤ÎÆ±´ü¤ò¼è¤ë´Ø¿ô"
+  "ãƒªãƒ¢ãƒ¼ãƒˆã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã¨ãƒ­ãƒ¼ã‚«ãƒ«ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®åŒæœŸã‚’å–ã‚‹é–¢æ•°"
   (mhc-cvs/delay-add-and-remove (mhc-summary-folder-to-path mhc-base-folder))
   (mhc-cvs/update full)
   ;; rescan if mhc
@@ -188,7 +188,7 @@ from 'month before last' to 'this month next year'."
   (let* ((entries (directory-files directory nil nil t))
 	 (dir-entries entries))
     (while dir-entries
-      ;; ¥ª¥Õ¥é¥¤¥ó¾õÂÖ¤Î»ş¤ËÄÉ²Ã¤µ¤ì¤¿¥Ç¥£¥ì¥¯¥È¥ê¤ò¼Âºİ¤ËÄÉ²Ã¤¹¤ë
+      ;; ã‚ªãƒ•ãƒ©ã‚¤ãƒ³çŠ¶æ…‹ã®æ™‚ã«è¿½åŠ ã•ã‚ŒãŸãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å®Ÿéš›ã«è¿½åŠ ã™ã‚‹
       (when (string-match (concat "^\\.mhc-cvs-added-\\(.*"
 				  (regexp-quote (cdr mhc-cvs-directory-separator))
 				  "\\)$")
@@ -202,12 +202,12 @@ from 'month before last' to 'this month next year'."
       (setq dir-entries (cdr dir-entries)))
     (while entries
       (cond
-       ;; ¥ª¥Õ¥é¥¤¥ó¾õÂÖ¤Î»ş¤ËÄÉ²Ã¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¤ò¼Âºİ¤ËÄÉ²Ã¤¹¤ë
+       ;; ã‚ªãƒ•ãƒ©ã‚¤ãƒ³çŠ¶æ…‹ã®æ™‚ã«è¿½åŠ ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿéš›ã«è¿½åŠ ã™ã‚‹
        ((string-match "^\\.mhc-cvs-added-" (car entries))
 	(mhc-cvs/add (expand-file-name (mhc-cvs/recover-directory-separator
 					(substring (car entries) (match-end 0)))
 				       directory)))
-       ;; ¥ª¥Õ¥é¥¤¥ó¾õÂÖ¤Î»ş¤Ëºï½ü¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¤ò¼Âºİ¤Ëºï½ü¤¹¤ë
+       ;; ã‚ªãƒ•ãƒ©ã‚¤ãƒ³çŠ¶æ…‹ã®æ™‚ã«å‰Šé™¤ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’å®Ÿéš›ã«å‰Šé™¤ã™ã‚‹
        ((string-match "^\\.mhc-cvs-removed-" (car entries))
 	(mhc-cvs/remove (expand-file-name (mhc-cvs/recover-directory-separator
 					   (substring (car entries) (match-end 0)))
@@ -250,7 +250,7 @@ from 'month before last' to 'this month next year'."
      dir)))
 
 (defun mhc-cvs/add (filename &optional offline)
-  "¥Õ¥¡¥¤¥ë¤òÄÉ²Ã¤¹¤ë´Ø¿ô"
+  "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¿½åŠ ã™ã‚‹é–¢æ•°"
   (let ((added (mhc-cvs/get-added-flag-file-name filename))
 	(removed (mhc-cvs/get-removed-file-name filename)))
     (if (file-exists-p removed) (delete-file removed))
@@ -263,7 +263,7 @@ from 'month before last' to 'this month next year'."
 	   (mhc-cvs/modify filename)))))
 
 (defun mhc-cvs/remove (filename &optional offline)
-  "¥Õ¥¡¥¤¥ë¤òºï½ü¤¹¤ë´Ø¿ô"
+  "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã™ã‚‹é–¢æ•°"
   (let ((added (mhc-cvs/get-added-flag-file-name filename))
 	(removed (mhc-cvs/get-removed-file-name filename))
 	(new-path (expand-file-name
@@ -289,7 +289,7 @@ from 'month before last' to 'this month next year'."
 	   (mhc-cvs/modify filename)))))
 
 (defun mhc-cvs/modify (filename &optional offline)
-  "¥Õ¥¡¥¤¥ë¤òÊÑ¹¹¤¹¤ë´Ø¿ô"
+  "ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å¤‰æ›´ã™ã‚‹é–¢æ•°"
   (or offline
       (prog1 (= 0 (mhc-cvs/backend
 		   (list "commit" "-m" ""
@@ -307,7 +307,7 @@ from 'month before last' to 'this month next year'."
 
 
 (defun mhc-cvs/update-dirs ()
-  "mhc-cvs-default-update-duration ¤Ç»ØÄê¤µ¤ì¤¿ÈÏ°Ï¤Î directory ¤òÊÖ¤¹"
+  "mhc-cvs-default-update-duration ã§æŒ‡å®šã•ã‚ŒãŸç¯„å›²ã® directory ã‚’è¿”ã™"
   (when mhc-cvs-default-update-duration
     (let ((cdate (or (mhc-current-date) (mhc-calendar-get-date) (mhc-date-now)))
 	  (i (- (cdr mhc-cvs-default-update-duration)
@@ -328,13 +328,13 @@ from 'month before last' to 'this month next year'."
       (nreverse dirs))))
 
 (defun mhc-cvs/update (&optional full)
-  "cvs update ¤ò¼Â¹Ô¤·¤¿·ë²Ì¤ò²òÀÏ¤¹¤ë´Ø¿ô"
-  ;; ¥í¡¼¥«¥ë¤Î¥¹¥±¥¸¥å¡¼¥ë¥Õ¥¡¥¤¥ë¤ò update ¤¹¤ë
+  "cvs update ã‚’å®Ÿè¡Œã—ãŸçµæœã‚’è§£æã™ã‚‹é–¢æ•°"
+  ;; ãƒ­ãƒ¼ã‚«ãƒ«ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ update ã™ã‚‹
   (prog1 (mhc-cvs/backend (append (list "update" "-d" "-I" ".*" "-I" "trash")
 				  (and (null full) (mhc-cvs/update-dirs))))
     (let (modified-files conflict-files updated-files
 			 commit-fault-files unknown-files)
-      ;; update ¤Î·ë²Ì¤ò²òÀÏ¤¹¤ë
+      ;; update ã®çµæœã‚’è§£æã™ã‚‹
       (let ((buffer (get-buffer mhc-cvs/tmp-buffer-name))
 	    (current-buffer (current-buffer)))
 	(unwind-protect
@@ -368,25 +368,25 @@ from 'month before last' to 'this month next year'."
 				     (mhc-summary-folder-to-path mhc-base-folder)))))
 		(forward-line 1)))
 	  (set-buffer current-buffer)))
-      ;; ÊÑ¹¹¤Î¤¢¤Ã¤¿¥Ç¥£¥ì¥¯¥È¥ê¤Î .mhc-mtime ¤ò¹¹¿·¤·¤Æ¤ª¤¯
+      ;; å¤‰æ›´ã®ã‚ã£ãŸãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã® .mhc-mtime ã‚’æ›´æ–°ã—ã¦ãŠã
       (while updated-files
 	(mhc-cvs/touch-directory
 	 (file-name-directory
 	  (expand-file-name (car updated-files)
 			    (mhc-summary-folder-to-path mhc-base-folder))))
 	(setq updated-files (cdr updated-files)))
-      ;; ½¤Àµ¤µ¤ì¤Æ¤¤¤ë¥Õ¥¡¥¤¥ë¤Ï¡¢Â¨ºÂ¤Ë commit ¤¹¤ë
+      ;; ä¿®æ­£ã•ã‚Œã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã¯ã€å³åº§ã« commit ã™ã‚‹
       (while modified-files
 	(or (= 0 (mhc-cvs/backend (list "commit" "-m" "" (car modified-files))))
 	    (setq commit-fault-files (cons (car modified-files) commit-fault-files)))
 	(setq modified-files (cdr modified-files)))
-      ;; ¼êÆ°¤Ç½ñ¤¤¤¿¤È»×¤ï¤ì¤ë¥Õ¥¡¥¤¥ë¤ò°·¤¦¡£MHC ¤Î¥Ç¡¼¥¿¤È¤·¤Æ´°À®¤·¤Æ¤¤¤Ê¤¤¤È¤¤¤±¤Ê¤¤¡£
+      ;; æ‰‹å‹•ã§æ›¸ã„ãŸã¨æ€ã‚ã‚Œã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ‰±ã†ã€‚MHC ã®ãƒ‡ãƒ¼ã‚¿ã¨ã—ã¦å®Œæˆã—ã¦ã„ãªã„ã¨ã„ã‘ãªã„ã€‚
       (when unknown-files
 	(mhc-cvs/unknown-file unknown-files))
       (if commit-fault-files
 	  (message "File(s) are fault to commit: %s"
 		   (mapconcat (lambda (s) s) commit-fault-files ",")))
-      ;; ½¤Àµ¤¬ conflict ¤òµ¯¤³¤·¤Æ¤¤¤ë¥Õ¥¡¥¤¥ë¤Ï½¤Àµ¤·¤ÆÌã¤¦
+      ;; ä¿®æ­£ãŒ conflict ã‚’èµ·ã“ã—ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã¯ä¿®æ­£ã—ã¦è²°ã†
       (if conflict-files
 	  (mhc-cvs-edit-conflict-file
 	   (mapcar (lambda (file)

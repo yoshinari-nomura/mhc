@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;;          Hideyuki SHIRAI <shirai@quickhack.net>

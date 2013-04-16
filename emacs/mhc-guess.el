@@ -11,45 +11,45 @@
 ;;;
 
 ;;
-;; $B%P%C%U%!$+$i(B mhc-guess-{time,date}: $BF|IU!";~4V$r=8$a$F!"(B
-;; $BM=Dj$NF|IU$1$rI=$o$7$F$$$k$H;W$o$l$k2DG=@-$N9b$$=g$KJB$Y$F(B
-;; $BJV$9!#(B
+;; バッファから mhc-guess-{time,date}: 日付、時間を集めて、
+;; 予定の日付けを表わしていると思われる可能性の高い順に並べて
+;; 返す。
 ;;
-;; $B0J2<$N$h$&$J(B GUESS-CANDIDATE $B$N%j%9%H$rJV$9(B
+;; 以下のような GUESS-CANDIDATE のリストを返す
 ;;   ([mhc-{date,time} mhc-{date,time}-end point-begin point-end score]..)
 ;;
-;; mhc-{date,time}:     $BM=Dj$N3+;O(B {$BF|(B, $B;~4V(B}
-;; mhc-{date,time}-end  $BM=Dj$N=*N;(B {$BF|(B, $B;~4V(B} or nil
+;; mhc-{date,time}:     予定の開始 {日, 時間}
+;; mhc-{date,time}-end  予定の終了 {日, 時間} or nil
 ;;
-;; $BF|IU?dB,$N<j=g(B
+;; 日付推測の手順
 ;;
-;; 1. $BF|IU(B/$B;~9o$rI=$9%-!<%o!<%I8+IU$1$F!"H/8+8D=j%j%9%H$r:n$k!#(B
+;; 1. 日付/時刻を表すキーワード見付けて、発見個所リストを作る。
 ;;
 ;;    (mhc-guess/gather-candidate mhc-guess-date-regexp-list now)
 ;;    (mhc-guess/gather-candidate mhc-guess-time-regexp-list now)
 ;;
-;;    $B$N(B 2$B$D$N4X?t$G!"(B
+;;    の 2つの関数で、
 ;;  
 ;;    ([found-date found-date-end found-point-begin found-point-end nil] ...)
 ;;    ([found-time found-time-end found-point-begin found-point-end nil] ...)
 ;;
-;;    $B$N$h$&$J(B candidate-list $B$rF@$k!#(B
+;;    のような candidate-list を得る。
 ;;
-;; 2. $B$_$D$+$C$?F|IU;~9o$KE@?t$r$D$1$k!#(B
+;; 2. みつかった日付時刻に点数をつける。
 ;;
 ;;    (mhc-guess/score candidate-list mhc-guess-keyword-score-alist)
 ;;
 ;;    ([found-date found-date-end found-point-begin found-point-end score] ...)
 ;;
-;;      $B%-!<%o!<%I$,0zMQ9TCf$K$"$k(B
-;;      $BF10l9T$KFCDj$NJ8;zNs$,$"$k(B
-;;      $B$"$kHO0O$NA0J}(B/$B8eJ}$KFCDj$NJ8;zNs$,$"$k(B
+;;      キーワードが引用行中にある
+;;      同一行に特定の文字列がある
+;;      ある範囲の前方/後方に特定の文字列がある
 ;;
-;;    $B$N$h$&$J>r7o$H2CE@(B/$B8:E@$rI=$9(B mhc-guess-keyword-score-alist $B$K4p(B
-;;    $B$E$$$F:NE@$r$9$k!#(B
+;;    のような条件と加点/減点を表す mhc-guess-keyword-score-alist に基
+;;    づいて採点をする。
 ;;
-;; 3. $BF@E@=g(B ($BF@E@$,F1$8>l9g$O!$F|IU$d;~4V$rI=$o$9J8;zNs$,D9$$=g(B)
-;;    $B$K(B sort $B$7$FJV$9(B
+;; 3. 得点順 (得点が同じ場合は，日付や時間を表わす文字列が長い順)
+;;    に sort して返す
 
 ;;;
 ;;; Code:
@@ -81,29 +81,29 @@ You can specify following symbols as a list.
 
 (defvar mhc-guess-date-regexp-list
   `(
-    (,(concat "\\([$B#0(B-$B#9(B0-9][$B#0(B-$B#9(B0-9][$B#0(B-$B#9(B0-9][$B#0(B-$B#9(B0-9]\\)[-$B!](B/$B!?(B]"
-	      "\\([$B#0(B-$B#9(B0-9][$B#0(B-$B#9(B0-9]\\)[-$B!](B/$B!?(B]"
-	      "\\([$B#0(B-$B#9(B0-9][$B#0(B-$B#9(B0-9]\\)")
+    (,(concat "\\([０-９0-9][０-９0-9][０-９0-9][０-９0-9]\\)[-−/／]"
+	      "\\([０-９0-9][０-９0-9]\\)[-−/／]"
+	      "\\([０-９0-9][０-９0-9]\\)")
      mhc-guess/make-date-from-yyyymmdd 1 2 3)
 
-    (,(concat "\\([$B#0(B-$B#9(B0-9]+$BG/(B\\)?"
-	      "\\([$BMh:##0(B-$B#9(B0-9]+\\)[\n$B!!(B ]*$B7n(B[\n $B!!(B]*$B$N(B?[\n $B!!(B]*"
-	      "\\([$B#0(B-$B#9(B0-9]+\\)$BF|(B?"
-	      "\\([$B!J!K(B()$B7n2P?eLZ6bEZF|MK(B\n $B!!(B ]*"
-	      "\\([$B!A!](B-$B!$(B,$B!"(B]\\|$B$+$i(B\\|$B$h$j(B\\)[\n $B!!(B]*"
-	      "\\([$B#0(B-$B#9(B0-9]+$BG/(B\\)?"
-	      "\\(\\([$BMh:##0(B-$B#9(B0-9]+\\)[\n$B!!(B ]*$B7n(B\\)?[\n $B!!(B]*$B$N(B?[\n $B!!(B]*"
-	      "\\([$B#0(B-$B#9(B0-9]+\\)$BF|(B?\\($B4V(B\\)?"
+    (,(concat "\\([０-９0-9]+年\\)?"
+	      "\\([来今０-９0-9]+\\)[\n　 ]*月[\n 　]*の?[\n 　]*"
+	      "\\([０-９0-9]+\\)日?"
+	      "\\([（）()月火水木金土日曜\n 　 ]*"
+	      "\\([〜−-，,、]\\|から\\|より\\)[\n 　]*"
+	      "\\([０-９0-9]+年\\)?"
+	      "\\(\\([来今０-９0-9]+\\)[\n　 ]*月\\)?[\n 　]*の?[\n 　]*"
+	      "\\([０-９0-9]+\\)日?\\(間\\)?"
 	      "\\)?")
      mhc-guess/make-date-from-mmdd 2 3 8 9 10)
 
-    (,(concat "\\([$B#0(B-$B#9(B0-9]+[$B!!(B ]*[$B!?(B/][$B!!(B ]*\\)?"
-	      "\\([$B#0(B-$B#9(B0-9]+\\)[$B!!(B ]*[$B!?(B/][$B!!(B ]*\\([$B#0(B-$B#9(B0-9]+\\)"
-	      "\\([$B!J!K(B()$B7n2P?eLZ6bEZF|MK(B\n $B!!(B ]*"
- 	           "\\([$B!A!]!$(B,$B!"(B-]\\|$B$+$i(B\\|$B$h$j(B\\)[\n $B!!(B]*"
-		   "\\([$B#0(B-$B#9(B0-9]+[$B!!(B ]*[$B!?(B/][$B!!(B ]*\\)?"
- 		   "\\(\\([$B#0(B-$B#9(B0-9]+\\)[$B!!(B ]*[$B!?(B/][$B!!(B ]*\\)"
- 		   "\\([$B#0(B-$B#9(B0-9]+\\)$BF|(B?\\($B4V(B\\)?"
+    (,(concat "\\([０-９0-9]+[　 ]*[／/][　 ]*\\)?"
+	      "\\([０-９0-9]+\\)[　 ]*[／/][　 ]*\\([０-９0-9]+\\)"
+	      "\\([（）()月火水木金土日曜\n 　 ]*"
+ 	           "\\([〜−，,、-]\\|から\\|より\\)[\n 　]*"
+		   "\\([０-９0-9]+[　 ]*[／/][　 ]*\\)?"
+ 		   "\\(\\([０-９0-9]+\\)[　 ]*[／/][　 ]*\\)"
+ 		   "\\([０-９0-9]+\\)日?\\(間\\)?"
 	      "\\)?")
      mhc-guess/make-date-from-mmdd 2 3 8 9 10)
 
@@ -129,8 +129,8 @@ You can specify following symbols as a list.
 
     throw
 
-    (,(concat "\\($B:#EY(B\\|[$B:#Mh<!(B]$B=5(B\\|$B:FMh=5(B\\)[\n $B!!(B]*$B$N(B?[\n $B!!(B]*"
-	     "\\([$B7n2P?eLZ6bEZF|(B]\\)$BMK(B")
+    (,(concat "\\(今度\\|[今来次]週\\|再来週\\)[\n 　]*の?[\n 　]*"
+	     "\\([月火水木金土日]\\)曜")
      mhc-guess/make-date-from-relative-week 1 2)
 
     (,(concat "\\([Tt]his\\|[Nn]ext\\)[\n ]+"
@@ -145,20 +145,20 @@ You can specify following symbols as a list.
 
     throw
 
-    ("\\([$B#0(B-$B#9(B0-9]+\\)[\n $B!!(B]*$BF|(B"
+    ("\\([０-９0-9]+\\)[\n 　]*日"
      mhc-guess/make-date-from-mmdd nil 1)
 
-    ("\\([$B#0(B-$B#9(B0-9]+\\)[ $B!!(B]*[($B!J(B][$B7n2P?eLZ6bEZF|(B]"
+    ("\\([０-９0-9]+\\)[ 　]*[(（][月火水木金土日]"
      mhc-guess/make-date-from-mmdd nil 1)
 
-    ("[^\($B!J(B]\\([$B7n2P?eLZ6bEZF|(B]\\)\n?$BMK(B"
+    ("[^\(（]\\([月火水木金土日]\\)\n?曜"
      mhc-guess/make-date-from-relative-week nil 1)
 
     (,(concat "\\(Monday\\|Tuesday\\|Wednesday\\|Thursday\\|Friday\\|"
 	      "Saturday\\|Sunday\\)")
      mhc-guess/make-date-from-english-relative-week 1 nil nil)
 
-    ("\\($BK\F|(B\\|$B:#F|(B\\|$B$"$9(B\\|$B$"$7$?(B\\|$B$"$5$C$F(B\\|$BL@F|(B\\|$BL@8eF|(B\\)"
+    ("\\(本日\\|今日\\|あす\\|あした\\|あさって\\|明日\\|明後日\\)"
      mhc-guess/make-date-from-relative-day 1)
 
     (,(concat "\\([Tt]oday\\|[Tt]omorrow\\|"
@@ -168,28 +168,28 @@ You can specify following symbols as a list.
 
 (defvar mhc-guess-time-regexp-list
   `(
-    (,(concat "\\([$B#0(B-$B#9(B0-9]+\\) *[$B;~(B] *\\([$B#0(B-$B#9(B0-9]+\\|$BH>(B\\)?$BJ,(B?"
-	      "\\([\n $B!!(B]*\\([$B!A!](B-]\\|$B$+$i(B\\|$B$h$j(B\\)[\n $B!!8aA08e(B]*"
-	      "\\([$B#0(B-$B#9(B0-9]+\\) *[$B;~(B]\\($B4V(B\\)? *\\([$B#0(B-$B#9(B0-9]+\\|$BH>(B\\)?\\)?")
+    (,(concat "\\([０-９0-9]+\\) *[時] *\\([０-９0-9]+\\|半\\)?分?"
+	      "\\([\n 　]*\\([〜−-]\\|から\\|より\\)[\n 　午前後]*"
+	      "\\([０-９0-9]+\\) *[時]\\(間\\)? *\\([０-９0-9]+\\|半\\)?\\)?")
      mhc-guess/make-time-from-hhmm 1 2 5 7 6)
-    (,(concat "\\([$B#0(B-$B#9(B0-9]+\\)[$B!'(B:]\\([$B#0(B-$B#9(B0-9]+\\)"
-	      "\\([\n $B!!(B]*\\([$B!A!](B-]\\|$B$+$i(B\\|$B$h$j(B\\)[\n $B!!8aA08e(B]*"
-	      "\\([$B#0(B-$B#9(B0-9]+\\) *[$B!'(B:$B;~(B]\\($B4V(B\\)? *\\([$B#0(B-$B#9(B0-9]+\\|$BH>(B\\)?\\)?")
+    (,(concat "\\([０-９0-9]+\\)[：:]\\([０-９0-9]+\\)"
+	      "\\([\n 　]*\\([〜−-]\\|から\\|より\\)[\n 　午前後]*"
+	      "\\([０-９0-9]+\\) *[：:時]\\(間\\)? *\\([０-９0-9]+\\|半\\)?\\)?")
      mhc-guess/make-time-from-hhmm 1 2 5 7 6)
     ))
 
 (defvar mhc-guess-location-list '()
   "*List of the regexps of the location, like this
-  '(\"$BBh(B?[0-9$B#0(B-$B#9!;(B-$B6e(B]+$B1~@\<<(B?\"
-    \"$BBh(B?[0-9$B#0(B-$B#9!;(B-$B6e(B]+$B2q5D<<(B[0-9$B#0(B-$B#9!;(B-$B6e(B]?\"))")
+  '(\"第?[0-9０-９〇-九]+応接室?\"
+    \"第?[0-9０-９〇-九]+会議室[0-9０-９〇-九]?\"))")
 
 (defvar mhc-guess-location-regexp-list
   `(
-    (,(concat "$B>l(B[ $B!!(B]*$B=j(B[ $B!!(B]*[$B!'(B:]*[\n $B!!(B]*\\([^\n $B!!(B]+\\)")
+    (,(concat "場[ 　]*所[ 　]*[：:]*[\n 　]*\\([^\n 　]+\\)")
      mhc-guess/make-location-from-string 1)
-    (,(concat "$B1w(B[ $B!!(B]*\\([^\n $B!!(B]+\\)")
+    (,(concat "於[ 　]*\\([^\n 　]+\\)")
      mhc-guess/make-location-from-string 1)
-    (,(concat "[@$B!w(B][$B!!(B ]*\\([^\n$B!!(B .]+\\)[$B!!(B \n]")
+    (,(concat "[@＠][　 ]*\\([^\n　 .]+\\)[　 \n]")
      mhc-guess/make-location-from-string 1)))
 
 ;; keyword to score-alist:
@@ -198,13 +198,13 @@ You can specify following symbols as a list.
   '(
     ;; positive factor
     ("^[\t ]+"                                      -200 t   +5)
-    ("$B<!2s(B"                                         -200 nil +10)
-    ("\\($B4|4V(B\\|$B7nF|(B\\|$BF|Dx(B\\|$B;~4VBS(B\\|$BF|;~(B\\|$B3+;O;~4V(B\\)"        -150 nil +5)
-    ("\\($B4|4V(B\\|$B7nF|(B\\|$BF|Dx(B\\|$B;~4VBS(B\\|$BF|;~(B\\|$B3+;O;~4V(B\\)[:$B!'(B]"   -150 t   +5)
-    ("\\($B$+$i(B\\|$B!A(B\\|$BJQ99(B\\|$B1d4|(B\\|$B=g1d(B\\|$B3+;O(B\\)"   +80 nil +4)
+    ("次回"                                         -200 nil +10)
+    ("\\(期間\\|月日\\|日程\\|時間帯\\|日時\\|開始時間\\)"        -150 nil +5)
+    ("\\(期間\\|月日\\|日程\\|時間帯\\|日時\\|開始時間\\)[:：]"   -150 t   +5)
+    ("\\(から\\|〜\\|変更\\|延期\\|順延\\|開始\\)"   +80 nil +4)
     ;; negative factor
-    ("\\($B5Y$_(B\\|$B=|$/(B\\|$BCf;_(B\\|$B$^$G$K(B\\)"             +80 t   -10)
-    ("$B=P7g(B"                                          -80 nil -5)
+    ("\\(休み\\|除く\\|中止\\|までに\\)"             +80 t   -10)
+    ("出欠"                                          -80 nil -5)
     ("^\\(On\\|At\\|Date:\\) "                      -200 t   -20)
     ("\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\)"      -200 t   -20)
     ("\\(Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\)"      -200 t   -20)
@@ -373,9 +373,9 @@ You can specify following symbols as a list.
  	(year-offset 0)
  	date)
     (cond 
-     ((string= mm-str "$BMh(B")
+     ((string= mm-str "来")
       (setq mm (mhc-date-mm (mhc-date-mm++ now))))
-     ((string= mm-str "$B:#(B")
+     ((string= mm-str "今")
       (setq mm (mhc-date-mm now)))
      ((= mm 0)
       (setq mm (mhc-date-mm now))))
@@ -426,14 +426,14 @@ You can specify following symbols as a list.
   (cond 
    ((null rel-word)
     nil)
-   ((or (string= rel-word "$B:#F|(B") (string= rel-word "$BK\F|(B"))
+   ((or (string= rel-word "今日") (string= rel-word "本日"))
     (cons now nil))
-   ((or (string= rel-word "$B$"$9(B")
- 	(string= rel-word "$B$"$7$?(B")
- 	(string= rel-word "$BL@F|(B"))
+   ((or (string= rel-word "あす")
+ 	(string= rel-word "あした")
+ 	(string= rel-word "明日"))
     (cons (mhc-date++ now) nil))
-   ((or (string= rel-word "$B$"$5$C$F(B")
- 	(string= rel-word "$BL@8eF|(B"))
+   ((or (string= rel-word "あさって")
+ 	(string= rel-word "明後日"))
     (cons (mhc-date+ now 2) nil))))
 
 (defun mhc-guess/make-date-from-english-relative-day (now rel-word)
@@ -451,21 +451,21 @@ You can specify following symbols as a list.
 
 (defun mhc-guess/make-date-from-relative-week (now rel-word week)
   (let ((data (match-data))
- 	(ww (string-match week "$BF|7n2P?eLZ6bEZ(B"))
+ 	(ww (string-match week "日月火水木金土"))
  	(date (or now (mhc-date-now)))
 	off)
     (setq off  (- ww (mhc-date-ww date)))
-    (if (string= week "$BF|(B") (setq off (+ 7 off)))
+    (if (string= week "日") (setq off (+ 7 off)))
     (setq off
  	  (cond
  	   ((or (null rel-word)
- 		(string= rel-word "$B:#EY(B")
- 		(string= rel-word "$B<!(B"))
+ 		(string= rel-word "今度")
+ 		(string= rel-word "次"))
  	    (if (<= off 0) (+ 7 off) off))
- 	   ((string= rel-word "$B:#=5(B") off)
- 	   ((string= rel-word "$BMh=5(B")
+ 	   ((string= rel-word "今週") off)
+ 	   ((string= rel-word "来週")
  	    (+ off 7))
- 	   ((string= rel-word "$B:FMh=5(B")
+ 	   ((string= rel-word "再来週")
  	    (+ off 14))))
     (store-match-data data)
     (cons (mhc-date+ date off) nil)
@@ -473,10 +473,10 @@ You can specify following symbols as a list.
 
 (defun mhc-guess/make-date-from-english-relative-week (now dow rel-word week)
   (unless mhc-guess-ignore-english-date
-    (let ((dow-alist '(("Monday" . "$B7n(B") ("Tuesday" . "$B2P(B")
-		       ("Wednesday" . "$B?e(B") ("Thursday" . "$BLZ(B")
-		       ("Friday" . "$B6b(B") ("Saturday" . "$BEZ(B")
-		       ("Sunday" . "$BF|(B")))
+    (let ((dow-alist '(("Monday" . "月") ("Tuesday" . "火")
+		       ("Wednesday" . "水") ("Thursday" . "木")
+		       ("Friday" . "金") ("Saturday" . "土")
+		       ("Sunday" . "日")))
 	  (rel (when (stringp rel-word)
 		 (downcase rel-word))))
       (mhc-guess/make-date-from-relative-week
@@ -484,13 +484,13 @@ You can specify following symbols as a list.
        (if (null rel)
 	   nil
 	 (cond ((and (string= rel "this") (null week))
-		"$B:#EY(B")
+		"今度")
 	       ((and (string= rel "this") week)
-		"$B:#=5(B")
+		"今週")
 	       ((and (string= rel "next") (null week))
-		"$B:#EY(B")
+		"今度")
 	       ((and (string= rel "next") week)
-		"$BMh=5(B")
+		"来週")
 	       (t
 		nil)))
        (cdr (assoc-ignore-case dow dow-alist))))))
@@ -524,7 +524,7 @@ You can specify following symbols as a list.
       (setq xMM 
 	    (cond
 	     ((not mm-str)	     0)
-	   ((string= mm-str "$BH>(B")    30)
+	   ((string= mm-str "半")    30)
 	   (t                        (mhc-guess/string-to-int mm-str))))
       (mhc-time-new xHH xMM t))))
 
@@ -591,16 +591,16 @@ You can specify following symbols as a list.
 ;;
 
 (defconst mhc-guess/zenkaku-hankaku-alist
-  '(("$B#0(B" . "0") ("$B#1(B" . "1") ("$B#2(B" . "2") ("$B#3(B" . "3") ("$B#4(B" . "4")
-    ("$B#5(B" . "5") ("$B#6(B" . "6") ("$B#7(B" . "7") ("$B#8(B" . "8") ("$B#9(B" . "9")
-    ("$B!?(B" . "/") ("$B!'(B" . ":")))
+  '(("０" . "0") ("１" . "1") ("２" . "2") ("３" . "3") ("４" . "4")
+    ("５" . "5") ("６" . "6") ("７" . "7") ("８" . "8") ("９" . "9")
+    ("／" . "/") ("：" . ":")))
 
 (defun mhc-guess/string-to-int (str)
   (let ((chr "") (ret "") (data (match-data))
 	(z2h-alist 
-	 '(("$B#0(B" . "0") ("$B#1(B" . "1") ("$B#2(B" . "2") ("$B#3(B" . "3") ("$B#4(B" . "4")
-	   ("$B#5(B" . "5") ("$B#6(B" . "6") ("$B#7(B" . "7") ("$B#8(B" . "8") ("$B#9(B" . "9")
-	   ("$B!?(B" . "/") ("$B!'(B" . ":"))))
+	 '(("０" . "0") ("１" . "1") ("２" . "2") ("３" . "3") ("４" . "4")
+	   ("５" . "5") ("６" . "6") ("７" . "7") ("８" . "8") ("９" . "9")
+	   ("／" . "/") ("：" . ":"))))
     (while (string-match "^." str)
       (setq chr (substring str (match-beginning 0) (match-end 0)))
       (setq ret (concat ret (or (cdr (assoc chr z2h-alist)) chr)))

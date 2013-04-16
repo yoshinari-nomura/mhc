@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -19,7 +19,7 @@
 (require 'mhc-schedule)
 
 (defun mhc-db/get-sexp-list-for-month (year month)
-  "»ØÄê¤µ¤ì¤¿·î¤Î¥¹¥±¥¸¥å¡¼¥ë¤òÃµº÷¤¹¤ë¤È¤­¤Ë¡¢É¾²Á¤¹¤ë¤Ù¤­S¼°¤Î¥ê¥¹¥È¤òÆÀ¤ë"
+  "æŒ‡å®šã•ã‚ŒãŸæœˆã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’æ¢ç´¢ã™ã‚‹ã¨ãã«ã€è©•ä¾¡ã™ã‚‹ã¹ãSå¼ã®ãƒªã‚¹ãƒˆã‚’å¾—ã‚‹"
   (mapcar
    (lambda (f) (mhc-record-sexp f))
    (apply (function nconc)
@@ -35,13 +35,13 @@
 
 
 (defun mhc-db/eval-for-duration (from to &optional todo) "\
-¤¢¤ë´ü´Ö FROM¡ÁTO ¤ËÂĞ¤·¤Æ¥¹¥±¥¸¥å¡¼¥ë¤òÃµº÷¤¹¤ë
-FROM, TO ¤Ï 1970/01/01 ¤«¤é¤Î·Ğ²áÆü¿ô¤òÍÑ¤¤¤Æ»ØÄê"
+ã‚ã‚‹æœŸé–“ FROMã€œTO ã«å¯¾ã—ã¦ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’æ¢ç´¢ã™ã‚‹
+FROM, TO ã¯ 1970/01/01 ã‹ã‚‰ã®çµŒéæ—¥æ•°ã‚’ç”¨ã„ã¦æŒ‡å®š"
   (let (list new)
     (mhc-day-let from
       (let* ((day from)
 	     (week-of-month (/ (1- day-of-month) 7))
-	     ;; FIXME: mhc-date.el ¤ÎÆâÉô´Ø¿ô¤ò¸Æ¤Ó½Ğ¤·¤Æ¤¤¤ë¡£
+	     ;; FIXME: mhc-date.el ã®å†…éƒ¨é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦ã„ã‚‹ã€‚
 	     (last-day-of-month (mhc-date/last-day-of-month year month))
 	     (last-week (> 7 (- last-day-of-month day-of-month)))
 	     (sexp-list (mhc-db/get-sexp-list-for-month year month)))
@@ -57,16 +57,16 @@ FROM, TO ¤Ï 1970/01/01 ¤«¤é¤Î·Ğ²áÆü¿ô¤òÍÑ¤¤¤Æ»ØÄê"
 		day-of-month (1+ day-of-month)
 		day-of-week (% (1+ day-of-week) 7))
 	  (if (> day-of-month last-day-of-month)
-	      ;; 1¥ö·î¤òÄ¶¤¨¤ÆÏ¢Â³¤·¤¿Ãµº÷¤ò¹Ô¤¦¾ì¹ç
+	      ;; 1ãƒ¶æœˆã‚’è¶…ãˆã¦é€£ç¶šã—ãŸæ¢ç´¢ã‚’è¡Œã†å ´åˆ
 	      (setq month (1+ (% month 12))
 		    year (if (= 1 month) (1+ year) year)
 		    day-of-month 1
 		    week-of-month 0
 		    last-week nil
-		    ;; FIXME: mhc-date.el ¤ÎÆâÉô´Ø¿ô¤ò¸Æ¤Ó½Ğ¤·¤Æ¤¤¤ë¡£
+		    ;; FIXME: mhc-date.el ã®å†…éƒ¨é–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦ã„ã‚‹ã€‚
 		    last-day-of-month (mhc-date/last-day-of-month year month)
 		    sexp-list (mhc-db/get-sexp-list-for-month year month))
-	    ;; ½µËöËè¤Î½èÍı
+	    ;; é€±æœ«æ¯ã®å‡¦ç†
 	    (setq week-of-month (/ (1- day-of-month) 7))
 	    (and (not last-week)
 		 (> 7 (- last-day-of-month day-of-month))
@@ -75,7 +75,7 @@ FROM, TO ¤Ï 1970/01/01 ¤«¤é¤Î·Ğ²áÆü¿ô¤òÍÑ¤¤¤Æ»ØÄê"
 
 
 (defun mhc-db/eval-for-month (year month &optional todo)
-  "»ØÄê¤µ¤ì¤¿·î¤Î¥¹¥±¥¸¥å¡¼¥ë¤òÃµº÷"
+  "æŒ‡å®šã•ã‚ŒãŸæœˆã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’æ¢ç´¢"
   (let ((from (mhc-date-new year month 1)))
     (mhc-db/eval-for-duration from (mhc-date-mm-last from) todo)))
 
@@ -110,11 +110,11 @@ FROM, TO ¤Ï 1970/01/01 ¤«¤é¤Î·Ğ²áÆü¿ô¤òÍÑ¤¤¤Æ»ØÄê"
   (let ((list (mhc-db/eval-for-duration from to)))
     (let ((days list))
       (if nosort
-	  ;; ½êÍÑ¤Î³«»Ï»ş´Ö¤Ë´ğ¤Å¤¯ÊÂ¤ÙÂØ¤¨¤Ï¹Ô¤ï¤º¤Ë¡¢½ËÆü¤Î¥Á¥§¥Ã¥¯¤Î¤ß¤ò¹Ô¤¦
+	  ;; æ‰€ç”¨ã®é–‹å§‹æ™‚é–“ã«åŸºã¥ãä¸¦ã¹æ›¿ãˆã¯è¡Œã‚ãšã«ã€ç¥æ—¥ã®ãƒã‚§ãƒƒã‚¯ã®ã¿ã‚’è¡Œã†
 	  (while days
 	    (mhc-day-set-holiday (car days) (mhc-db/holiday-p (car days)))
 	    (setq days (cdr days)))
-	;; ½êÍÑ¤Î³«»Ï»ş´Ö¤Ë´ğ¤Å¤¯ÊÂ¤ÙÂØ¤¨¤âÆ±»ş¤Ë¹Ô¤¦
+	;; æ‰€ç”¨ã®é–‹å§‹æ™‚é–“ã«åŸºã¥ãä¸¦ã¹æ›¿ãˆã‚‚åŒæ™‚ã«è¡Œã†
 	(while days
 	  (mhc-day-set-schedules (car days) (mhc-db/sort-schedules-by-time (car days)))
 	  (setq days (cdr days)))))
@@ -125,11 +125,11 @@ FROM, TO ¤Ï 1970/01/01 ¤«¤é¤Î·Ğ²áÆü¿ô¤òÍÑ¤¤¤Æ»ØÄê"
   (let ((list (mhc-db/eval-for-month year month)))
     (let ((days list))
       (if nosort
-	  ;; ½êÍÑ¤Î³«»Ï»ş´Ö¤Ë´ğ¤Å¤¯ÊÂ¤ÙÂØ¤¨¤Ï¹Ô¤ï¤º¤Ë¡¢½ËÆü¤Î¥Á¥§¥Ã¥¯¤Î¤ß¤ò¹Ô¤¦
+	  ;; æ‰€ç”¨ã®é–‹å§‹æ™‚é–“ã«åŸºã¥ãä¸¦ã¹æ›¿ãˆã¯è¡Œã‚ãšã«ã€ç¥æ—¥ã®ãƒã‚§ãƒƒã‚¯ã®ã¿ã‚’è¡Œã†
 	  (while days
 	    (mhc-day-set-holiday (car days) (mhc-db/holiday-p (car days)))
 	    (setq days (cdr days)))
-	;; ½êÍÑ¤Î³«»Ï»ş´Ö¤Ë´ğ¤Å¤¯ÊÂ¤ÙÂØ¤¨¤âÆ±»ş¤Ë¹Ô¤¦
+	;; æ‰€ç”¨ã®é–‹å§‹æ™‚é–“ã«åŸºã¥ãä¸¦ã¹æ›¿ãˆã‚‚åŒæ™‚ã«è¡Œã†
 	(while days
 	  (mhc-day-set-schedules (car days) (mhc-db/sort-schedules-by-time (car days)))
 	  (setq days (cdr days)))))
@@ -160,7 +160,7 @@ FROM, TO ¤Ï 1970/01/01 ¤«¤é¤Î·Ğ²áÆü¿ô¤òÍÑ¤¤¤Æ»ØÄê"
 			(> (car a) (car b)))))))))
 
 (defun mhc-db-scan-memo (day)
-  "¹ÔÊıÉÔÌÀ¤Î schedule ¤Î¼èÆÀ"
+  "è¡Œæ–¹ä¸æ˜ã® schedule ã®å–å¾—"
   (let ((schedules (mapcar
 		    (lambda (f) (car (mhc-record-schedules f)))
 		    (apply (function nconc)
@@ -198,16 +198,16 @@ FROM, TO ¤Ï 1970/01/01 ¤«¤é¤Î·Ğ²áÆü¿ô¤òÍÑ¤¤¤Æ»ØÄê"
 	 (old-record))
     (unless slot (error "Cannot get schedule slot"))
     (if (mhc-record-name record)
-	;; ´ûÂ¸¤Î¥¹¥±¥¸¥å¡¼¥ë¤òÊÔ½¸¤·¤¿¾ì¹ç
+	;; æ—¢å­˜ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’ç·¨é›†ã—ãŸå ´åˆ
 	(if (string= directory
 		     (file-name-directory
 		      (directory-file-name
 		       (mhc-record-name record))))
 	    (setq old-record record)
-	  ;; ¥¹¥±¥¸¥å¡¼¥ëÊÑ¹¹¤Ë¤è¤Ã¤Æ¡¢¥Ç¥£¥ì¥¯¥È¥ê¤ÎÊÑ¹¹¤¬É¬Í×¤Ê¾ì¹ç
+	  ;; ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«å¤‰æ›´ã«ã‚ˆã£ã¦ã€ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å¤‰æ›´ãŒå¿…è¦ãªå ´åˆ
 	  (setq old-record (mhc-record-copy record))
 	  (mhc-record-set-name record (mhc-misc-get-new-path directory)))
-      ;; ¿·µ¬¤Î¥¹¥±¥¸¥å¡¼¥ë¤òÊİÂ¸¤¹¤ë¾ì¹ç
+      ;; æ–°è¦ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’ä¿å­˜ã™ã‚‹å ´åˆ
       (mhc-record-set-name record (mhc-misc-get-new-path directory)))
     (if (or force-refile
 	    (y-or-n-p (format
@@ -240,8 +240,8 @@ FROM, TO ¤Ï 1970/01/01 ¤«¤é¤Î·Ğ²áÆü¿ô¤òÍÑ¤¤¤Æ»ØÄê"
     (mhc-slot-update-cache slot 'remove record)))
 
 
-;; FIXME: X-SC-Schedule ¥Ø¥Ã¥À¤Ë¤è¤Ã¤Æ»ØÄê¤µ¤ì¤¿»Ò¥¹¥±¥¸¥å¡¼¥ë¤ËÂĞ¤¹¤ë
-;; Îã³°µ¬Â§¤ÎÄÉ²Ã¤¬Æ°ºî¤·¤Ê¤¤¡£
+;; FIXME: X-SC-Schedule ãƒ˜ãƒƒãƒ€ã«ã‚ˆã£ã¦æŒ‡å®šã•ã‚ŒãŸå­ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã«å¯¾ã™ã‚‹
+;; ä¾‹å¤–è¦å‰‡ã®è¿½åŠ ãŒå‹•ä½œã—ãªã„ã€‚
 (defun mhc-db-add-exception-rule (original-record except-day)
   (let ((date-string (mhc-day-let except-day
 		       (format "%04d%02d%02d" year month day-of-month))))

@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>
 ;; Created: 2000/07/18
@@ -143,7 +143,7 @@
 ;; override cmail functions.
 
 (defun cmail-n-page (nth)
-  "NTHÈÖÌÜ¤Î¥á¥¤¥ë¤ÎÀèÆ¬¤Î¥İ¥¤¥ó¥¿¤ÎÃÍ¤òÊÖ¤¹. ¥İ¥¤¥ó¥¿¤â°ÜÆ°¤¹¤ë."
+  "NTHç•ªç›®ã®ãƒ¡ã‚¤ãƒ«ã®å…ˆé ­ã®ãƒã‚¤ãƒ³ã‚¿ã®å€¤ã‚’è¿”ã™. ãƒã‚¤ãƒ³ã‚¿ã‚‚ç§»å‹•ã™ã‚‹."
   (if (not (integerp nth))
       (progn
  	(mhc-insert-file-contents-as-coding-system
@@ -155,7 +155,7 @@
 ;; cmail-get-page-number-from-summary now gets an absolute file name
 ;; which is in a trail of  line. \r path-name.
 (defun cmail-get-page-number-from-summary (&optional no-err)
-  "¥µ¥Ş¥ê¤«¤é¥«¡¼¥½¥ë°ÌÃÖ¤Îmail¤Î¥Ú¡¼¥¸ÈÖ¹æ¤ò½¦¤¦."
+  "ã‚µãƒãƒªã‹ã‚‰ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã®mailã®ãƒšãƒ¼ã‚¸ç•ªå·ã‚’æ‹¾ã†."
   (cmail-fixcp)
   (save-excursion
     (beginning-of-line)
@@ -178,7 +178,7 @@
 ;; if not, it includes an MH style file into mail-buffer.
 ;;
 (defun cmail-show-contents (page-or-path &optional all-headers)
-  "FOLDER¤ÎPAGEÈÖÌÜ¤Î¥á¥¤¥ë¤òÉ½¼¨¤¹¤ë."
+  "FOLDERã®PAGEç•ªç›®ã®ãƒ¡ã‚¤ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹."
   (interactive (list (cmail-get-page-number-from-summary)))
   (if (integerp page-or-path)
       (cmail-show-contents-orig page-or-path all-headers)
@@ -204,8 +204,8 @@
 ;; diffs are only 2 lines: use (equal page) instead of (=  page).
 ;; page may be an absolute filename of MH style file.
 (defun cmail-read-contents (page)
-  "FOLDER¤ÎPAGEÈÖÌÜ¤Î¥á¥¤¥ë¤òÉ½¼¨¡¦¥¹¥¯¥í¡¼¥ë¤µ¤»¤ë.
-½ª¤ê¤Ş¤ÇÆÉ¤à¤È¼¡¤Î¥á¥¤¥ë¤òÉ½¼¨¤¹¤ë."
+  "FOLDERã®PAGEç•ªç›®ã®ãƒ¡ã‚¤ãƒ«ã‚’è¡¨ç¤ºãƒ»ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã›ã‚‹.
+çµ‚ã‚Šã¾ã§èª­ã‚€ã¨æ¬¡ã®ãƒ¡ã‚¤ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹."
   (interactive (list (cmail-get-page-number-from-summary)))
   (let ((disp (get-buffer-window *cmail-mail-buffer)))
     (if (equal page 0)

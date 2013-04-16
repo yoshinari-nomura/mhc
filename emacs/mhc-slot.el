@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -155,8 +155,8 @@
 ;; Functions to manipulate slot key:
 
 (defsubst mhc-slot-key-to-directory (key) "\
-»ØÄê¤µ¤ì¤¿ KEY ::= (YEAR . MONTH) ¤ËÂĞ±ş¤¹¤ëÅ¬Åö¤Ê¥Ç¥£¥ì¥¯¥È¥ê¤òÊÖ¤¹
-¤¿¤À¤· (nil . nil) ¤¬»ØÄê¤µ¤ì¤¿¾ì¹ç¤Ï intersect/ ¤òÊÖ¤¹"
+æŒ‡å®šã•ã‚ŒãŸ KEY ::= (YEAR . MONTH) ã«å¯¾å¿œã™ã‚‹é©å½“ãªãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’è¿”ã™
+ãŸã ã— (nil . nil) ãŒæŒ‡å®šã•ã‚ŒãŸå ´åˆã¯ intersect/ ã‚’è¿”ã™"
   (file-name-as-directory
    (expand-file-name (if (equal key '(nil . nil))
 			 "intersect"
@@ -164,7 +164,7 @@
 		     (mhc-summary-folder-to-path mhc-base-folder))))
 
 (defsubst mhc-slot-directory-to-key (directory)
-  "mhc-slot-month-to-directory ¤ÎµÕ´Ø¿ô"
+  "mhc-slot-month-to-directory ã®é€†é–¢æ•°"
   (setq directory (expand-file-name directory))
   (let ((base (regexp-quote (mhc-summary-folder-to-path mhc-base-folder))))
     (cond

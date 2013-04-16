@@ -405,7 +405,7 @@ If HIDE-PRIVATE, private schedules are suppressed."
 (defun mhc-goto-date-calendar (date hide-private)
   (mhc-calendar-goto-month date))
 (defun mhc-goto-date-summary (date hide-private)
-  ;; XXX mhc-calendar-scan$B$N%Q%/%j$G$9(B
+  ;; XXX mhc-calendar-scanのパクリです
   (mhc-goto-month date hide-private)
   (goto-char (point-min))
   (if (mhc-summary-search-date date)

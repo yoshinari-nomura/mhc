@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Created: 2000/04/30
@@ -9,13 +9,13 @@
 
 ;; This file is a part of MHC.
 
-;; �������塼��ξ���ɽ���إå��򡢤��ξ���������S�����Ѵ����뤿��
-;; �Υ饤�֥�ꡣ
+;; スケジュールの条件を表すヘッダを、その条件と等しいS式に変換するため
+;; のライブラリ。
 
-;; S���ϡ��ʲ��Τ褦�ʥ��������ѿ���«���β���ɾ������롣
+;; S式は、以下のようなローカル変数の束縛の下で評価される。
 
 ;;     (let ((month 4)
-;;           (day 11048) ; 1970/1/1 ���������
+;;           (day 11048) ; 1970/1/1 からの日数
 ;;           (day-of-month 1)
 ;;           (day-of-week 6) ; 0 = Sun, 1 = Mon, ...
 ;;           (week-of-month 0) ; 0 = 1st, 1 = 2nd, 2 = 3rd, 3 = 4th, 4 = 5th
@@ -23,25 +23,25 @@
 ;;           (todo nil))
 ;;       (eval sexp))
 
-;; ����Ū��ɾ���η����ϡ�mhc-logic-eval-for-date, mhc-db/eval-for-duration
-;; �ؿ�������ʤɤ򻲾ȡ�
+;; 具体的な評価の形式は、mhc-logic-eval-for-date, mhc-db/eval-for-duration
+;; 関数の定義などを参照。
 
-;; ��郎��Emacs-Lisp �νҸ�Τߤ���ʤ�S�����Ѵ������ȡ������ξ��
-;; �ΰ�̣��ʬ����Ť餯�ʤ뤿�ᡢ��ö�������Υإå��ȤۤȤ��Ʊ������
-;; �Υޥ������Ѥ��������Ѵ����롣
+;; 条件が、Emacs-Lisp の述語のみからなるS式に変換されると、元々の条件
+;; の意味が分かりづらくなるため、一旦、元々のヘッダとほとんど同じ形式
+;; のマクロを用いた式に変換する。
 
-;; ������ּ��򻲾Ȥ��뤳�Ȥˤ�äơ������ξ����Ф����̣��Ū��ɾ��
-;; ����ǽ�Ȥʤ�(mhc-logic-file-to-slot)��
+;; この中間式を参照することによって、元々の条件に対する意味論的な評価
+;; が可能となる(mhc-logic-file-to-slot)。
 
-;; �ޤ����̾��ɾ����Ԥ����ϡ���ּ��˴ޤޤ��ޥ���������Ÿ����
-;; �Ƥ���Ԥ�����(mhc-logic-compile-file)�����ԡ��ɤϹ�®���ݤ���롣
+;; また、通常の評価を行う場合は、中間式に含まれるマクロを完全に展開し
+;; てから行うため(mhc-logic-compile-file)、スピードは高速に保たれる。
 
 ;;; Definition:
 (require 'mhc-date)
 (require 'bytecomp)
 
 ;;----------------------------------------------------------------------
-;;		MHC-LOGIC ��¤��
+;;		MHC-LOGIC 構造体
 ;;----------------------------------------------------------------------
 
 ;; MHC-LOGIC    ::= [ DAY AND TODO INTERMEDIATE SEXP ]
@@ -52,11 +52,11 @@
 ;; INTERMEDIATE ::= macro expression
 ;; SEXP         ::= full expanded expression
 
-;; mhc-logic/day          = ����(X-SC-Day)�ˤ����
-;; mhc-logic/and          = ����ʳ��Υإå��˴�Ť����
-;; mhc-logic/todo         = TODO�ν��
-;; mhc-logic/intermediate = ����S�����Ѵ����뤿�����ַ���
-;; mhc-logic-sexp         = ������Ÿ�����줿S��
+;; mhc-logic/day          = 日付(X-SC-Day)による条件
+;; mhc-logic/and          = それ以外のヘッダに基づく条件
+;; mhc-logic/todo         = TODOの順位
+;; mhc-logic/intermediate = 条件をS式に変換するための中間形式
+;; mhc-logic-sexp         = 完全に展開されたS式
 
 (defun mhc-logic-new ()
   (make-vector 5 nil))
@@ -93,11 +93,11 @@
 
 
 ;;----------------------------------------------------------------------
-;;		��Ｐ��ɾ������ؿ�
+;;		条件式を評価する関数
 ;;----------------------------------------------------------------------
 
 (defun mhc-logic-eval-for-date (sexp-list day &optional todo)
-  "���ꤵ�줿���Υ������塼���õ��"
+  "指定された日のスケジュールを探索"
   (mhc-day-let day
     (let ((week-of-month (/ (+ day-of-month
 			       (mhc-date-ww (mhc-date-mm-first day))
@@ -116,11 +116,11 @@
 
 
 ;;----------------------------------------------------------------------
-;;		��Ｐ���������뤿��δؿ���
+;;		条件式を生成するための関数群
 ;;----------------------------------------------------------------------
 
-;; S����ɽ��������ַ����Υޥ���
-;; �����ϡ���Ｐ�ΰ�̣��Ūɽ���Ȥ����Ѥ����롣
+;; S式を表現する中間形式のマクロ
+;; これらは、条件式の意味論的表示として用いられる。
 (defmacro mhc-logic/condition-month (n) `(eq month ,n))
 (defmacro mhc-logic/condition-day (n) `(eq day ,n))
 (defmacro mhc-logic/condition-day-of-month (n) `(eq day-of-month ,n))
@@ -132,18 +132,18 @@
 (defmacro mhc-logic/condition-duration-end (end) `(<= day ,end))
 
 (defconst mhc-logic/space-regexp "[,| \t\n]+"
-  "��ʸ���Ǥζ��ڤ�˰��פ�������ɽ��")
+  "構文要素の区切りに一致する正規表現")
 
 (defconst mhc-logic/not-regexp "\\(!\\)?[ \t]*"
-  "��ʸ���Ǥ�����˰��פ�������ɽ��")
+  "構文要素の否定に一致する正規表現")
 
 (defconst mhc-logic/day-regexp
   "\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)"
-  "��ʸ���Ǥ����դ˰��פ�������ɽ��")
+  "構文要素の日付に一致する正規表現")
 
 (defconst mhc-logic/day-of-month-regexp
   "0*\\([1-9]\\|[1-2][0-9]\\|3[01]\\)"
-  "��ʸ���Ǥγ�����β����ܤ���ɽ�������˰��פ�������ɽ��")
+  "構文要素の該当月の何日目かを表す序数に一致する正規表現")
 
 (defconst mhc-logic/week-of-month-alist
   '(("1st" 0 (mhc-logic/condition-week-of-month 0))
@@ -152,21 +152,21 @@
     ("4th" 3 (mhc-logic/condition-week-of-month 3))
     ("5th" 4 (mhc-logic/condition-week-of-month 4))
     ("last" 5 (mhc-logic/condition-last-week)))
-  "��ʸ���Ǥγ�����β����ܤ���ɽ��������Ϣ������")
+  "構文要素の該当月の何週目かを表す序数の連想配列")
 
 (defconst mhc-logic/week-of-month-regexp
   (mhc-regexp-opt (mapcar (function car) mhc-logic/week-of-month-alist) 'paren)
-  "��ʸ���Ǥβ����ܤ���ɽ�������˰��פ�������ɽ��")
+  "構文要素の何週目かを表す序数に一致する正規表現")
 
 (defconst mhc-logic/day-of-week-alist
   '(("sun" . 0) ("mon" . 1) ("tue" . 2) ("wed" . 3) ("thu" . 4) ("fri" . 5) ("sat" . 6)
     ("sunday" . 0) ("monday" . 1) ("tuesday" . 2) ("wednesday" . 3) ("thursday" . 4)
     ("friday" . 5) ("saturday" . 6))
-  "��ʸ���Ǥ�������Ϣ������")
+  "構文要素の曜日の連想配列")
 
 (defconst mhc-logic/day-of-week-regexp
   (mhc-regexp-opt (mapcar (function car) mhc-logic/day-of-week-alist) 'paren)
-  "��ʸ���Ǥ������˰��פ�������ɽ��")
+  "構文要素の曜日に一致する正規表現")
 
 (defconst mhc-logic/month-alist
   '(("jan" . 1) ("feb" . 2) ("mar" . 3) ("apr" . 4) ("may" . 5) ("jun" . 6)
@@ -174,24 +174,24 @@
     ("january" . 1) ("february" . 2) ("march" . 3) ("april" . 4) ("june" . 6)
     ("july" . 7) ("august" . 8) ("september" . 9) ("october" .10) ("november" . 11)
     ("december" . 12))
-  "��ʸ���Ǥη��Ϣ������")
+  "構文要素の月の連想配列")
 
 (defconst mhc-logic/month-regexp
   (mhc-regexp-opt (mapcar (function car) mhc-logic/month-alist) 'paren)
-  "��ʸ���Ǥη�˰��פ�������ɽ��")
+  "構文要素の月に一致する正規表現")
 
 (defconst mhc-logic/old-style-date-regexp
   "\\([0-9]+\\)[\t ]+\\([A-Z][a-z][a-z]\\)[\t ]+\\([0-9]+\\)"
-  "��ʸ���Ǥε���������ջ���˰��פ�������ɽ��")
+  "構文要素の旧形式の日付指定に一致する正規表現")
 
 
 (defmacro mhc-logic/looking-at (&rest regexp)
-  "����ɽ���˰��פ��빽ʸ���Ǥ�ȯ������ޥ���"
+  "正規表現に一致する構文要素を発見するマクロ"
   `(looking-at (concat ,@regexp mhc-logic/space-regexp)))
 
 
 (defun mhc-logic-parse-day (logicinfo)
-  "X-SC-Day: �إå�����Ϥ���ؿ�"
+  "X-SC-Day: ヘッダを解析する関数"
   (let ((d) (days (mhc-logic/day logicinfo)))
     (if (looking-at mhc-logic/space-regexp)
 	(goto-char (match-end 0)))
@@ -207,7 +207,7 @@
 
 
 (defun mhc-logic-parse-old-style-date (logicinfo)
-  "X-SC-Date: �إå���������ʬ����Ϥ���ؿ�"
+  "X-SC-Date: ヘッダの日付部分を解析する関数"
   (if (looking-at mhc-logic/space-regexp)
       (goto-char (match-end 0)))
   (let (month)
@@ -230,38 +230,38 @@
 
 
 (defun mhc-logic-parse-cond (logicinfo)
-  "X-SC-Cond: �إå�����Ϥ���ؿ�"
+  "X-SC-Cond: ヘッダを解析する関数"
   (let (sexp day-of-month week-of-month day-of-week month)
     (if (looking-at mhc-logic/space-regexp)
 	(goto-char (match-end 0)))
     (while (not (eobp))
       (cond
-       ;; ������
+       ;; 何日目
        ((mhc-logic/looking-at mhc-logic/day-of-month-regexp)
 	(setq day-of-month
 	      (cons (list 'mhc-logic/condition-day-of-month (string-to-number (match-string 1)))
 		    day-of-month)))
-       ;; ������
+       ;; 何週目
        ((mhc-logic/looking-at mhc-logic/week-of-month-regexp)
 	(setq week-of-month
 	      (cons (nth 2 (assoc (downcase (match-string 1))
 				  mhc-logic/week-of-month-alist))
 		    week-of-month)))
-       ;; ����
+       ;; 曜日
        ((mhc-logic/looking-at mhc-logic/day-of-week-regexp)
 	(setq day-of-week
 	      (cons (list 'mhc-logic/condition-day-of-week
 			  (cdr (assoc (downcase (match-string 1))
 				      mhc-logic/day-of-week-alist)))
 		    day-of-week)))
-       ;; ��
+       ;; 月
        ((mhc-logic/looking-at mhc-logic/month-regexp)
 	(setq month
 	      (cons (list 'mhc-logic/condition-month
 			  (cdr (assoc (downcase (match-string 1))
 				      mhc-logic/month-alist)))
 		    month)))
-       (t ;; ���Ǥ��ʤ����Ǥξ��
+       (t ;; 解釈できない要素の場合
 	(error "Parse ERROR !!!(at X-SC-Cond:)")))
       (goto-char (match-end 0)))
     (mapcar (lambda (s)
@@ -280,7 +280,7 @@
 
 
 (defun mhc-logic-parse-duration (logicinfo)
-  "X-SC-Duration: �إå�����Ϥ���ؿ�"
+  "X-SC-Duration: ヘッダを解析する関数"
   (let (sexp)
     (if (looking-at mhc-logic/space-regexp)
 	(goto-char (match-end 0)))
@@ -306,7 +306,7 @@
 			  (mhc-date-new (string-to-number (match-string 1))
 					(string-to-number (match-string 2))
 					(string-to-number (match-string 3)))))
-		   (t ; ����ʳ��ξ��
+		   (t ; それ以外の場合
 		    (error "Parse ERROR !!!(at X-SC-Duration:)")))
 		  sexp))
       (goto-char (match-end 0)))
@@ -330,7 +330,7 @@
 
 
 (defun mhc-logic-compile-file (record)
-  "���դ���ꤵ�줿�Ȥ��ˡ��ط����륹�����塼������Ӥ��������S������������"
+  "日付を指定されたときに、関係するスケジュールを選びだすためのS式を生成する"
   (let ((sexp) (schedules (mhc-record-schedules record))
 	(byte-compile-warnings))
     (while schedules
@@ -349,9 +349,9 @@
 
 
 (defun mhc-logic/compile-schedule (schedule)
-  "mhc-logic-compile-file �β������ؿ�"
+  "mhc-logic-compile-file の下請け関数"
   (let* ((logicinfo (mhc-schedule-condition schedule)) sexp)
-    ;; ���դˤ���㳰���Ȥ���ʳ��ξ����礷������������������
+    ;; 日付による例外条件とそれ以外の条件を結合した論理式を生成する
     (setq sexp
 	  (nreverse
 	   (delq nil
@@ -367,28 +367,28 @@
 			       (mhc-logic/day logicinfo))))))
     (if sexp
 	(progn
-	  ;; ���ο��ˤ�äơ���Ｐ���Ŭ�����Ƥ���
+	  ;; 条件の数によって、条件式を最適化しておく
  	  (setq sexp (if (= 1 (length sexp))
  			 (if (nth 1 (car sexp))
  			     (car (car sexp))
  			   `(not ,(car (car sexp))))
  		       (cons 'cond sexp)))
-	  ;; TODO�˴�Ť�����ä���
+	  ;; TODOに基づく条件を加える
 	  (setq sexp (if (mhc-logic-todo logicinfo)
 			 `(if todo t ,sexp)
 		       `(if todo nil ,sexp))))
       (if (mhc-logic-todo logicinfo)
 	  (setq sexp 'todo)))
-    ;; ������ַ�������¸���Ƥ���
+    ;; この中間形式を保存しておく
     (mhc-logic/set-intermediate logicinfo sexp)
-    ;; ��ַ�����Ÿ������
+    ;; 中間形式を展開する
     (mhc-logic/set-sexp logicinfo
 			(if sexp (mhc-logic/macroexpand
 				  `(if ,sexp ,schedule))))))
 
 
 (defun mhc-logic/macroexpand (sexp)
-  "��ʬ�����̤äƥޥ�����Ÿ������ؿ�"
+  "部分式に遡ってマクロを展開する関数"
   (macroexpand
    (if (listp sexp)
        (mapcar (function mhc-logic/macroexpand) sexp)

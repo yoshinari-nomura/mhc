@@ -1,4 +1,4 @@
-#!@@MHC_RUBY_PATH@@ -Ke
+#!@@MHC_RUBY_PATH@@
 # -*- ruby -*-
 
 $LOAD_PATH .unshift('@@MHC_TOPDIR@@')

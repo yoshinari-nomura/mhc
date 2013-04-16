@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ### mhc-schedule.rb
 ##
 ## Author:  Yoshinari Nomura <nom@quickhack.net>
@@ -782,7 +783,7 @@ class MhcScheduleItem
 	  end
 	  sch2 = MhcScheduleItem .new .add_cond(ord_str) .add_cond(wek_str)
 	  beg2 = beg .dup
-	  while !sch2 .occur_on?(beg2) ## xxx Â¿Ê¬¤³¤ì¤ÏÉÔÍ×?
+	  while !sch2 .occur_on?(beg2) ## xxx å¤šåˆ†ã“ã‚Œã¯ä¸è¦?
 	    beg2 .succ!
 	  end
 	  ret << mk_palm_skel .set_monthly_by_day(beg2, fin, 1, ord, wek)
@@ -791,7 +792,7 @@ class MhcScheduleItem
     elsif cond_num .length == 1 &&
 	  cond_num .length == cond .length
       ## monthly by date
-      while !occur_on?(beg) ## xxx ¤³¤Ã¤Á¤ÏÉ¬Í×
+      while !occur_on?(beg) ## xxx ã“ã£ã¡ã¯å¿…è¦
 	beg .succ!
       end
       ret << mk_palm_skel .set_monthly_by_date(beg, fin, 1)
@@ -808,7 +809,7 @@ class MhcScheduleItem
       if date < beg
 	date .y_succ! 
       end
-      ## 2/29 ¤Ï¤É¤¦¤¹¤ë?
+      ## 2/29 ã¯ã©ã†ã™ã‚‹?
       ret << mk_palm_skel .set_yearly(date, fin, 1)
 
     elsif cond_ord .length == 1  &&
@@ -1522,46 +1523,46 @@ class MhcLogEntry
   end
 end
 
-## MHC Alarm ¥¯¥é¥¹
+## MHC Alarm ã‚¯ãƒ©ã‚¹
 ##
-## MHC Alarm ¥¯¥é¥¹¤Ï¡¢MhcScheduleDB ¤«¤é¡¢Àè¤ÎÍ½Äê¤ò¥¹¥­¥ã¥ó¤·¤Æ¤­¤Æ¡¢
-## Alarm ¤òÈ¯¹Ô¤·¤Æ¤Û¤·¤¤»ş´Ö½ç¤Ë¥½¡¼¥È¤·¤¿ÇÛÎó¤òÊİÂ¸¤·¤Æ¤ª¤¯¡£Í½Äê»ş
-## ´Ö¤¬Íè¤¿¤é¡¢signal ¤òÈ¯¹Ô¤¹¤ë¡£
+## MHC Alarm ã‚¯ãƒ©ã‚¹ã¯ã€MhcScheduleDB ã‹ã‚‰ã€å…ˆã®äºˆå®šã‚’ã‚¹ã‚­ãƒ£ãƒ³ã—ã¦ãã¦ã€
+## Alarm ã‚’ç™ºè¡Œã—ã¦ã»ã—ã„æ™‚é–“é †ã«ã‚½ãƒ¼ãƒˆã—ãŸé…åˆ—ã‚’ä¿å­˜ã—ã¦ãŠãã€‚äºˆå®šæ™‚
+## é–“ãŒæ¥ãŸã‚‰ã€signal ã‚’ç™ºè¡Œã™ã‚‹ã€‚
 ##
-## ²¿¼Ô¤«¤Ë¤è¤Ã¤Æ¡¢DB ¤¬ÊÑ¹¹¤µ¤ì¤¿¤é¡¢ÊİÂ¸¤·¤Æ¤¤¤ë Alarm ¾ğÊó¤¬Ìµ¸ú¤Ë
-## ¤Ê¤Ã¤Æ¤·¤Ş¤¦¤Î¤Ç¡¢ºÆ¥¹¥­¥ã¥ó¤·¤¹¤ë¡£
+## ä½•è€…ã‹ã«ã‚ˆã£ã¦ã€DB ãŒå¤‰æ›´ã•ã‚ŒãŸã‚‰ã€ä¿å­˜ã—ã¦ã„ã‚‹ Alarm æƒ…å ±ãŒç„¡åŠ¹ã«
+## ãªã£ã¦ã—ã¾ã†ã®ã§ã€å†ã‚¹ã‚­ãƒ£ãƒ³ã—ã™ã‚‹ã€‚
 ##
-## 1. make_alarm_table : @alarm_table ¤ØÍ½ÄêÉ½¤ÎÊİÂ¸
+## 1. make_alarm_table : @alarm_table ã¸äºˆå®šè¡¨ã®ä¿å­˜
 ##
-##    º£Æü¤ÎÆüÉÕ¤«¤é¡¢LOOK_AHEAD_DAYS ÆüÊ¬Àè¤ÎÍ½Äê¤ò scan, sort ¤¹¤ë
+##    ä»Šæ—¥ã®æ—¥ä»˜ã‹ã‚‰ã€LOOK_AHEAD_DAYS æ—¥åˆ†å…ˆã®äºˆå®šã‚’ scan, sort ã™ã‚‹
 ##
-##    aTime ¤Ï¥¢¥é¡¼¥àÈ¯¹Ô»ş´Ö (Í½Äê¤Î»ş´Ö¤Ç¤Ï¤Ê¤¤)
-##    xTime ¤òÍ½Äê¤Î»ş´Ö¤À¤È¤¹¤ë¤È¡¢
+##    aTime ã¯ã‚¢ãƒ©ãƒ¼ãƒ ç™ºè¡Œæ™‚é–“ (äºˆå®šã®æ™‚é–“ã§ã¯ãªã„)
+##    xTime ã‚’äºˆå®šã®æ™‚é–“ã ã¨ã™ã‚‹ã¨ã€
 ##
-##    now   <= aTime <= xTime  ¤ÊÍ½Äê --> @alarm_table ¤ËÊİÂ¸
-##    aTime <= now   <= xTime  ¤ÊÍ½Äê --> Â¨ signal ¤òÈ¯¹Ô
-##    aTime <= xTime <= now    ¤ÊÍ½Äê --> ¼Î¤Æ¤ë
+##    now   <= aTime <= xTime  ãªäºˆå®š --> @alarm_table ã«ä¿å­˜
+##    aTime <= now   <= xTime  ãªäºˆå®š --> å³ signal ã‚’ç™ºè¡Œ
+##    aTime <= xTime <= now    ãªäºˆå®š --> æ¨ã¦ã‚‹
 ## 
 ##    @alarm_table =  [[aTime, aMhcScheduleItem], ... ]
 ##
 ##
-## 2. ¥¹¥±¥¸¥å¡¼¥ë¤¬²¿¼Ô¤«¤Ë¤è¤Ã¤ÆÊÑ¹¹¤µ¤ì¤Æ¤·¤Ş¤Ã¤¿¤È¤­
+## 2. ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒä½•è€…ã‹ã«ã‚ˆã£ã¦å¤‰æ›´ã•ã‚Œã¦ã—ã¾ã£ãŸã¨ã
 ##
-##    DB ¤«¤é updated signal ¤ò½¦¤Ã¤Æ¡¢1 ¤ò¼Â¹Ô¤¹¤ë¡£¤½¤Î¤È¤­¡¢
+##    DB ã‹ã‚‰ updated signal ã‚’æ‹¾ã£ã¦ã€1 ã‚’å®Ÿè¡Œã™ã‚‹ã€‚ãã®ã¨ãã€
 ##
-##    > aTime <= now   <= xTime  ¤ÊÍ½Äê --> Â¨ signal ¤òÈ¯¹Ô
+##    > aTime <= now   <= xTime  ãªäºˆå®š --> å³ signal ã‚’ç™ºè¡Œ
 ##
-##    ¤Ï¼Â¹Ô¤·¤Ê¤¤¡£
+##    ã¯å®Ÿè¡Œã—ãªã„ã€‚
 ##
-## 3. 1Ê¬¤´¤È¤Ë¡¢
+## 3. 1åˆ†ã”ã¨ã«ã€
 ##
-##    a. @alarm_table ¤ÎÀèÆ¬¤È¸½ºß»ş¹ï now ¤òÈæ³Ó
-##    b. aTime <= now ¤Ê¤é signal ¤ò emit¡£@alarm_table ¤«¤é¼Î¤Æ¤Æ a. ¤ËÌá¤ë
+##    a. @alarm_table ã®å…ˆé ­ã¨ç¾åœ¨æ™‚åˆ» now ã‚’æ¯”è¼ƒ
+##    b. aTime <= now ãªã‚‰ signal ã‚’ emitã€‚@alarm_table ã‹ã‚‰æ¨ã¦ã¦ a. ã«æˆ»ã‚‹
 ##
-## 4. 1ÆüËè¤Ë¡¢
+## 4. 1æ—¥æ¯ã«ã€
 ##
-##    Æü¤¬ÊÑ¤ï¤ëËè¤Ë¡¢ºÇ¸å¤Ë scan ¤·¤¿ÆüÉÕ¤Î 1ÆüÀè¤ÎÆâÍÆ¤ò
-##    1. ¤ÎÊıË¡¤Ç @alarm_table ¤ËÄÉ²Ã¡£
+##    æ—¥ãŒå¤‰ã‚ã‚‹æ¯ã«ã€æœ€å¾Œã« scan ã—ãŸæ—¥ä»˜ã® 1æ—¥å…ˆã®å†…å®¹ã‚’
+##    1. ã®æ–¹æ³•ã§ @alarm_table ã«è¿½åŠ ã€‚
 ##
 
 class MhcAlarm

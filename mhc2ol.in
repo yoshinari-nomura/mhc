@@ -1,4 +1,4 @@
-#!@@MHC_RUBY_PATH@@ -Ke
+#!@@MHC_RUBY_PATH@@
 # -*- ruby -*-
 
 ### mhc2ol -- copy articles from mhc to Outlook.
@@ -278,7 +278,7 @@ class MhcScheduleItem
 	  wek = MhcDate::W_LABEL .index(wek_str)
 	  sch2 = MhcScheduleItem .new .add_cond(ord_str) .add_cond(wek_str)
 	  beg2 = beg .dup
-	  while !sch2 .occur_on?(beg2) ## xxx Â¿Ê¬¤³¤ì¤ÏÉÔÍ×?
+	  while !sch2 .occur_on?(beg2) ## xxx å¤šåˆ†ã“ã‚Œã¯ä¸è¦?
 	    beg2 .succ!
 	  end
 	  dates << RepeatPattern::MonthlyByDow .new(beg2, fin,
@@ -289,7 +289,7 @@ class MhcScheduleItem
     elsif cond_num .length == 1 &&
 	  cond_num .length == cond .length
       ## monthly by date
-      while !occur_on?(beg) ## xxx ¤³¤Ã¤Á¤ÏÉ¬Í×
+      while !occur_on?(beg) ## xxx ã“ã£ã¡ã¯å¿…è¦
 	beg .succ!
       end
       dates << RepeatPattern::MonthlyByDate .new(beg, fin, time_b, time_e, 1)
@@ -306,7 +306,7 @@ class MhcScheduleItem
       if date < beg
 	date .y_succ! 
       end
-      ## 2/29 ¤Ï¤É¤¦¤¹¤ë?
+      ## 2/29 ã¯ã©ã†ã™ã‚‹?
       dates << RepeatPattern::Yearly .new(date, fin, time_b, time_e, 1)
 
     elsif cond_ord .length == 1  &&
@@ -562,43 +562,43 @@ class Exporter
 
   def sync_from_outlook(sch, last_sync_info)
 
-    ## OutlookÂ¦¤Ç¤Î¹¹¿·ÆâÍÆ¤òmhc¤Ë¼è¤ê¹ş¤à.  ¼è¤ê¹ş¤àÆâÍÆ¤Ï¾ì½ê
-    ## (Location), ´ü¸Â(Day), »ş´Ö(Time), ´°Î»¥Õ¥é¥°(TODO/DONE), Í¥Àè
-    ## ½ç°Ì(Priority), ´ü´Ö(Duration) ¤È¤¹¤ë.  Ê¬Îà(Category)¤ÏÊÑ´¹¥ë¡¼
-    ## ¥ë¤¬ÄêµÁ¤Ç¤­¤Ê¤¤¤È¤Ş¤º¤¤¥Ï¥º.
+    ## Outlookå´ã§ã®æ›´æ–°å†…å®¹ã‚’mhcã«å–ã‚Šè¾¼ã‚€.  å–ã‚Šè¾¼ã‚€å†…å®¹ã¯å ´æ‰€
+    ## (Location), æœŸé™(Day), æ™‚é–“(Time), å®Œäº†ãƒ•ãƒ©ã‚°(TODO/DONE), å„ªå…ˆ
+    ## é †ä½(Priority), æœŸé–“(Duration) ã¨ã™ã‚‹.  åˆ†é¡(Category)ã¯å¤‰æ›ãƒ«ãƒ¼
+    ## ãƒ«ãŒå®šç¾©ã§ããªã„ã¨ã¾ãšã„ãƒã‚º.
     entry_id = last_sync_info[0]
     appoint = get_ol_appointment(entry_id) if entry_id
     entry_id = last_sync_info[2]
     task = get_ol_task(entry_id) if entry_id
     cats = sch .category_as_string() .split(' ')
 
-    # ol_appoint¤«¤é ¾ì½ê, ´ü¸Â, »ş´Ö ¤ò¼è¤ê¹ş¤à.
+    # ol_appointã‹ã‚‰ å ´æ‰€, æœŸé™, æ™‚é–“ ã‚’å–ã‚Šè¾¼ã‚€.
     if appoint
       sch.set_location(MhcKconv::toeuc(appoint .Location))
-      # ´ü¸Â/»ş¹ï: ¤É¤¦¤·¤è¤¦¡© appoint .Start / .End
+      # æœŸé™/æ™‚åˆ»: ã©ã†ã—ã‚ˆã†ï¼Ÿ appoint .Start / .End
     end
 
-    # ol_task¤«¤é ´ü´Ö, ´°Î»¥Õ¥é¥°, Í¥Àè½ç°Ì ¤ò¼è¤ê¹ş¤à
+    # ol_taskã‹ã‚‰ æœŸé–“, å®Œäº†ãƒ•ãƒ©ã‚°, å„ªå…ˆé †ä½ ã‚’å–ã‚Šè¾¼ã‚€
     if task
-      # ´ü´Ö: .StartDate, .DueDate
-      # ´°Î»¥Õ¥é¥°: Complete, DateCompleted
+      # æœŸé–“: .StartDate, .DueDate
+      # å®Œäº†ãƒ•ãƒ©ã‚°: Complete, DateCompleted
       if task .Complete
 	if ! cats .include?('done')
-	  # º£²ó´°Î»¤·¤¿»Å»ö.  ºî¶È´ü´Ö¤òBody¤ËËä¤á¹ş¤à
+	  # ä»Šå›å®Œäº†ã—ãŸä»•äº‹.  ä½œæ¥­æœŸé–“ã‚’Bodyã«åŸ‹ã‚è¾¼ã‚€
 	  sch .description = sch .duration + sch .description
 	  sch .set_duration( nil , nil)
-	  cats .delete('todo')	# ºï½ü
-	  cats .add('done')	# ÄÉ²Ã
+	  cats .delete('todo')	# å‰Šé™¤
+	  cats .add('done')	# è¿½åŠ 
 	end
       end
-      # Í¥Àè½ç°Ì: .Importance
+      # å„ªå…ˆé †ä½: .Importance
     end
 
-    # ´ü´ÖÊÑ¹¹¤Ï ol_task, ol_appoint ¤ÎÊÑ¹¹¤ò¥Ş¡¼¥¸¤¹¤ëÉ¬Í×¤¢¤ê?  ´ğËÜ
-    # Åª¤Ë¸åÍ¥Àè¤Ç¼è¤ê¹ş¤à.
+    # æœŸé–“å¤‰æ›´ã¯ ol_task, ol_appoint ã®å¤‰æ›´ã‚’ãƒãƒ¼ã‚¸ã™ã‚‹å¿…è¦ã‚ã‚Š?  åŸºæœ¬
+    # çš„ã«å¾Œå„ªå…ˆã§å–ã‚Šè¾¼ã‚€.
     sch .add_sch
 
-    # ¹¹¿·¤µ¤ì¤¿last_sync_info¤òÊÖ¤¹
+    # æ›´æ–°ã•ã‚ŒãŸlast_sync_infoã‚’è¿”ã™
     last_sync_info
   end
   private :sync_from_outlook
@@ -619,26 +619,26 @@ class Exporter
     last_sync_info = @last_sync_infos .assoc(rec_id)
   
     if last_sync_info
-      ## Á°²ó¤Îsync¾ğÊó¤¬¤¢¤ë¾ì¹ç
+      ## å‰å›ã®syncæƒ…å ±ãŒã‚ã‚‹å ´åˆ
       @last_sync_infos .delete(last_sync_info)
       mhc_last_modified_time = last_sync_info[1]
       ol_last_sync_infos = last_sync_info[2]
-      ## mhcÂ¦¤¬¹¹¿·¤µ¤ì¤Æ¤¤¤ë¤«¡©
+      ## mhcå´ãŒæ›´æ–°ã•ã‚Œã¦ã„ã‚‹ã‹ï¼Ÿ
       mhc_is_modified = (File .mtime(file) != mhc_last_modified_time)
-      ## (mhcÌ¤¹¹¿·¤Î¤È¤­)OutlookÂ¦¤¬¹¹¿·¤µ¤ì¤Æ¤¤¤ë¤«¡©
+      ## (mhcæœªæ›´æ–°ã®ã¨ã)Outlookå´ãŒæ›´æ–°ã•ã‚Œã¦ã„ã‚‹ã‹ï¼Ÿ
       is_update = ol_is_update?(ol_last_sync_infos) unless mhc_is_modified
-      ## mhc¹¹¿·ºÑ¤ß ¤Ş¤¿¤Ï mhcÌ¤¹¹¿·¤«¤ÄOutlookÌ¤¹¹¿·¤Î¤È¤­
-      ## ¢ª Outlook¥¨¥ó¥È¥ê¤òºï½ü¤¹¤ë(mhc¥¨¥ó¥È¥ê¤òºÆÅÙÄó¶¡¤¹¤ë).
+      ## mhcæ›´æ–°æ¸ˆã¿ ã¾ãŸã¯ mhcæœªæ›´æ–°ã‹ã¤Outlookæœªæ›´æ–°ã®ã¨ã
+      ## â†’ Outlookã‚¨ãƒ³ãƒˆãƒªã‚’å‰Šé™¤ã™ã‚‹(mhcã‚¨ãƒ³ãƒˆãƒªã‚’å†åº¦æä¾›ã™ã‚‹).
       delete_ol_appointments(ol_last_sync_infos) unless is_update
     end
     if is_update
-      ## mhcÌ¤¹¹¿·¤«¤ÄOutlook¹¹¿·ºÑ¤ß.  Outlook¥¨¥ó¥È¥ê¤Ï»Ä¤·¤Æ¤¢¤ë.
+      ## mhcæœªæ›´æ–°ã‹ã¤Outlookæ›´æ–°æ¸ˆã¿.  Outlookã‚¨ãƒ³ãƒˆãƒªã¯æ®‹ã—ã¦ã‚ã‚‹.
       sync_info << ol_last_sync_infos
-      #TODO: Outlook¤Ë¤â¤È¤Å¤¤¤Æmhc¤ò¹¹¿·¤¹¤ë
+      #TODO: Outlookã«ã‚‚ã¨ã¥ã„ã¦mhcã‚’æ›´æ–°ã™ã‚‹
 #      sync_info << sync_with_outlook(sch, last_sync_info)
       print "copying to Outlook is skipped!\n" if @@flag_verbose
     else
-      ## ¾åµ­°Ê³°.  Outlook¥¨¥ó¥È¥ê¤Ï¤â¤È¤â¤È¤Ê¤¤¤«ºï½üºÑ¤ß.
+      ## ä¸Šè¨˜ä»¥å¤–.  Outlookã‚¨ãƒ³ãƒˆãƒªã¯ã‚‚ã¨ã‚‚ã¨ãªã„ã‹å‰Šé™¤æ¸ˆã¿.
       sync_info << setup_ol_appointments(periods, sch)
       print "\n"  if @@flag_verbose
     end

@@ -1,4 +1,4 @@
-#!@@MHC_RUBY_PATH@@ -Ke
+#!@@MHC_RUBY_PATH@@
 # -*- ruby -*-
 
 require 'mkmf'
@@ -21,7 +21,7 @@ else
   print "creating make.rb\n"
   mfile = open("make.rb", "w")
   mfile .print <<EOMK
-#!@@MHC_RUBY_PATH@@ -Ke
+#!@@MHC_RUBY_PATH@@
 #------------------------------------------------------
 
 $LOAD_PATH .unshift('@@MHC_TOPDIR@@')

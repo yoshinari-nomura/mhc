@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -14,38 +14,38 @@
 
 ;;; About Backend:
 
-;; ���Υ饤�֥��ϡ��ºݤ˥ե����������Хå�����ɤ�ƤӽФ���
-;; �Ȥˤ�ä�ư��롣�Хå�����ɤϡ��ʲ��Τ褦�ʥ᥽�åɤ��󶡤���
-;; ���Ȥ����Ԥ���Ƥ��롣
+;; このライブラリは、実際にファイルを操作するバックエンドを呼び出すこ
+;; とによって動作する。バックエンドは、以下のようなメソッドを提供する
+;; ことが期待されている。
 ;;
 ;;     (mhc-foo/init)
-;;          �ͥåȥ���ξ��֤˰�¸���ʤ������������Ԥ��ؿ�
+;;          ネットワークの状態に依存しない初期化処理を行う関数
 ;;
 ;;     (mhc-foo/exit)
-;;          �ͥåȥ���ξ��֤˰�¸���ʤ���λ������Ԥ��ؿ�
+;;          ネットワークの状態に依存しない終了処理を行う関数
 ;;
 ;;     (mhc-foo/open &optional OFFLINE)
-;;          �ͥåȥ���ξ��֤˰�¸��������������Ԥ��ؿ�
+;;          ネットワークの状態に依存する初期化処理を行う関数
 ;;
 ;;     (mhc-foo/close &optional OFFLINE)
-;;          �ͥåȥ���ξ��֤˰�¸���뽪λ������Ԥ��ؿ�
+;;          ネットワークの状態に依存する終了処理を行う関数
 ;;
 ;;     (mhc-foo/sync)
-;;	    �������塼��ե������Ʊ������ؿ�
+;;	    スケジュールファイルの同期を取る関数
 ;;
 ;;     (mhc-foo/add FILENAME &optional OFFLINE)
-;;	    �ե�������ɲä����Τ���ؿ�
-;;          (�ե�����μ��Τ��ɲä��줿��˸ƤӽФ����)
+;;	    ファイルを追加を通知する関数
+;;          (ファイルの実体は追加された後に呼び出される)
 ;;
 ;;     (mhc-foo/modify FILENAME &optional  OFFLINE)
-;;	    �ե�������ѹ������Τ���ؿ�
-;;          (�ե�����μ��Τ��ѹ����줿��˸ƤӽФ����)
+;;	    ファイルの変更を通知する関数
+;;          (ファイルの実体が変更された後に呼び出される)
 ;;
 ;;     (mhc-foo/remove FILENAME &optional OFFLINE)
-;;	    �ե������������ؿ�
-;;          (�ե�����μ��Τ� *������줺��* �ƤӽФ����)
+;;	    ファイルを削除する関数
+;;          (ファイルの実体は *削除されずに* 呼び出される)
 ;;
-;; �����Υ᥽�åɤ�Ŭ�ڤ�����������˰ʲ��Τ褦��������դ��ä��롣
+;; これらのメソッドを適切に定義し、更に以下のような宣言を付け加える。
 ;;
 ;;     (provide 'mhc-foo)
 ;;     (put 'mhc-foo 'init   'mhc-foo/init)
@@ -57,11 +57,11 @@
 ;;     (put 'mhc-foo 'modify 'mhc-foo/modify)
 ;;     (put 'mhc-foo 'remove 'mhc-foo/remove)
 ;;
-;; �᥽�åɤδؿ�̾��Ǥ�դ����֤��Ȥ��Ǥ��롣
+;; メソッドの関数名は任意に選ぶことができる。
 ;;
-;; �ޤ����᥽�åɤ�����Ͼ�ά���뤳�Ȥ��Ǥ��롣��ά���줿�᥽�åɤϡ�
-;; �ؿ� mhc-file/true �ˤ�ä��ִ����졢���ν����Ͼ������������Τȸ�
-;; �ʤ���롣
+;; また、メソッドの定義は省略することができる。省略されたメソッドは、
+;; 関数 mhc-file/true によって置換され、その処理は常に成功したものと見
+;; なされる。
 
 
 ;;; Definition

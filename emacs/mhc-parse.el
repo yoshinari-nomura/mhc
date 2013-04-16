@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -21,7 +21,7 @@
 (defvar mhc-parse/strict nil)
 
 (defun mhc-parse/continuous-lines ()
-  "¥Ø¥Ã¥À¤Î·ÑÂ³¹Ô¤ò½èÍı¤·¤Æ¡¢ÆâÍÆ¤Î¤ß¤ò¼è¤ê½Ğ¤¹´Ø¿ô"
+  "ãƒ˜ãƒƒãƒ€ã®ç¶™ç¶šè¡Œã‚’å‡¦ç†ã—ã¦ã€å†…å®¹ã®ã¿ã‚’å–ã‚Šå‡ºã™é–¢æ•°"
   (let (list)
     (skip-chars-forward " \t\n")
     (while (not (eobp))
@@ -140,16 +140,16 @@
    (mhc-eword-decode-string (mhc-parse/continuous-lines)))
   schedule)
 
-;; FIXME: Í×ºï½ü
+;; FIXME: è¦å‰Šé™¤
 (defun mhc-parse/next (record schedule)
   (let ((new (mhc-schedule-new record)))
     (if schedule (mhc-schedule/set-region-end schedule (point-min)))
     (mhc-schedule/set-region-start new (point-min))
     new))
 
-;; FIXME: X-SC-Schedule ¤ÎÆş¤ì»Ò¹½Â¤¤Ï¡¢(mhc-db-add-exception-rule) ¤Î
-;; ¼ÂÁõ¤ÎÅÔ¹ç¾å¼õ¤±Æş¤ì¤é¤ì¤Ê¤¤¤Î¤Ç¡¢top level °Ê³°¤Î X-SC-Schedule ¤Ï
-;; °ÂÁ´¤ËÌµ»ë¤µ¤ì¤ëÉ¬Í×¤¬¤¢¤ë¡£
+;; FIXME: X-SC-Schedule ã®å…¥ã‚Œå­æ§‹é€ ã¯ã€(mhc-db-add-exception-rule) ã®
+;; å®Ÿè£…ã®éƒ½åˆä¸Šå—ã‘å…¥ã‚Œã‚‰ã‚Œãªã„ã®ã§ã€top level ä»¥å¤–ã® X-SC-Schedule ã¯
+;; å®‰å…¨ã«ç„¡è¦–ã•ã‚Œã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
 (defun mhc-parse/schedule (record schedule)
   (let ((buffer (current-buffer))
 	(start (point))
@@ -174,14 +174,14 @@
       (mhc-parse/internal-parser record schedule)))
   schedule)
 
-;; FIXME: top level °Ê³°¤Î¾ì½ê¤Çµ­½Ò¤µ¤ì¤¿ X-SC-Record-Id: ¤Ï°ÂÁ´¤ËÌµ
-;; »ë¤µ¤ì¤ëÉ¬Í×¤¬¤¢¤ë¤¬¡¢¸½ºß¤Î¼ÂÁõ¤Ç¤Ï²¿¤â¹Í¤¨¤º¤Ë¾å½ñ¤­¤·¤Æ¤·¤Ş¤¦¡£
+;; FIXME: top level ä»¥å¤–ã®å ´æ‰€ã§è¨˜è¿°ã•ã‚ŒãŸ X-SC-Record-Id: ã¯å®‰å…¨ã«ç„¡
+;; è¦–ã•ã‚Œã‚‹å¿…è¦ãŒã‚ã‚‹ãŒã€ç¾åœ¨ã®å®Ÿè£…ã§ã¯ä½•ã‚‚è€ƒãˆãšã«ä¸Šæ›¸ãã—ã¦ã—ã¾ã†ã€‚
 (defun mhc-parse/record-id (record schedule)
   (mhc-record-set-id record (mhc-parse/continuous-lines))
   schedule)
 
-;; FIXME: top level ¤È¤½¤ì°Ê³°¤Î¾ì½ê¤Çµö¤µ¤ì¤ë header ¤¬°Û¤Ê¤ë¤Î¤Ç¡¢
-;; multi pass parser ¤ËÁÈ¤ßÂØ¤¨¤ë¤Ù¤­¤«¤âÃÎ¤ì¤Ê¤¤¡£
+;; FIXME: top level ã¨ãã‚Œä»¥å¤–ã®å ´æ‰€ã§è¨±ã•ã‚Œã‚‹ header ãŒç•°ãªã‚‹ã®ã§ã€
+;; multi pass parser ã«çµ„ã¿æ›¿ãˆã‚‹ã¹ãã‹ã‚‚çŸ¥ã‚Œãªã„ã€‚
 (defun mhc-parse/internal-parser (record &optional schedule strict)
   "Internal parseser of schedule headers in this narrowed buffer."
   (let ((mhc-parse/strict strict)
@@ -216,16 +216,16 @@
   (mhc-header-narrowing
     (let ((schedule (mhc-parse/internal-parser record nil strict)))
       (if schedule (mhc-schedule/set-region-end schedule (point)))))
-  ;; ÆÀ¤é¤ì¤¿¹½Â¤¤òÀ°Íı¤¹¤ë
+  ;; å¾—ã‚‰ã‚ŒãŸæ§‹é€ ã‚’æ•´ç†ã™ã‚‹
   (let (schedules sexp)
-    ;; ¸½¤ì¤¿½ç½ø¤ËÄ¾¤·¤Æ¤ª¤¯
+    ;; ç¾ã‚ŒãŸé †åºã«ç›´ã—ã¦ãŠã
     (mhc-record-set-schedules record (nreverse (mhc-record-schedules record)))
-    ;; ÀèÆ¬¤Î¥¹¥±¥¸¥å¡¼¥ë¤ò¥Ç¥Õ¥©¥ë¥È¤È¤·¤Æ»²¾È¤·¤Æ¡¢·ç¤±¤Æ¤¤¤ëÍ×ÁÇ¤òËä¤á¤Æ¤ª¤¯
+    ;; å…ˆé ­ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¨ã—ã¦å‚ç…§ã—ã¦ã€æ¬ ã‘ã¦ã„ã‚‹è¦ç´ ã‚’åŸ‹ã‚ã¦ãŠã
     (setq schedules (cdr (mhc-record-schedules record)))
     (while schedules
       (mhc-schedule-append-default (car schedules) (car (mhc-record-schedules record)))
       (setq schedules (cdr schedules)))
-    ;; ³Æ¥¹¥±¥¸¥å¡¼¥ë¤Î¾ò·ï¼°¤òÀ¸À®¤¹¤ë
+    ;; å„ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã®æ¡ä»¶å¼ã‚’ç”Ÿæˆã™ã‚‹
     (mhc-logic-compile-file record))
   record)
 

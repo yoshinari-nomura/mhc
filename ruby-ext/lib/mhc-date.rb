@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ### mhc-date.rb
 ##
 ## Author:  Yoshinari Nomura <nom@quickhack.net>
@@ -62,7 +63,7 @@ class MhcDate
   O_LABEL  = %w(1st 2nd 3rd 4th 5th Last)
   M_LABEL  = %w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
   W_LABEL  = %w(Sun Mon Tue Wed Thu Fri Sat)
-  W_JLABEL = %w(Æü ·î ²Ğ ¿å ÌÚ ¶â ÅÚ)
+  W_JLABEL = %w(æ—¥ æœˆ ç« æ°´ æœ¨ é‡‘ åœŸ)
 
   M_LONG_LABEL = %w(January February March April May June July August September October November December)
   W_LONG_LABEL = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
@@ -96,7 +97,7 @@ class MhcDate
     return Time .local(@y, @m, @d, tim .hour, tim .minute) + (tim .day * 86400)
   end
 
-  ## X-SC- ¤Ç»È¤ï¤ì¤ëÉ½¸½·Á¼°
+  ## X-SC- ã§ä½¿ã‚ã‚Œã‚‹è¡¨ç¾å½¢å¼
   def y_s;   format("%04d", @y)                 ; end
   def m_s;   M_LABEL[@m - 1]                    ; end
   def d_s;   format("%02d", @d)                 ; end
@@ -104,7 +105,7 @@ class MhcDate
   def o_s;   O_LABEL[o]                         ; end
   def to_s;  format("%04d%02d%02d", @y, @m, @d) ; end
 
-  ## ¤Ç¤­¤ë¤À¤±¿ô»ú¤ÇÉ½¤¹É½¸½·Á¼°
+  ## ã§ãã‚‹ã ã‘æ•°å­—ã§è¡¨ã™è¡¨ç¾å½¢å¼
   alias y_s1            y_s
   def   m_s1 (s = '');  format("%02d", @m)                        ; end
   def   d_s1 (s = '');  format("%02d", @d)                        ; end
@@ -113,16 +114,16 @@ class MhcDate
   def   to_s1(s = '');  format("%04d#{s}%02d#{s}%02d", @y, @m, @d); end
   #alias inspect to_s1
 
-  ## ¤Ç¤­¤ë¤À¤±¿Í´Ö¤ËÊ¬¤«¤ê¤ä¤¹¤¤É½¸½·Á¼°
+  ## ã§ãã‚‹ã ã‘äººé–“ã«åˆ†ã‹ã‚Šã‚„ã™ã„è¡¨ç¾å½¢å¼
   if ENV['LANG'] =~ /^ja/i
     def ym_js
-      MhcKconv::todisp(format("%04dÇ¯%02d·î", @y, @m))
+      MhcKconv::todisp(format("%04då¹´%02dæœˆ", @y, @m))
     end
     def md_js
-      MhcKconv::todisp(format("%02d·î%02dÆü(%s)", @m, @d, W_JLABEL[w]))
+      MhcKconv::todisp(format("%02dæœˆ%02dæ—¥(%s)", @m, @d, W_JLABEL[w]))
     end
     def to_js
-      MhcKconv::todisp(format("%04dÇ¯%02d·î%02dÆü(%s)",
+      MhcKconv::todisp(format("%04då¹´%02dæœˆ%02dæ—¥(%s)",
 			      @y, @m, @d, W_JLABEL[w]))
     end
   else

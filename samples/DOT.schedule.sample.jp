@@ -5,97 +5,97 @@
 ## Revised: $Date: 2007/11/27 01:12:06 $
 ##
 
-X-SC-Subject: $B85F|(B
+X-SC-Subject: 元日
 X-SC-Category: Holiday
 X-SC-Cond: 1 Jan
 
-X-SC-Subject: $B@.?M$NF|(B
+X-SC-Subject: 成人の日
 X-SC-Category: Holiday
 X-SC-Cond: 15 Jan
 X-SC-Duration: -19990115
 
-X-SC-Subject: $B@.?M$NF|(B
+X-SC-Subject: 成人の日
 X-SC-Category: Holiday
 X-SC-Cond: 2nd Mon Jan
 X-SC-Duration: 20000110-
 
-X-SC-Subject: $B7z9q5-G0$NF|(B
+X-SC-Subject: 建国記念の日
 X-SC-Category: Holiday
 X-SC-Cond: 11 Feb
 
-X-SC-Subject: $B$_$I$j$NF|(B
+X-SC-Subject: みどりの日
 X-SC-Category: Holiday
 X-SC-Cond: 29 Apr
 X-SC-Duration: -20060429
 
-X-SC-Subject: $B><OB$NF|(B
+X-SC-Subject: 昭和の日
 X-SC-Category: Holiday
 X-SC-Cond: 29 Apr
 X-SC-Duration: 20070429-
 
-X-SC-Subject: $B7{K!5-G0F|(B
+X-SC-Subject: 憲法記念日
 X-SC-Category: Holiday
 X-SC-Cond: 3 May
 
-X-SC-Subject: $B9qL1$N5YF|(B
+X-SC-Subject: 国民の休日
 X-SC-Category: Holiday
 X-SC-Cond: 4 May
 X-SC-Duration: -20060504
 
-X-SC-Subject: $B$_$I$j$NF|(B
+X-SC-Subject: みどりの日
 X-SC-Category: Holiday
 X-SC-Cond: 4 May
 X-SC-Duration: 20070504-
 
-X-SC-Subject: $B$3$I$b$NF|(B
+X-SC-Subject: こどもの日
 X-SC-Category: Holiday
 X-SC-Cond: 5 May
 
-X-SC-Subject: $B3$$NF|(B
+X-SC-Subject: 海の日
 X-SC-Category: Holiday
 X-SC-Cond: 20 Jul
 X-SC-Duration: -20020720
 
-X-SC-Subject: $B3$$NF|(B
+X-SC-Subject: 海の日
 X-SC-Category: Holiday
 X-SC-Cond: 3rd Mon Jul
 X-SC-Duration: 20030701-
 
-X-SC-Subject: $B7IO7$NF|(B
+X-SC-Subject: 敬老の日
 X-SC-Category: Holiday
 X-SC-Cond: 15 Sep
 X-SC-Duration: -20020915
 
-X-SC-Subject: $B7IO7$NF|(B
+X-SC-Subject: 敬老の日
 X-SC-Category: Holiday
 X-SC-Cond: 3rd Mon Sep
 X-SC-Duration: 20030901-
 
-X-SC-Subject: $BBN0i$NF|(B
+X-SC-Subject: 体育の日
 X-SC-Category: Holiday
 X-SC-Cond: 10 Oct
 X-SC-Duration: -19991010
 
-X-SC-Subject: $BBN0i$NF|(B
+X-SC-Subject: 体育の日
 X-SC-Category: Holiday
 X-SC-Cond: 2nd Mon Oct
 X-SC-Duration: 20001009-
 
-X-SC-Subject: $BJ82=$NF|(B
+X-SC-Subject: 文化の日
 X-SC-Category: Holiday
 X-SC-Cond: 3 Nov
 
-X-SC-Subject: $B6PO+46<U$NF|(B
+X-SC-Subject: 勤労感謝の日
 X-SC-Category: Holiday
 X-SC-Cond: 23 Nov
 
-X-SC-Subject: $BE79DCB@8F|(B
+X-SC-Subject: 天皇誕生日
 X-SC-Category: Holiday
 X-SC-Cond: 23 Dec
 
-## $BKhG/JQ$o$k=KF|$H?6BX5YF|(B
+## 毎年変わる祝日と振替休日
 
-X-SC-Subject: $B=UJ,$NF|(B
+X-SC-Subject: 春分の日
 X-SC-Day: 19960320 19970320 19980321 19990321 20000320 20010320 20020321
 	20030321 20040320 20050320 20060321 20070321 20080320 20090320
 	20100321 20110321 20120320 20130320 20140321 20150321 20160320
@@ -104,7 +104,7 @@ X-SC-Day: 19960320 19970320 19980321 19990321 20000320 20010320 20020321
 	20310321
 X-SC-Category: Holiday
 
-X-SC-Subject: $B=)J,$NF|(B
+X-SC-Subject: 秋分の日
 X-SC-Day: 19960923 19970923 19980923 19990923 20000923 20010923 20020923
 	20030923 20040923 20050923 20060923 20070923 20080923 20090923
 	20100923 20110923 20120922 20130923 20140923 20150923 20160922
@@ -113,7 +113,7 @@ X-SC-Day: 19960923 19970923 19980923 19990923 20000923 20010923 20020923
 	20310923
 X-SC-Category: Holiday
 
-X-SC-Subject: $B5YF|(B
+X-SC-Subject: 休日
 X-SC-Day: 19900212 19900430 19900924 19901224 19910506 19910916 19911104
 	19931011 19950102 19950116 19960212 19960506 19960916 19961104
 	19970721 19971124 19990322 19991011 20010212 20010430 20010924
@@ -127,7 +127,7 @@ X-SC-Day: 19900212 19900430 19900924 19901224 19910506 19910916 19911104
 	20310506 20311124
 X-SC-Category: Holiday
 
-#### $B:G8e$K2~9T$rF~$l$k(B
+#### 最後に改行を入れる
 
 ####
 

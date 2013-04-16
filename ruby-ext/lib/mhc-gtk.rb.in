@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # -*- ruby -*-
 
 ### mhc-gtk.rb
@@ -541,8 +542,8 @@ class GtkCalendar < Gtk::VBox
   FILL = Gtk::FILL | Gtk::SHRINK | Gtk::EXPAND
   NONE = Gtk::SHRINK
   if ENV['LANG'] =~ /^ja/i
-    WEEK_L = ['Æü', '·î', '²Ð', '¿å', 'ÌÚ', '¶â', 'ÅÚ']
-    WEEK_S = ['Æü', '·î', '²Ð', '¿å', 'ÌÚ', '¶â', 'ÅÚ']
+    WEEK_L = ['æ—¥', 'æœˆ', 'ç«', 'æ°´', 'æœ¨', 'é‡‘', 'åœŸ']
+    WEEK_S = ['æ—¥', 'æœˆ', 'ç«', 'æ°´', 'æœ¨', 'é‡‘', 'åœŸ']
   else
     WEEK_L = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     WEEK_S = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
@@ -599,7 +600,7 @@ class GtkCalendar < Gtk::VBox
       if on?(i)
 	dd = pos_to_date(i)
 	@dList[i] .set_date(dd, true) \
-        	.set_tip(MhcKconv::todisp("#{dd .d}Æü")) .show
+        	.set_tip(MhcKconv::todisp("#{dd .d}æ—¥")) .show
       else
 	@dList[i] .hide
       end

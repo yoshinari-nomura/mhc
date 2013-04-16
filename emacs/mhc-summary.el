@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -150,7 +150,7 @@
 
 (defcustom mhc-summary-line-format
   (if (eq mhc-summary-language 'japanese)
-      "%M%·î%D%Æü%(%ÍË%) %b%e %c%i%s %p%l"
+      "%M%æœˆ%D%æ—¥%(%æ›œ%) %b%e %c%i%s %p%l"
     "%M%/%D%S%W %b%e %c%i%s %p%l")
   "*A format string for summary line of MHC.
 It may include any of the following format specifications
@@ -173,10 +173,10 @@ which are replaced by the given information:
 %) A right parenthesis character if first line of the day.
 %S A space with face.
 
-%Ç¯ The 'Ç¯' of the line if first line of the day.
-%·î The '·î' of the line if first line of the day.
-%Æü The 'Æü' of the line if first line of the day.
-%ÍË The japaneses weekday name of the line if first line of the day.
+%å¹´ The 'å¹´' of the line if first line of the day.
+%æœˆ The 'æœˆ' of the line if first line of the day.
+%æ—¥ The 'æ—¥' of the line if first line of the day.
+%æ›œ The japaneses weekday name of the line if first line of the day.
 "
   :group 'mhc
   :type 'string)
@@ -228,20 +228,20 @@ which are replaced by the given information:
   )
 
 (defcustom mhc-todo-string-remaining-day
-  (if (eq mhc-summary-language 'japanese) "(¤¢¤È %d Æü)" "(%d days to go)")
+  (if (eq mhc-summary-language 'japanese) "(ã‚ã¨ %d æ—¥)" "(%d days to go)")
   "*String format which is displayed in TODO entry.
 '%d' is replaced with remaining days."
   :group 'mhc
   :type 'string)
 
 (defcustom mhc-todo-string-deadline-day
-    (if (eq mhc-summary-language 'japanese) "(¡ºÀÚÆü)" "(due this date)")
+    (if (eq mhc-summary-language 'japanese) "(ã€†åˆ‡æ—¥)" "(due this date)")
   "*String which indicates deadline day in TODO."
   :group 'mhc
   :type 'string)
 
 (defcustom mhc-todo-string-excess-day
-    (if (eq mhc-summary-language 'japanese) "(%d ÆüÄ¶²á)" "(%d days overdue)")
+    (if (eq mhc-summary-language 'japanese) "(%d æ—¥è¶…é)" "(%d days overdue)")
   "*String format which is displayed in TODO entry.
 '%d' is replaced with excess days."
   :group 'mhc
@@ -249,7 +249,7 @@ which are replaced by the given information:
 
 (defcustom mhc-todo-string-heading
       (if (eq mhc-summary-language 'japanese) 
-	  "TODO(s) at %04dÇ¯%02d·î%02dÆü"
+	  "TODO(s) at %04då¹´%02dæœˆ%02dæ—¥"
 	"TODO(s) at %04d/%02d/%02d")
   "*String which is displayed as heading of TODO.
 First %d is replaced with year, second one is replaced with month,
@@ -264,13 +264,13 @@ third one is replaced with day of month."
 
 
 (defcustom mhc-todo-string-done
-  (if (eq mhc-summary-language 'japanese) "¢£" "[X]")
+  (if (eq mhc-summary-language 'japanese) "â– " "[X]")
   "*String which indicates done TODO."
   :group 'mhc
   :type 'string)
 
 (defcustom mhc-todo-string-not-done
-  (if (eq mhc-summary-language 'japanese) "¢¢" "[ ]")
+  (if (eq mhc-summary-language 'japanese) "â–¡" "[ ]")
   "*String which indicates not-done TODO."
   :group 'mhc
   :type 'string)
@@ -390,13 +390,13 @@ which are replaced by the given information:
 	 'face mhc-tmp-day-face)
     (?\) (if mhc-tmp-first ")" " ")
 	 'face mhc-tmp-day-face)
-    (?Ç¯ (if mhc-tmp-first "Ç¯" (make-string 2 ? ))
+    (?å¹´ (if mhc-tmp-first "å¹´" (make-string 2 ? ))
 	 'face mhc-tmp-day-face)
-    (?·î (if mhc-tmp-first "·î" (make-string 2 ? ))
+    (?æœˆ (if mhc-tmp-first "æœˆ" (make-string 2 ? ))
 	 'face mhc-tmp-day-face)
-    (?Æü (if mhc-tmp-first "Æü" (make-string 2 ? ))
+    (?æ—¥ (if mhc-tmp-first "æ—¥" (make-string 2 ? ))
 	 'face mhc-tmp-day-face)
-    (?ÍË (mhc-summary/line-day-of-week-ja-string)
+    (?æ›œ (mhc-summary/line-day-of-week-ja-string)
 	 'face mhc-tmp-day-face))
   "An alist of format specifications that can appear in summary lines.
 Each element is a list of following:
@@ -804,7 +804,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
       (let ((week (mhc-day-day-of-week mhc-tmp-dayinfo)))
 	(if (and mhc-summary/cw-week(= week 1) )
 	    (format "%2d" (mhc-date-cw (mhc-day-date mhc-tmp-dayinfo)))
-	  (aref ["Æü" "·î" "²Ğ" "¿å" "ÌÚ" "¶â" "ÅÚ"] week)))
+	  (aref ["æ—¥" "æœˆ" "ç«" "æ°´" "æœ¨" "é‡‘" "åœŸ"] week)))
     (make-string 2 ? )))
 
 
