@@ -7,6 +7,7 @@
 
 (defcustom mhc-e21-icon-alist 
   '(("Conflict"   . "Conflict.xpm")
+    ("Recurrence" . "Recurrence.xpm")
     ("Private"    . "Private.xpm")
     ("Holiday"    . "Holiday.xpm")
     ("Todo"       . "CheckBox.xpm")

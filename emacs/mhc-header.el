@@ -25,6 +25,7 @@
     ("x-sc-time"	"X-SC-Time:"		mhc-parse/time)
     ("x-sc-alarm"	"X-SC-Alarm:"		mhc-parse/alarm)
     ("x-sc-category"	"X-SC-Category:"	mhc-parse/category)
+    ("x-sc-recurrence-tag" "X-SC-Recurrence-Tag:" mhc-parse/recurrence-tag)
 ;    ("x-sc-todo"	"X-SC-ToDo:"		mhc-parse/todo)
     ("x-sc-priority"	"X-SC-Priority:"	mhc-parse/priority)
     ("x-sc-record-id"	"X-SC-Record-Id:"	mhc-parse/record-id)

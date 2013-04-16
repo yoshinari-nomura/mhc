@@ -112,6 +112,11 @@
   :group 'mhc
   :type 'string)
 
+(defcustom mhc-summary-string-recurrence "[R]"
+  "*String which indicates recurrences in summary buffer."
+  :group 'mhc
+  :type 'string)
+
 (defcustom mhc-summary-string-secret "[SECRET]"
   "*String which hides private subjects in summary buffer."
   :group 'mhc
@@ -310,6 +315,7 @@ which are replaced by the given information:
 (defvar mhc-tmp-begin    nil "begin time.")
 (defvar mhc-tmp-end      nil "end time.")
 (defvar mhc-tmp-conflict nil "non-nil if conflicted schedule.")
+(defvar mhc-tmp-recurrence nil "non-nil if recurrence schedule.")
 (defvar mhc-tmp-first    nil "non-nil if first schedule.")
 (defvar mhc-tmp-private  nil "non-nil if private display mode.")
 (defvar mhc-tmp-priority nil "a priority of the schedule.")
@@ -354,6 +360,14 @@ which are replaced by the given information:
 	    'icon 'face)
 	(if (and (mhc-use-icon-p) (mhc-icon-exists-p "conflict"))
 	    (list "conflict") 'mhc-summary-face-conflict))
+    (?r (if (and mhc-tmp-recurrence (not (string= "" mhc-tmp-recurrence)))
+            (if (and (mhc-use-icon-p) (mhc-icon-exists-p "recurrence"))
+                t
+              mhc-summary-string-recurrence))
+        (if (and (mhc-use-icon-p) (mhc-icon-exists-p "recurrence"))
+            'icon 'face)
+        (if (and (mhc-use-icon-p) (mhc-icon-exists-p "recurrence"))
+            (list "recurrence") 'mhc-summary-face-recurrence))
     (?p (if mhc-tmp-priority
 	    (format "[%d]" mhc-tmp-priority))
 	'face (cond 
@@ -621,7 +635,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 	(mhc-tmp-first t)
 	mhc-tmp-begin mhc-tmp-end
 	mhc-tmp-location mhc-tmp-schedule
-	mhc-tmp-conflict mhc-tmp-priority
+	mhc-tmp-conflict mhc-tmp-recurrence mhc-tmp-priority
 	next-begin displayed)
     (if schedules
 	(progn
@@ -642,7 +656,8 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 			mhc-tmp-conflict (or (and mhc-tmp-end next-begin
 						  (< next-begin mhc-tmp-end))
 					     (and mhc-tmp-begin time-max 
-						  (< mhc-tmp-begin time-max))))
+						  (< mhc-tmp-begin time-max)))
+			mhc-tmp-recurrence (mhc-schedule-recurrence-tag (car schedules)))
 		  (if mhc-tmp-end (setq time-max (max mhc-tmp-end time-max)))
 		  (setq displayed t)
 		  (mhc-summary-insert-contents

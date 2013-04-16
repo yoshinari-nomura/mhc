@@ -594,7 +594,7 @@ If HIDE-PRIVATE, private schedules are suppressed."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; import, edit, delete, modify
 
-(defcustom mhc-input-sequences '(date time subject location category alarm)
+(defcustom mhc-input-sequences '(date time subject location category recurrence-tag alarm)
   "*Sequence of the inputs."
   :group 'mhc
   :type '(repeat (choice (const :tag "Date" date)
@@ -602,6 +602,7 @@ If HIDE-PRIVATE, private schedules are suppressed."
 			 (const :tag "Subject" subject)
 			 (const :tag "Location" location)
 			 (const :tag "Category" category)
+			 (const :tag "Recurrence tag" recurrence-tag)
 			 (const :tag "Alarm" alarm))))
 
 (defun mhc-edit (&optional import-buffer)
@@ -615,7 +616,7 @@ Returns t if the importation was succeeded."
   (let ((draft-buffer (generate-new-buffer mhc-draft-buffer-name))
 	(current-date (or (mhc-current-date) (mhc-calendar-get-date) (mhc-date-now)))
 	(succeed t)
-	msgp date time subject location category priority alarm)
+	msgp date time subject location category recurrence-tag priority alarm)
     (and (interactive-p)
 	 (mhc-window-push))
     (set-buffer draft-buffer)
@@ -688,6 +689,12 @@ Returns t if the importation was succeeded."
 			      (mhc-input-category
 			       "Category: "
 			       (mhc-schedule-categories-as-string schedule))))
+			;; input recurrence tag
+		       ((eq input 'recurrence-tag)
+			(setq recurrence-tag
+			      (mhc-input-recurrence-tag
+			       "Recurrence Tag: "
+			       (mhc-schedule-recurrence-tag-as-string schedule))))
 		       ;; input alarm
 		       ((eq input 'alarm)
 			(if mhc-ask-alarm
@@ -719,6 +726,8 @@ Returns t if the importation was succeeded."
 		(setq location (mhc-input-location "Location: ")))
 	       ((eq input 'category)
 		(setq category (mhc-input-category "Category: ")))
+	       ((eq input 'recurrence-tag)
+		(setq recurrence-tag (mhc-input-recurrence-tag "Recurrence Tag: " (or subject ""))))
 	       ((eq input 'alarm)
 		(if mhc-ask-alarm
 		    (setq alarm (mhc-input-alarm "Alarm: " mhc-default-alarm))))))))
@@ -771,6 +780,7 @@ Returns t if the importation was succeeded."
 		  "\nX-SC-Priority: " (if priority
 					  (number-to-string priority)
 					"")
+		  "\nX-SC-Recurrence-Tag: " recurrence-tag
 		  "\nX-SC-Cond: "
 		  "\nX-SC-Duration: "
 		  "\nX-SC-Alarm: " (or alarm "")

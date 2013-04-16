@@ -412,6 +412,16 @@
 	  nil
 	(mhc-misc-split in)))))
 
+
+(defvar mhc-recurrence-tag-hist nil)
+
+(defun mhc-input-recurrence-tag (&optional prompt default)
+  (interactive)
+  (read-from-minibuffer  (or prompt "Recurrence Tag: ")
+			 (or default "")
+			 nil nil 'mhc-recurrence-tag-hist))
+
+
 (defvar mhc-alarm-hist nil)
 
 (defun mhc-input-alarm (&optional prompt default)

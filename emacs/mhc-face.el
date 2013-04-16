@@ -54,6 +54,7 @@ refer to mhc-calendar-hnf-face-alist-internal.")
     (mhc-summary-face-time      . (nil "yellowgreen" nil))
     (mhc-summary-face-location  . (nil "black"       "paleturquoise"))
     (mhc-summary-face-conflict  . (nil "white"       "purple"))
+    (mhc-summary-face-recurrence . (nil "black"      "green"))
     (mhc-summary-face-secret    . (nil "gray"        nil))
     ;;
     (mhc-minibuf-face-candidate . (nil nil           "yellow"))

@@ -34,7 +34,7 @@
 
 ;;; Codes:
 (defun mhc-schedule-new
-  (record &optional condition subject location time alarm categories priority region)
+  (record &optional condition subject location time alarm categories priority region recurrence-tag)
   "Constructor of MHC-SCHEDULE structure."
   (let ((new (vector record
 		     (or condition (mhc-logic-new))
@@ -44,7 +44,8 @@
 		     alarm
 		     categories
 		     priority
-		     (or region (cons nil nil)))))
+		     (or region (cons nil nil))
+                     recurrence-tag)))
     (mhc-record-set-schedules record (cons new (mhc-record-schedules record)))
     new))
 
@@ -66,6 +67,8 @@
   (if schedule (aref schedule 7)))
 (defsubst mhc-schedule-region (schedule)
   (if schedule (aref schedule 8)))
+(defsubst mhc-schedule-recurrence-tag (schedule)
+  (if schedule (aref schedule 9)))
 
 (defmacro mhc-schedule-time-begin (schedule)
   `(car (mhc-schedule-time ,schedule)))
@@ -109,6 +112,8 @@
   `(setcar (aref ,schedule 8) ,start))
 (defmacro mhc-schedule/set-region-end (schedule end)
   `(setcdr (aref ,schedule 8) ,end))
+(defmacro mhc-schedule/set-recurrence-tag (schedule tag)
+  `(aset ,schedule 9 ,tag))
 
 
 (defun mhc-schedule-append-default (schedule default)
@@ -124,7 +129,9 @@
   (or (mhc-schedule-alarm schedule)
       (mhc-schedule/set-alarm schedule (mhc-schedule-alarm default)))
   (or (mhc-schedule-categories schedule)
-      (mhc-schedule/set-categories schedule (mhc-schedule-categories default))))
+      (mhc-schedule/set-categories schedule (mhc-schedule-categories default)))
+  (or (mhc-schedule-recurrence-tag schedule)
+      (mhc-schedule/set-recurrence-tag schedule (mhc-schedule-recurrence-tag default))))
 
 
 (defsubst mhc-schedule/time-to-string (minutes)
@@ -167,6 +174,8 @@
 	 (member (downcase category) (mhc-schedule-categories schedule)))))
 
 
+(defun mhc-schedule-recurrence-tag-as-string (schedule)
+  (or (mhc-schedule-recurrence-tag schedule) ""))
 
 (provide 'mhc-schedule)
 

@@ -133,6 +133,13 @@
 		      (mhc-schedule-in-category-p schedule "todo"))
   schedule)
 
+
+(defun mhc-parse/recurrence-tag (record schedule)
+  (mhc-schedule/set-recurrence-tag
+   schedule
+   (mhc-eword-decode-string (mhc-parse/continuous-lines)))
+  schedule)
+
 ;; FIXME: Í×ºï½ü
 (defun mhc-parse/next (record schedule)
   (let ((new (mhc-schedule-new record)))

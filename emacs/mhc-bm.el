@@ -10,6 +10,7 @@
 
 (defcustom mhc-bm-icon-alist
   '(("Conflict"    . ("Conflict.xbm" "Yellow"))
+    ("Recurrence"  . ("Recurrence.xbm" "Green"))
     ("Private"     . ("Private.xbm" "HotPink"))
     ("Holiday"     . ("Holiday.xbm" "OrangeRed" "White"))
     ("Todo"         .("CheckBox.xbm" "Red"))
