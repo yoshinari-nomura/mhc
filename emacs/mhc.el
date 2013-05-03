@@ -819,6 +819,17 @@ the default action of this command is changed to the latter."
     ;; failed.
     (mhc-window-pop)))
 
+(defun mhc-import-from-region (s e)
+  "Import a schedule from region."
+  (interactive "r")
+  (save-restriction
+    (narrow-to-region s e)
+    (let ((str (buffer-substring s e)))
+      (mhc-import)
+      (goto-char (point-max))
+      (insert str)
+      (goto-char (point-min)))))
+
 (defun mhc-delete ()
   "Delete the current schedule."
   (interactive)
