@@ -259,7 +259,7 @@
 
 (defun mhc-mew-draft-reedit-file (file)
   (erase-buffer)
-  (mhc-insert-file-contents-as-coding-system mhc-default-coding-system file)
+  (insert-file-contents file)
   (make-local-variable 'mail-header-separator)
   (setq mail-header-separator mew-header-separator)
   (goto-char (point-min))
@@ -361,7 +361,8 @@
   (goto-char (point-min))
   (re-search-forward "^$" nil t)
   (forward-line)
-  (let* ((charset (or (mew-charset-guess-region (point) (point-max))
+  (let* ((charset (or (and mhc-default-coding-system (mew-cs-to-charset mhc-default-coding-system))
+                      (mew-charset-guess-region (point) (point-max))
                       mew-us-ascii))
          (cte (or (mew-charset-to-cte charset) mew-b64))
          (switch mew-prog-mime-encode-text-switch)
@@ -378,6 +379,8 @@
       (setq beg (point))
       (mew-cs-encode-region beg (point-max) (mew-charset-to-cs charset))
       (cond
+       ((mew-case-equal cte mew-8bit)
+        ())
        ((and (mew-case-equal cte mew-b64) (fboundp 'base64-encode-region))
         (goto-char beg)
         (while (search-forward "\n" nil t) (replace-match "\r\n"))
