@@ -127,7 +127,9 @@
   (define-key mhc-prefix-map "j" 'mhc-goto-date)
   (define-key mhc-prefix-map "." 'mhc-goto-this-month)
   (define-key mhc-prefix-map "n" 'mhc-goto-next-month)
+  (define-key mhc-prefix-map "N" 'mhc-goto-next-year)
   (define-key mhc-prefix-map "p" 'mhc-goto-prev-month)
+  (define-key mhc-prefix-map "P" 'mhc-goto-prev-year)
   (define-key mhc-prefix-map "f" 'mhc-goto-today)
   (define-key mhc-prefix-map "|" 'mhc-import)
   (define-key mhc-prefix-map "m" 'mhc-modify)
@@ -138,7 +140,6 @@
   (define-key mhc-prefix-map "i" 'mhc-insert-schedule)
   (define-key mhc-prefix-map "?" 'mhc-calendar)
   (define-key mhc-prefix-map "t" 'mhc-calendar-toggle-insert-rectangle)
-  (define-key mhc-prefix-map "P" 'mhc-ps)
   (define-key mhc-prefix-map "T" 'mhc-file-toggle-offline)
   (define-key mhc-prefix-map "S" 'mhc-file-sync)
   (define-key mhc-prefix-map "R" 'mhc-reset)
@@ -430,9 +431,17 @@ If HIDE-PRIVATE, private schedules are suppressed."
                    (or (mhc-current-date-month) (mhc-date-now)) arg)
                   mhc-default-hide-private-schedules))
 
+(defun mhc-goto-next-year (&optional arg)
+  (interactive "p")
+  (mhc-goto-next-month (* (or arg 1) 12)))
+
 (defun mhc-goto-prev-month (&optional arg)
   (interactive "p")
   (mhc-goto-next-month (- arg)))
+
+(defun mhc-goto-prev-year (&optional arg)
+  (interactive "p")
+  (mhc-goto-next-year (- arg)))
 
 (defun mhc-goto-today (&optional no-display)
   "*Go to the line of today's schedule or first day of month.
