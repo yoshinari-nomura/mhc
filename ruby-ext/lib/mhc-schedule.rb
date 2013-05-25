@@ -210,6 +210,7 @@ class MhcScheduleItem
 
   def set_subject(str)
     @subject = str .to_s
+    @subject .force_encoding("ASCII-8BIT") if RUBY_VERSION .to_f >= 1.9
     set_modified(true, 'set_subject')
     return self
   end
@@ -331,7 +332,10 @@ class MhcScheduleItem
       @category = str
     else
       @category = []
-      str .to_s .split .each{|s| @category << s}
+      str .to_s .split .each{|s|
+        s .force_encoding("ASCII-8BIT") if RUBY_VERSION .to_f >= 1.9
+        @category << s
+      }
     end
     @category .uniq!
     set_modified(true, 'set_category')
@@ -1364,6 +1368,7 @@ class MhcScheduleDB
 
       header = ''
       while (line = file .gets)
+        line .force_encoding("ASCII-8BIT") if RUBY_VERSION .to_f >= 1.9
         next if line =~ /^#/
         if line == "\n"
           if  header != ''

@@ -416,6 +416,7 @@ class MhcConfigure
     dst_file  = File .open(dst_file_name, "w") or die "#{$!}\n"
 
     src_contents = src_file .gets(nil); src_file .close
+    src_contents .force_encoding("ASCII-8BIT") if RUBY_VERSION .to_f >= 1.9
     keywords .each{|key, val| src_contents .gsub!(key, val)}
 
     if src_contents =~ /(@@MHC_[a-z\d_]+@@)/in
