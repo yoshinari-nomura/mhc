@@ -26,8 +26,8 @@
 #define ary_push   rb_ary_push
 #define ary_shift  rb_ary_shift
 #define obj_call_init rb_obj_call_init
-#define Fail(x)    rb_raise(rb_eRuntimeError, x)
-#define TypeError(x)  rb_raise(rb_eTypeError, x)
+#define Fail(x)    rb_raise(rb_eRuntimeError, "%s", x)
+#define TypeError(x)  rb_raise(rb_eTypeError, "%s", x)
 #endif
 
 #if 0
