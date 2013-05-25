@@ -7,7 +7,7 @@
 
 require 'rbconfig'
 require 'mkmf'
-require 'ftools'
+require 'fileutils'
 require 'kconv'
 require 'getoptlong'
 
@@ -110,8 +110,8 @@ module MhcMake
     else
       INSTALL_FILES .each{|filename_mode_dir|
         filename, mode, dir = filename_mode_dir .split(':')
-        File .makedirs(dir) if ! File .directory?(dir)
-        File .install(filename, dir, mode .oct, true)
+        FileUtils .makedirs(dir) if ! File .directory?(dir)
+        FileUtils .install(filename, dir, {:mode => mode .oct, :verbose => true})
       }
     end
     process_subdirs()
