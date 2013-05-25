@@ -139,7 +139,7 @@ module MhcMake
 end
 
 class MhcConfigTable
-  include Config
+  include RbConfig
   # ['--kcode', '@@MHC_KCODE@@', GetoptLong::OPTIONAL_ARGUMENT, usage, default]
 
   DEFAULT_CONFIG_TABLE = [
@@ -236,7 +236,7 @@ class MhcConfigTable
 end
 
 class MhcConfigure
-  include Config
+  include RbConfig
 
   def initialize(local_config_table = [])
     @macros = {}
