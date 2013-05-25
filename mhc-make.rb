@@ -250,7 +250,7 @@ class MhcConfigure
 
     ## set useful macros.
     @macros['@@MHC_RUBY_VERSION@@'] =
-      VERSION .split('.') .collect{|i| format("%02d", i)} .join('')
+      RUBY_VERSION .split('.') .collect{|i| format("%02d", i)} .join('')
     @macros['@@MHC_TOPDIR@@'] = Dir .pwd
   end
 
