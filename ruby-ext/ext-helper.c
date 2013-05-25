@@ -87,8 +87,8 @@ VALUE ary_copy(VALUE dst, VALUE src)
   Check_Type(src, T_ARRAY);
   Check_Type(dst, T_ARRAY);
 
-  for (i = 0; i < RARRAY(src)->len; i++){
-    ary_push(dst, RARRAY(src)->ptr[i]);
+  for (i = 0; i < RARRAY_LEN(src); i++){
+    ary_push(dst, RARRAY_PTR(src)[i]);
   }
   return dst;
 }
@@ -246,7 +246,7 @@ int cp_get1(VALUE obj, char *fmt, char *ivname, void *cval)
     break;
   case T_STRING:
     cp_Check_Type(*fmt, 's', at_name);
-    STRING_LENGTH = RSTRING(val)->len;
+    STRING_LENGTH = RSTRING_LEN(val);
     if (STRING_LENGTH > 0){
       *(char**)cval = STR2CSTR(val);
     } else {
