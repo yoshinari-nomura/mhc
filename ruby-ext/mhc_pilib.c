@@ -83,7 +83,7 @@ static VALUE rdlp_AddSyncLogEntry(VALUE obj, VALUE sd, VALUE str)
 {
   Check_Type(str, T_STRING);
 
-  if (dlp_AddSyncLogEntry(INT2FIX(sd), RSTRING(str)->ptr) < 0)
+  if (dlp_AddSyncLogEntry(INT2FIX(sd), RSTRING_PTR(str)) < 0)
     return Qnil;
 
   return Qtrue;
@@ -410,7 +410,7 @@ static VALUE runpack_Appointment(VALUE x, VALUE raw_str)
 
   Check_Type(raw_str, T_STRING);
 
-  if (!pi_buffer_append(buffer, RSTRING(raw_str)->ptr, RSTRING(raw_str)->len)) {
+  if (!pi_buffer_append(buffer, RSTRING_PTR(raw_str), RSTRING_LEN(raw_str))) {
     pi_buffer_free(buffer);
     return Qnil;
   }
@@ -484,7 +484,7 @@ static VALUE runpack_Address(VALUE x, VALUE raw_str)
   if (!buffer) return Qnil;
 
   Check_Type(raw_str, T_STRING);
-  if (!pi_buffer_append(buffer, RSTRING(raw_str)->ptr, RSTRING(raw_str)->len)) {
+  if (!pi_buffer_append(buffer, RSTRING_PTR(raw_str), RSTRING_LEN(raw_str))) {
     pi_buffer_free(buffer);
     return Qnil;
   }
@@ -527,7 +527,7 @@ static VALUE runpack_AddressAppInfo(VALUE o, VALUE raw_str)
   VALUE ary = ary_new();
 
   Check_Type(raw_str, T_STRING);
-  unpack_AddressAppInfo(&ai, RSTRING(raw_str)->ptr, RSTRING(raw_str)->len);
+  unpack_AddressAppInfo(&ai, RSTRING_PTR(raw_str), RSTRING_LEN(raw_str));
 
   ar_set2(ary, "b", ai.category.renamed, 16);
   ar_set2(ary, "s16", ai.category.name, 16);
@@ -558,7 +558,7 @@ static VALUE rpi_file_open(int argc, VALUE *argv, VALUE klass)
   rb_scan_args(argc, argv, "11", &name, &rec_klass);
   Check_Type(name, T_STRING);
 
-  if ((pf = pi_file_open(RSTRING(name)->ptr)) == NULL){
+  if ((pf = pi_file_open(RSTRING_PTR(name))) == NULL){
     Fail("pi_file_open");
   }
   obj = Data_Wrap_Struct(cPilotFile, 0, (void *)pi_file_close, pf);

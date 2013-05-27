@@ -1,5 +1,5 @@
 #!@@MHC_RUBY_PATH@@
-# -*- ruby -*-
+# -*- coding: utf-8; mode: ruby; -*-
 
 ### mhc2ol -- copy articles from mhc to Outlook.
 ##

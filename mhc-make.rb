@@ -7,7 +7,7 @@
 
 require 'rbconfig'
 require 'mkmf'
-require 'ftools'
+require 'fileutils'
 require 'kconv'
 require 'getoptlong'
 
@@ -110,8 +110,8 @@ module MhcMake
     else
       INSTALL_FILES .each{|filename_mode_dir|
         filename, mode, dir = filename_mode_dir .split(':')
-        File .makedirs(dir) if ! File .directory?(dir)
-        File .install(filename, dir, mode .oct, true)
+        FileUtils .makedirs(dir) if ! File .directory?(dir)
+        FileUtils .install(filename, dir, {:mode => mode .oct, :verbose => true})
       }
     end
     process_subdirs()
@@ -139,7 +139,7 @@ module MhcMake
 end
 
 class MhcConfigTable
-  include Config
+  include RbConfig
   # ['--kcode', '@@MHC_KCODE@@', GetoptLong::OPTIONAL_ARGUMENT, usage, default]
 
   DEFAULT_CONFIG_TABLE = [
@@ -162,8 +162,7 @@ class MhcConfigTable
 
     ['--libdir', '@@MHC_LIBDIR@@', GetoptLong::REQUIRED_ARGUMENT,
       "=DIR   Ruby script libraries go to DIR",
-      File::join(CONFIG["libdir"], "ruby",
-                 CONFIG["MAJOR"] + "." + CONFIG["MINOR"])],
+      CONFIG["rubylibdir"]],
 
     ['--with-emacs', '@@MHC_EMACS_PATH@@', GetoptLong::REQUIRED_ARGUMENT,
       "=PATH  absolute path of emacs/xemacs executable",
@@ -236,7 +235,7 @@ class MhcConfigTable
 end
 
 class MhcConfigure
-  include Config
+  include RbConfig
 
   def initialize(local_config_table = [])
     @macros = {}
@@ -250,7 +249,7 @@ class MhcConfigure
 
     ## set useful macros.
     @macros['@@MHC_RUBY_VERSION@@'] =
-      VERSION .split('.') .collect{|i| format("%02d", i)} .join('')
+      RUBY_VERSION .split('.') .collect{|i| format("%02d", i)} .join('')
     @macros['@@MHC_TOPDIR@@'] = Dir .pwd
   end
 
@@ -417,6 +416,7 @@ class MhcConfigure
     dst_file  = File .open(dst_file_name, "w") or die "#{$!}\n"
 
     src_contents = src_file .gets(nil); src_file .close
+    src_contents .force_encoding("ASCII-8BIT") if RUBY_VERSION .to_f >= 1.9
     keywords .each{|key, val| src_contents .gsub!(key, val)}
 
     if src_contents =~ /(@@MHC_[a-z\d_]+@@)/in
