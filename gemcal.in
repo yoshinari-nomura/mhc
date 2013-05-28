@@ -402,6 +402,7 @@ class MhcScheduleEdit < GtkToplevel
   def conv_description(string)
     part1_is_header = true
 
+    string .force_encoding("ASCII-8BIT") if RUBY_VERSION .to_f >= 1.9
     part1, part2 = string .split("\n\n", 2)
 
     if !(part1 =~ /^[ \t]+/ or part1 =~ /^[A-Za-z0-9_-]+:/)
