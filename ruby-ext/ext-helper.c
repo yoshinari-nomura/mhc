@@ -248,7 +248,7 @@ int cp_get1(VALUE obj, char *fmt, char *ivname, void *cval)
     cp_Check_Type(*fmt, 's', at_name);
     STRING_LENGTH = RSTRING_LEN(val);
     if (STRING_LENGTH > 0){
-      *(char**)cval = STR2CSTR(val);
+      *(char**)cval = StringValuePtr(val);
     } else {
       *(char**)cval = NULL;
     }
