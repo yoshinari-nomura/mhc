@@ -82,7 +82,7 @@
   :type 'boolean)
 
 (defcustom mhc-default-coding-system
-  (if (>= emacs-major-version 20) 'utf-8 '*iso-2022-ss2-7*)
+  (if (>= emacs-major-version 20) 'utf-8-unix '*iso-2022-ss2-7*)
   "*Default coding system for MHC schedule files."
   :group 'mhc
   :type 'symbol)
