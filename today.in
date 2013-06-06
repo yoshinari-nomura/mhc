@@ -120,15 +120,15 @@ formatter_normal = Proc .new{|date, items|
     heading = heading .gsub(/./, ' ') if !first
     ret += heading + format("%-11s %s%s\n",
                             sch .time_as_string,
-                            sch .subject,
+                            MhcKconv::todisp(sch .subject),
                             if sch .location and sch .location != ''
-                              ' [' + sch .location + ']'
+                              ' [' + MhcKconv::todisp(sch .location) + ']'
                             else
                               ''
                             end)
     first = false
   }
-  MhcKconv::todisp(ret)
+  ret
 }
 
 formatter_ps = Proc .new{|date, items|
@@ -189,7 +189,7 @@ formatter_howm = Proc .new{|date, items|
     else
       sw="@"
     end
-    ret += sw + " " + sch .subject + "\n"
+    ret += sw + " " + MhcKconv::todisp(sch .subject) + "\n"
     if sch .description
       ret += sch .description .gsub(/^/, " ")
     end
