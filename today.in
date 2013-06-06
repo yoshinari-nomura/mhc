@@ -297,7 +297,7 @@ if mail_address
   if contents && contents != ''
     message = MhcKconv::tomail(header + contents)
     Net::SMTPSession .start(MailServer, 25, MyHostName) {|server|
-      server .sendmail(message, mail_address, [mail_address])
+      server .sendmail(message.force_encoding("BINARY"), mail_address, [mail_address])
     }
   end
 else
