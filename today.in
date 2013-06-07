@@ -296,8 +296,9 @@ if mail_address
 
   if contents && contents != ''
     message = MhcKconv::tomail(header + contents)
+    message .force_encoding("ASCII-8BIT") if RUBY_VERSION .to_f >= 1.9
     Net::SMTPSession .start(MailServer, 25, MyHostName) {|server|
-      server .sendmail(message.force_encoding("BINARY"), mail_address, [mail_address])
+      server .sendmail(message, mail_address, [mail_address])
     }
   end
 else
