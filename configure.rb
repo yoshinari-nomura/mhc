@@ -79,10 +79,10 @@ if conf['@@MHC_DISABLE_PALM@@'] == ''
   conf .search_library(lib_search_path,
                        'pisock',
                        'pi_socket',
-                       '@@MHC_PILOT_LINK_LIB@@', false, true)
+                       '@@MHC_PILOT_LINK_LIB@@', false, false)
   conf .search_include(inc_search_path,
                        'pi-dlp.h',
-                       '@@MHC_PILOT_LINK_INC@@', false, true)
+                       '@@MHC_PILOT_LINK_INC@@', false, false)
 end
 
 ################################################################
