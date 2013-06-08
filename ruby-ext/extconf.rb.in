@@ -1,6 +1,7 @@
 #!@@MHC_RUBY_PATH@@
 # -*- ruby -*-
 
+require 'mkmf'
 
 ################################################################
 # crate make file.
@@ -10,8 +11,6 @@ $CFLAGS += " -DNEW_NAMING " if '@@MHC_RUBY_VERSION@@' >= '010300'
 $LDFLAGS = "@@MHC_LDFLAGS@@"
 
 if '@@MHC_PILOT_LINK_LIB@@' != '' and '@@MHC_PILOT_LINK_INC@@' != ''
-  require 'mkmf'
-
 #  CONFIG["LDSHARED"] = "LD_RUN_PATH=@@MHC_PILOT_LINK_LIB@@ " +
 #    CONFIG["LDSHARED"]
 
