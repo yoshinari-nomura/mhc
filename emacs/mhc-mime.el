@@ -142,7 +142,7 @@
 
 (defun mhc-mime-draft-reedit-file (file)
   (erase-buffer)
-  (insert-file-contents-as-raw-text-CRLF file)
+  (insert-file-contents-as-raw-text file)
   (mhc-mime/draft-reedit))
 
 
