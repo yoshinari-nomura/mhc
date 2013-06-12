@@ -842,7 +842,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 ;;; Line format parsing
 
 (defmacro mhc-line-insert (string)
-  (` (and (stringp (, string)) (insert (, string)))))
+  `(and (stringp ,string) (insert ,string)))
 
 (defun mhc-line-parse-format (format spec-alist)
   (let ((f (mhc-string-to-char-list format))
@@ -885,15 +885,15 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 
 
 (defmacro mhc-line-inserter-setup (inserter format alist)
-  (` (let (byte-compile-warnings)
-       (setq (, inserter)
-             (byte-compile
-              (list 'lambda ()
-                    (mhc-line-parse-format (, format) (, alist)))))
-       (when (get-buffer "*Compile-Log*")
-         (bury-buffer "*Compile-Log*"))
-       (when (get-buffer "*Compile-Log-Show*")
-             (bury-buffer "*Compile-Log-Show*")))))
+  `(let (byte-compile-warnings)
+     (setq ,inserter
+	   (byte-compile
+	    (list 'lambda ()
+		  (mhc-line-parse-format ,format ,alist))))
+     (when (get-buffer "*Compile-Log*")
+       (bury-buffer "*Compile-Log*"))
+     (when (get-buffer "*Compile-Log-Show*")
+       (bury-buffer "*Compile-Log-Show*"))))
 
 
 (defun mhc-summary-line-inserter-setup ()

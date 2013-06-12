@@ -71,7 +71,7 @@ refer to mhc-calendar-hnf-face-alist-internal.")
     (mhc-calendar-hnf-face-uri  . (italic "blue" nil))))
 
 (defmacro mhc-face-put (symbol face)
-  (` (put-text-property 0 (length (, symbol)) 'face (, face) (, symbol))))
+  `(put-text-property 0 (length ,symbol) 'face ,face ,symbol))
 
 (eval-when-compile
   (cond
@@ -79,19 +79,19 @@ refer to mhc-calendar-hnf-face-alist-internal.")
     ;; XEmacs 21.2 (make-face-bold FACE &optional LOCALE TAGS)
     ;; XEmacs 21.1 (make-face-bold FACE &optional LOCALE)
     (defmacro mhc-face/make-face-bold (face)
-      (` (make-face-bold (, face))))
+      `(make-face-bold ,face))
     (defmacro mhc-face/make-face-italic (face)
-      (` (make-face-italic (, face))))
+      `(make-face-italic ,face))
     (defmacro mhc-face/make-face-bold-italic (face)
-      (` (make-face-bold-italic (, face)))))
+      `(make-face-bold-italic ,face)))
    (t
     ;; (make-face-bold FACE &optional FRAME NOERROR)
     (defmacro mhc-face/make-face-bold (face)
-      (` (make-face-bold (, face) nil t)))
+      `(make-face-bold ,face nil t))
     (defmacro mhc-face/make-face-italic (face)
-      (` (make-face-italic (, face) nil t)))
+      `(make-face-italic ,face nil t))
     (defmacro mhc-face/make-face-bold-italic (face)
-      (` (make-face-bold-italic (, face) nil t))))))
+      `(make-face-bold-italic ,face nil t)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; make faces from string/symbol
