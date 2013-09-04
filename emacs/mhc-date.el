@@ -194,7 +194,7 @@
   (- yday -3 (% (- yday wday -382) 7)))
 
 (defmacro mhc-date/substring-to-int (str pos)
-  `(string-to-int
+  `(string-to-number
     (substring ,str (match-beginning ,pos) (match-end ,pos))))
 
 ;; according to our current time zone,
