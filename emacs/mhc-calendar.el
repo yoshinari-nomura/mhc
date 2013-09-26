@@ -954,7 +954,7 @@ The keys that are defined for mhc-calendar-mode are:
       (when (string= input "")
         (setq input (cdr (car alst))))
       (when (string-match "^\\([0-9]+\\)$" input)
-        (setq i (string-to-int input))
+        (setq i (string-to-number input))
         (when (> (length alst) i)
           (setq input (cdr (nth i alst)))))
       (when (string-match "^[0-9]+:[ \t]*" input)

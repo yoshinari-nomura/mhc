@@ -44,10 +44,10 @@
 (defun mhc-misc-substring-to-int (str pos)
   (cond
    ((stringp str)
-    (string-to-int
+    (string-to-number
      (substring str (match-beginning pos) (match-end pos))))
    (t
-    (string-to-int
+    (string-to-number
      (buffer-substring (match-beginning pos) (match-end pos))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

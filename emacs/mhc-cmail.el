@@ -163,7 +163,7 @@
      ((looking-at mhc-cmail/summary-filename-regex)
       (buffer-substring (match-beginning 1) (match-end 1)))
      ((looking-at "^[ +]*\\([0-9]+\\)")
-      (string-to-int
+      (string-to-number
        (buffer-substring (match-beginning 1) (match-end 1))))
      (no-err
       nil)

@@ -606,7 +606,7 @@ You can specify following symbols as a list.
       (setq ret (concat ret (or (cdr (assoc chr z2h-alist)) chr)))
       (setq str (substring str (match-end 0))))
     (store-match-data data)
-    (string-to-int ret)))
+    (string-to-number ret)))
 
 
 ;;; Copyright Notice:
