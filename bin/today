@@ -20,8 +20,20 @@ $DEBUG2       = false
 MailServer    = 'localhost'  ## for --mail option
 MyHostName    = 'localhost'  ## for --mail option
 
-require 'mhc-schedule'
-require 'mhc-kconv'
+if File.symlink?(__FILE__) and ENV["RBENV_VERSION"]
+  ENV["RBENV_VERSION"] = nil
+  shims_path = File.expand_path("shims", ENV["RBENV_ROOT"])
+  ENV["PATH"] = shims_path + ":" + ENV["PATH"]
+  exec(File.readlink(__FILE__), *ARGV)
+end
+
+ENV["BUNDLE_GEMFILE"] = File.expand_path("../../Gemfile", __FILE__)
+
+require 'rubygems'
+require 'bundler/setup'
+# Bundler.require
+
+require 'mhc'
 require 'net/smtp'
 
 class String

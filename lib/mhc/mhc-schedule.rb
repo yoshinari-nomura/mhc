@@ -11,10 +11,6 @@
 ######## Classes for handling schedule articles. ###############
 ################################################################
 
-require 'mhc-signal'
-require 'mhc-palm'
-require 'mhc-date'
-
 ################################################################
 ## MHC schedule item class
 ##

@@ -7,8 +7,6 @@
 ## Revised: $Date: 2004/10/25 02:28:57 $
 ##
 
-require 'mhc-kconv'
-
 class MhcTime
   include Comparable
 
