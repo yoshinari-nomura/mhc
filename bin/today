@@ -1,4 +1,4 @@
-#!@@MHC_RUBY_PATH@@
+#!/usr/bin/env ruby
 # -*- ruby -*-
 
 ## today

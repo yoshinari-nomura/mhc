@@ -1,4 +1,4 @@
-#!@@MHC_RUBY_PATH@@
+#!/usr/bin/env ruby
 # -*- ruby -*-
 
 ### palm2mhc -- copy articles from palm to new mhc repository.
