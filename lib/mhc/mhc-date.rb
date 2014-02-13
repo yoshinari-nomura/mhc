@@ -11,10 +11,10 @@ class MhcTime
   include Comparable
 
   def initialize(h = 0, m = 0)
-    if h .is_a?(String) && h =~ /^(\d+):(\d+)$/
-      @sec = ($1 .to_i) * 3600 + ($2 .to_i) * 60
+    if h.is_a?(String) && h =~ /^(\d+):(\d+)$/
+      @sec = ($1.to_i) * 3600 + ($2.to_i) * 60
     else
-      @sec = (h .to_i)  * 3600 + (m .to_i)  * 60
+      @sec = (h.to_i)  * 3600 + (m.to_i)  * 60
     end
   end
 
@@ -26,8 +26,8 @@ class MhcTime
   def mm;  (@sec % 3600) / 60  ;end
 
   def <=>(o)
-    if o .kind_of?(MhcTime)
-      return @sec <=> o .to_i
+    if o.kind_of?(MhcTime)
+      return @sec <=> o.to_i
     else
       return nil
     end
@@ -45,9 +45,9 @@ class MhcTime
     return [hh, mm]
   end
 
-  def to_t(date = MhcDate .new(1970, 1, 2))
-    date = date .succ(day)
-    Time .local(date .y, date .m, date .d, hour, minute)
+  def to_t(date = MhcDate.new(1970, 1, 2))
+    date = date.succ(day)
+    Time.local(date.y, date.m, date.d, hour, minute)
   end
 end
 
@@ -67,12 +67,12 @@ class MhcDate
   W_LONG_LABEL = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
 
   def initialize(y = -1, m = 1, d = 1)
-    if y .kind_of?(String) && y =~ /^(\d{4})(\d\d)(\d\d)$/
-      @y, @m, @d = $1 .to_i, $2 .to_i, $3 .to_i
+    if y.kind_of?(String) && y =~ /^(\d{4})(\d\d)(\d\d)$/
+      @y, @m, @d = $1.to_i, $2.to_i, $3.to_i
     else
       if (y == -1)
-        t = Time .now
-        @y, @m, @d = t .year, t .month, t .day
+        t = Time.now
+        @y, @m, @d = t.year, t.month, t.day
       else
         @y, @m, @d = y, m, d
       end
@@ -89,10 +89,10 @@ class MhcDate
   def md_a;  return [@m, @d]                          ; end
   def to_a;  return [@y, @m, @d]                      ; end
 
-  #def to_t(hh, mm);  return Time .local(@y, @m, @d, hh, mm); end
+  #def to_t(hh, mm);  return Time.local(@y, @m, @d, hh, mm); end
 
-  def to_t(tim = MhcTime .new(0, 0))
-    return Time .local(@y, @m, @d, tim .hour, tim .minute) + (tim .day * 86400)
+  def to_t(tim = MhcTime.new(0, 0))
+    return Time.local(@y, @m, @d, tim.hour, tim.minute) + (tim.day * 86400)
   end
 
   ## X-SC- で使われる表現形式
@@ -148,7 +148,7 @@ class MhcDate
   end
 
   def y_succ(n = 1)
-    return MhcDate .new(@y, @m, @d) .y_succ!(n)
+    return MhcDate.new(@y, @m, @d).y_succ!(n)
   end
 
   ################
@@ -181,29 +181,29 @@ class MhcDate
 #    end
 
   def m_first_day
-    return MhcDate .new(@y, @m, 1)
+    return MhcDate.new(@y, @m, 1)
   end
 
   def m_last_day
-    return MhcDate .new(@y, @m, m_days)
+    return MhcDate.new(@y, @m, m_days)
   end
 
   def m_succ(n = 1)
-    return MhcDate .new(@y, @m, @d) .m_succ!(n)
+    return MhcDate.new(@y, @m, @d).m_succ!(n)
   end
 
   def m_each_day
     for i in (1 .. m_days)
-      dd = MhcDate .new(@y, @m, i)
+      dd = MhcDate.new(@y, @m, i)
       yield dd
     end
   end
 
   ################
   ## week
-  def w_this(week_str_or_num = self .w)
-    if week_str_or_num .kind_of?(String)
-      week_number = W_LABEL .index(week_str_or_num[0,3] .capitalize)
+  def w_this(week_str_or_num = self.w)
+    if week_str_or_num.kind_of?(String)
+      week_number = W_LABEL.index(week_str_or_num[0,3].capitalize)
     else
       week_number = week_str_or_num
     end
@@ -243,7 +243,7 @@ class MhcDate
   end
 
   def succ(n = 1)
-    return MhcDate .new(@y, @m, @d) .succ!(n)
+    return MhcDate.new(@y, @m, @d).succ!(n)
   end
 
   def dec!(n = 1)
@@ -263,7 +263,7 @@ class MhcDate
   end
 
   def dec(n = 1)
-    return MhcDate .new(@y, @m, @d) .dec!(n)
+    return MhcDate.new(@y, @m, @d).dec!(n)
   end
 
   def days
@@ -277,25 +277,25 @@ class MhcDate
   ## alias hash days
 
   def today?
-    t = Time .now
-    return ((@y == t .year) and (@m == t .month) and (@d == t .day))
+    t = Time.now
+    return ((@y == t.year) and (@m == t.month) and (@d == t.day))
   end
 
   def <=>(other)
-    if other .kind_of?(MhcDate)
-      return days <=> other .days
+    if other.kind_of?(MhcDate)
+      return days <=> other.days
     else
       return nil
     end
   end
 
   def eql?(other)
-    return @d == other .d && @m == other .m && @y == other .y
+    return @d == other.d && @m == other.m && @y == other.y
   end
   ## alias eql? ==
 
   def -(other)
-    return days - other .days
+    return days - other.days
   end
 end
 

@@ -21,30 +21,30 @@ class SignalConduit
   end
 
   def signal_emit(sig, *arg)
-    return 0 if @proc_table[sig] .nil?
-    @proc_table[sig] .keys .sort .each{|k|
-      @proc_table[sig][k] .call(*arg)
+    return 0 if @proc_table[sig].nil?
+    @proc_table[sig].keys.sort.each{|k|
+      @proc_table[sig][k].call(*arg)
     }
   end
 
   def signal_connect(sig, &p)
     @sd += 1
-    @proc_table[sig] = {} if @proc_table[sig] .nil?
+    @proc_table[sig] = {} if @proc_table[sig].nil?
     @proc_table[sig][@sd] = p
     return @sd
   end
 
   def signal_disconnect(sd)
-    @proc_table .each_key{|sig|
+    @proc_table.each_key{|sig|
       # @proc_table[sig][sd] = nil
-      @proc_table[sig] .delete(sd)
+      @proc_table[sig].delete(sd)
     }
   end
 
   def dump
-    @proc_table .each_key{|sig|
+    @proc_table.each_key{|sig|
       print "(#{self}) #{sig} -> "  # if $DEBUG
-      @proc_table[sig] .each_key{|sd|
+      @proc_table[sig].each_key{|sd|
         print @proc_table[sig][sd], " "
       }
       print "\n" # if $DEBUG
@@ -59,32 +59,32 @@ class Alarm < SignalConduit
 
   def initialize
     super
-    @now = Time .now .localtime
-    @th  = Thread .new {
+    @now = Time.now.localtime
+    @th  = Thread.new {
       while true
         tick
         sleep 3
       end
     }
-    @th .abort_on_exception= true
+    @th.abort_on_exception= true
   end
 
   def tick
-    now = Time .now .localtime
+    now = Time.now.localtime
 
     if (now != @now)
       signal_emit('sec-changed')
     end
 
-    if (now .day != @now .day)
+    if (now.day != @now.day)
       signal_emit('day-changed')
     end
 
-    if (now .min != @now .min)
+    if (now.min != @now.min)
       signal_emit('min-changed')
     end
 
-    if (now .month != @now .month)
+    if (now.month != @now.month)
       signal_emit('month-changed')
     end
 
