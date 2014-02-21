@@ -438,6 +438,28 @@ class MhcScheduleItem
     return self
   end
 
+  ## mission-tag
+  def mission_tag
+    return @mission_tag
+  end
+
+  def set_mission_tag(tag)
+    @mission_tag = tag.to_s
+    set_modified(true, 'set_mission_tag')
+    return self
+  end
+
+  ## recurrence-tag
+  def recurrence_tag
+    return @recurrence_tag
+  end
+
+  def set_recurrence_tag(tag)
+    @recurrence_tag = tag.to_s
+    set_modified(true, 'set_recurrence_tag')
+    return self
+  end
+
   ## record-id
   def rec_id
     return @rec_id
@@ -611,6 +633,8 @@ class MhcScheduleItem
       "X-SC-Cond: #{cond_as_string}\n"         +
       "X-SC-Duration: #{duration_as_string}\n" +
       "X-SC-Alarm: #{alarm_as_string}\n"       +
+      "X-SC-Mission-Tag: #{mission_tag}\n"       +
+      "X-SC-Recurrence-Tag: #{recurrence_tag}\n" +
       "X-SC-Record-Id: #{rec_id}\n"
     ## "X-SC-Debug-Path: #{path}\n"
   end
@@ -1020,6 +1044,12 @@ class MhcScheduleItem
 
       when 'record-id:'
         @rec_id = val
+
+      when 'recurrence-tag:'
+        @recurrence_tag = val
+
+      when 'mission-tag:'
+        @mission = val
 
       when 'priority:'
         if val =~ /^(\d+)\s*$/i
