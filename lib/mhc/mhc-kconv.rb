@@ -22,22 +22,22 @@ module MhcKconv
   end
 
   def todisp(string)
-    Kconv::kconv(string, DISP_CODE, Kconv::AUTO)
+    Kconv::kconv(string.to_s, DISP_CODE, Kconv::AUTO)
   end
   module_function :todisp
 
   def tomail(string)
-    Kconv::tojis(string)
+    Kconv::tojis(string.to_s)
   end
   module_function :tomail
 
   def tohtml(string)
-    Kconv::tojis(string)
+    Kconv::tojis(string.to_s)
   end
   module_function :tohtml
 
   def tops(string)
-    Kconv::toeuc(string)
+    Kconv::toeuc(string.to_s)
   end
   module_function :tops
 end
