@@ -48,14 +48,11 @@
 
 ;; Functions:
 
+(require 'org-id)
+
 (defun mhc-record-create-id ()
   "Return unique ID string."
-  (let ((uid (user-login-name))
-        (time (format-time-string "%Y%m%d%H%M%S" (current-time)))
-        (sequence (format "%04d" mhc-record/id-counter))
-        (host (system-name)))
-    (setq mhc-record/id-counter (1+ mhc-record/id-counter))
-    (concat "<" time sequence "." uid "@" host ">")))
+  (org-id-new))
 
 (defun mhc-record-new (name &optional id schedules sexp)
   "Constructer of MHC-RECORD structure."
