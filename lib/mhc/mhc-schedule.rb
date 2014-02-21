@@ -967,6 +967,18 @@ class MhcScheduleItem
     return self
   end
 
+  def mhc_make_date_list(from, to = nil)
+    return [MhcDate.new(from)] unless to
+    dates = []
+    date1 = MhcDate.new(from)
+    date2 = MhcDate.new(to)
+    while (date1 <= date2)
+      dates << date1
+      date1 = date1.succ
+    end
+    return dates
+  end
+
   def parse_xsc_headers(hash)
     hash.each_pair{|key,val|
       case key
@@ -975,12 +987,12 @@ class MhcScheduleItem
           case val
           when /^!/
             is_exception = true
-          when /^\d+/
+          when /^(\d+)(?:-(\d+))?/
             if is_exception
-              @exception << MhcDate.new($&)
+              @exception += mhc_make_date_list($1, $2)
               is_exception = false
             else
-              @day << MhcDate.new($&)
+              @day += mhc_make_date_list($1, $2)
             end
           when /^[^!\d]+/
             # discard the word.

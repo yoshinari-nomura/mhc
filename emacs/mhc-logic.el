@@ -86,10 +86,14 @@
 (defun mhc-logic-day-as-string-list (logicinfo)
   (mapcar (lambda (day)
             (if (consp day)
-                (mhc-date-format (car day) "!%04d%02d%02d" yy mm dd)
+                (if (null (cdr day))
+                    (mhc-date-format (car day) "!%04d%02d%02d" yy mm dd)
+                  (concat
+                   (mhc-date-format (car day) "%04d%02d%02d" yy mm dd)
+                   "-"
+                   (mhc-date-format (cdr day) "%04d%02d%02d-%04d%02d%02d" yy mm dd)))
               (mhc-date-format day "%04d%02d%02d" yy mm dd)))
           (mhc-logic/day logicinfo)))
-
 
 
 ;;----------------------------------------------------------------------
@@ -196,12 +200,27 @@
     (if (looking-at mhc-logic/space-regexp)
         (goto-char (match-end 0)))
     (while (not (eobp))
-      (or (mhc-logic/looking-at mhc-logic/not-regexp mhc-logic/day-regexp)
-          (error "Parse ERROR !!! (at X-SC-Day:)"))
-      (setq d (mhc-date-new (string-to-number (match-string 2))
-                            (string-to-number (match-string 3))
-                            (string-to-number (match-string 4)))
-            days (cons (if (match-string 1) (cons d nil) d) days))
+      (setq
+       days
+       (cons
+        (cond
+         ((mhc-logic/looking-at mhc-logic/day-regexp
+                                "-" mhc-logic/day-regexp)
+          (cons
+           (mhc-date-new (string-to-number (match-string 1))
+                         (string-to-number (match-string 2))
+                         (string-to-number (match-string 3)))
+           (mhc-date-new (string-to-number (match-string 4))
+                         (string-to-number (match-string 5))
+                         (string-to-number (match-string 6)))))
+         ((mhc-logic/looking-at mhc-logic/not-regexp mhc-logic/day-regexp)
+          (setq d (mhc-date-new (string-to-number (match-string 2))
+                                (string-to-number (match-string 3))
+                                (string-to-number (match-string 4))))
+          (if (match-string 1) (cons d nil) d))
+         (t
+          (error "Parse ERROR !!! (at X-SC-Day:)")))
+        days))
       (goto-char (match-end 0)))
     (mhc-logic/set-day logicinfo (nreverse days)))) ;; xxxxx
 
@@ -362,7 +381,9 @@
                                (list (cons 'and (reverse and)) t))))
                        (mapcar (lambda (day)
                                  (if (consp day)
-                                     `((mhc-logic/condition-day ,(car day)) nil)
+                                     (if (null (cdr day))
+                                         `((mhc-logic/condition-day ,(car day)) nil)
+                                       `((mhc-logic/condition-duration ,(car day) ,(cdr day)) t))
                                    `((mhc-logic/condition-day ,day) t)))
                                (mhc-logic/day logicinfo))))))
     (if sexp
