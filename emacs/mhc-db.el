@@ -206,9 +206,9 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
             (setq old-record record)
           ;; スケジュール変更によって、ディレクトリの変更が必要な場合
           (setq old-record (mhc-record-copy record))
-          (mhc-record-set-name record (mhc-misc-get-new-path directory)))
+          (mhc-record-set-name record (mhc-misc-get-new-path directory record)))
       ;; 新規のスケジュールを保存する場合
-      (mhc-record-set-name record (mhc-misc-get-new-path directory)))
+      (mhc-record-set-name record (mhc-misc-get-new-path directory record)))
     (if (or force-refile
             (y-or-n-p (format
                        "Refile %s to %s "

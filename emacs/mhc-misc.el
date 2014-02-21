@@ -53,7 +53,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; file & path
 
-(defun mhc-misc-get-new-path (dir)
+(defun mhc-misc-get-new-path (dir &optional record)
+  "Return name for new schedule file on DIR."
+  (if (and record (mhc-record-id record))
+      ;; old-path uses UUID format, so simply change the directory
+      (expand-file-name (concat (file-name-nondirectory (mhc-record-id record)) ".mhc") dir)
+    (mhc-misc-get-new-path-by-number dir)))
+
+(defun mhc-misc-get-new-path-by-number (dir)
   "Return name for new schedule file on DIR."
   (let (dirent (max 0) (num nil))
     (mhc-file-make-directory dir)

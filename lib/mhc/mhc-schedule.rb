@@ -1383,7 +1383,8 @@ class MhcScheduleDB
     elsif (File.directory?(slot))
       ## read as a yyyy/mm folder.
       Dir.open(slot).each{|file|
-        if (file =~ /^\d+$/)
+        # if (file =~ /^\d+$/)
+        if (file =~ /\.mhc$/)
           path = slot + '/' + file
           regist(slot, sch = MhcScheduleItem.new(path))
         end

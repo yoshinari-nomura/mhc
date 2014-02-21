@@ -189,7 +189,7 @@
                           (directory-files directory nil nil t)))
              records filename)
         (while entries
-          (and (not (string-match "[^0-9]" (car entries)))
+          (and (string-match "\\.mhc$" (car entries))
                (file-regular-p (setq filename (expand-file-name (car entries) directory)))
                (setq records (cons (mhc-parse-file filename)
                                    records)))
