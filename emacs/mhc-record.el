@@ -57,7 +57,7 @@
 (defun mhc-record-new (name &optional id schedules sexp)
   "Constructer of MHC-RECORD structure."
   (cons name
-        (vector (or id (mhc-record-create-id))
+        (vector id
                 schedules
                 sexp)))
 
