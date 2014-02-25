@@ -887,9 +887,9 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 (defmacro mhc-line-inserter-setup (inserter format alist)
   `(let (byte-compile-warnings)
      (setq ,inserter
-	   (byte-compile
-	    (list 'lambda ()
-		  (mhc-line-parse-format ,format ,alist))))
+           (byte-compile
+            (list 'lambda ()
+                  (mhc-line-parse-format ,format ,alist))))
      (when (get-buffer "*Compile-Log*")
        (bury-buffer "*Compile-Log*"))
      (when (get-buffer "*Compile-Log-Show*")
