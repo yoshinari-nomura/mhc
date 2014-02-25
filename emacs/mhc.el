@@ -703,7 +703,7 @@ Returns t if the importation was succeeded."
                         (setq recurrence-tag
                               (mhc-input-recurrence-tag
                                "Recurrence Tag: "
-                               (mhc-schedule-recurrence-tag-as-string schedule))))
+                               (or (mhc-schedule-recurrence-tag schedule) subject ""))))
                        ;; input alarm
                        ((eq input 'alarm)
                         (if mhc-ask-alarm
