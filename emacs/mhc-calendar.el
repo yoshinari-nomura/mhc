@@ -452,6 +452,7 @@ ww-japanese-long => \"土曜日\"
                                        (or date today)))))
          (mm (mhc-date-mm (or date today)))
          (days (mhc-db-scan-month (mhc-date-yy (or date today)) mm t))
+         (dayinfo-cache days)
          (separator (if separator separator mhc-calendar/separator-str))
          (start (mhc-day-day-of-week (car days)))
          (i 0)
@@ -493,7 +494,7 @@ ww-japanese-long => \"土曜日\"
                                                     mouse-face ,(if mhc-calendar-use-mouse-highlight
                                                                     'highlight nil)
                                                     help-echo ,(if mhc-calendar-use-help-echo
-                                                                   (mhc-calendar/get-contents cdate) nil))
+                                                                   (mhc-calendar/get-contents cdate dayinfo-cache) nil))
                            day)
       (setq week (cons day week))
       (when (= (mhc-end-day-of-week) (mhc-day-day-of-week (car days)))
@@ -743,17 +744,17 @@ The keys that are defined for mhc-calendar-mode are:
 
 (defvar mhc-calendar/date-format nil)
 
-(defun mhc-calendar/get-contents (date)
+(defun mhc-calendar/get-contents (date dayinfo-alist)
   (unless mhc-calendar/date-format
     (setq mhc-calendar/date-format
           (if (eq mhc-calendar-language 'japanese)
               "%04d年%2d月%2d日(%s)\n"
             "%04d-%02d-%02d (%s)\n")))
   (with-temp-buffer
-    (let* ((dayinfo (car (mhc-db-scan date date)))
+    (let* ((dayinfo (assoc date dayinfo-alist))
            (schedules (mhc-day-schedules dayinfo))
            schedule begin end subject location)
-      (mhc-date-let (mhc-day-date dayinfo)
+      (mhc-date-let date
         (insert (format mhc-calendar/date-format
                         yy mm dd
                         (aref mhc-calendar-day-strings ww))))
