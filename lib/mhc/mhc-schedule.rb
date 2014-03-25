@@ -1156,10 +1156,10 @@ class MhcScheduleDB
 
   ALL = 'all'
 
-  def initialize(basedir = DEF_BASEDIR, *rcfiles)
+  def initialize(basedir = nil, *rcfiles)
     @db        = {}
     @mtime     = {}
-    @basedir   = basedir
+    @basedir   = basedir || DEF_BASEDIR
     @rcfiles   = rcfiles.length == 0 ? [DEF_RCFILE] : rcfiles
     @slots     = @rcfiles + [@basedir + '/intersect']
     @alarm     = nil
