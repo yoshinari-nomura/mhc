@@ -1,0 +1,120 @@
+#+TITLE: MHC -- Message Harmonized Calendaring system.
+#+AUTHOR: Yoshinari Nomura
+#+EMAIL:
+#+DATE: 2014-03-25
+#+OPTIONS: H:3 num:2 toc:nil
+#+OPTIONS: ^:nil @:t \n:nil ::t |:t f:t TeX:t
+#+OPTIONS: skip:nil
+#+OPTIONS: author:t
+#+OPTIONS: email:nil
+#+OPTIONS: creator:nil
+#+OPTIONS: timestamp:nil
+#+OPTIONS: timestamps:nil
+#+OPTIONS: d:nil
+#+OPTIONS: tags:t
+#+TEXT:
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE: ja
+#+STARTUP: odd
+#+LATEX_CLASS: jsarticle
+#+LATEX_CLASS_OPTIONS: [a4j]
+# #+LATEX_HEADER: \usepackage{plain-article}
+# #+LATEX_HEADER: \renewcommand\maketitle{}
+# #+LATEX_HEADER: \pagestyle{empty}
+# #+LaTeX: \thispagestyle{empty}
+
+* MHC -- Message Harmonized Calendaring system.
+
+** DESCRIPTION
+   MHC is designed to help those who receive most appointments via email.
+   Using MHC, you can easily import schedule articles from emails.
+
+   You can get the latest version from:
+    http://www.quickhack.net/mhc/
+
+   MHC has following features:
+
+   + Easy import your schedule from email articles.
+     Using with Mew/Gnus/Wanderlust (MUAs on Emacs),
+     you can easily compose your schedule items from
+     appoint-emails. MHC will guess the title,
+     date, time and description by scanning the email.
+   + Simple data structure allows you to manipulate stored data in many ways.
+   + Both UNIX and Windows support.
+   + Appointments can be made to repeat in flexible ways.
+   + powerful but simple expression of appointments.
+     Each appointment can have following attributes:
+
+       date, subject, start/end time(not mandatory),
+       advance time of alarm,
+       multiple categories,
+       recurrence rules,
+       duration of the recurrence,
+       list of exception dates,
+       list of extra dates
+       description.
+
+   MHC stores schedule articles in the same form of MH; you can manipulate
+   these messages not only by above tools but also by many other MUAs,
+   editors, UNIX commandline tools or your own scripts.
+
+** SYSTEM REQUIREMENTS
+   + Ruby 2.1 or newer
+   + Emacs 24 or newer
+
+** INSTALL for developers:
+   1) Install rbenv + ruby-build
+      (see https://github.com/sstephenson/rbenv#basic-github-checkout for details)
+      #+BEGIN_SRC shell-script
+        $ git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+        $ git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+        # Edit your shell dot files to add some path and environment variables.
+      #+END_SRC
+
+   2) Install Latest Ruby and bundler
+      #+BEGIN_SRC shell-script
+        # Install ruby 2.1.1
+        $ rbenv install 2.1.1
+
+        # Installation check
+        $ rbenv global 2.1.1
+        $ ruby -v # -> You will see: ruby 2.1.1...
+
+        # Install bundler for your new Ruby
+        $ gem install bundler
+
+        # If you want to use Ruby in your sytem, say /usr/bin/ruby
+        $ rbenv global system
+        $ ruby -v
+      #+END_SRC
+
+   3) Clone MHC from github
+      #+BEGIN_SRC shell-script
+        $ git clone git@github.com:yoshinari-nomura/mhc.git ~/src/mhc
+      #+END_SRC
+
+   3) Set default ruby version in MHC project
+      #+BEGIN_SRC shell-script
+        $ cd ~/src/mhc
+        $ echo '2.1.1' > .ruby-version
+        $ ruby -v # -> You will see: ruby 2.1.1...
+      #+END_SRC
+
+   4) Install requied gem packages in sandbox ~/src/mhc/vendor/bundle
+      #+BEGIN_SRC shell-script
+        $ cd ~/src/mhc
+        $ bundle install --path vendor/bundle
+      #+END_SRC
+
+   5) Check if TODAY is good.
+      #+BEGIN_SRC shell-script
+        $ ~/src/mhc/bin/today
+      #+END_SRC
+
+   You may add ~/src/mhc/bin directory your $PATH for dogfooding
+
+** FOR MORE INFORMATION:
+   Please visit our site:
+   http://www.quickhack.net/mhc/
+   https://github.com/yoshinari-nomura/mhc
