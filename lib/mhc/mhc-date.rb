@@ -66,6 +66,78 @@ class MhcDate
   M_LONG_LABEL = %w(January February March April May June July August September October November December)
   W_LONG_LABEL = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
 
+
+  def self.today
+    return self.new
+  end
+
+  class ParseError < StandardError; end
+
+  def self.parse_relative(date_string)
+    case (date_string.downcase)
+    when 'today'
+      return MhcDate.today
+
+    when 'tomorrow'
+      return MhcDate.today.succ
+
+    when /^(sun|mon|tue|wed|thu|fri|sat)/
+      return MhcDate.today.w_this(date_string.downcase)
+
+    when /^\d{8}$/
+      return MhcDate.new(date_string)
+
+    when /^\d{6}$/
+      return MhcDate.new(date_string + '01')
+
+    when /^thismonth$/
+      return MhcDate.today.m_first_day
+
+    when /^nextmonth$/
+      return MhcDate.today.m_first_day.m_succ
+
+    else
+      raise ParseError
+    end
+  end
+
+  def absolute_from_epoch
+    self.to_date - Date.new(1970, 1, 1)
+  end
+
+  def succ_by(unit = :d, number = 1)
+    case unit.to_sym
+    when :d
+      return self.succ(number.to_i)
+    when :w
+      return self.succ(number.to_i * 7)
+    when :m
+      return self.m_succ(number.to_i)
+    end
+  end
+
+
+  def self.parse_range(range_string)
+    case range_string
+    when /^([^+-]+)-([^+-]+)$/
+      return [parse_relative($1), parse_relative($2)]
+
+    when /^([^+-]+)\+(\d+)([dwm])$/
+      date = parse_relative($1)
+      return [date, date.succ_by($3, $2.to_i).dec]
+
+    when /^(thismonth|nextmonth|\d{6})$/
+      date = parse_relative($1)
+      return [date, date.m_succ.dec]
+
+    when /^([^+-]+)$/
+      date = parse_relative($1)
+      return [date, date.succ.dec]
+    else
+      raise ParseError
+    end
+  end
+
   def initialize(y = -1, m = 1, d = 1)
     if y.kind_of?(String) && y =~ /^(\d{4})(\d\d)(\d\d)$/
       @y, @m, @d = $1.to_i, $2.to_i, $3.to_i
@@ -90,6 +162,10 @@ class MhcDate
   def to_a;  return [@y, @m, @d]                      ; end
 
   #def to_t(hh, mm);  return Time.local(@y, @m, @d, hh, mm); end
+
+  def to_date
+    return Date.new(@y, @m, @d)
+  end
 
   def to_t(tim = MhcTime.new(0, 0))
     return Time.local(@y, @m, @d, tim.hour, tim.minute) + (tim.day * 86400)
