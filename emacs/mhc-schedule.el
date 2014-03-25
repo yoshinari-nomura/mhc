@@ -17,7 +17,7 @@
 ;; Each MHC-SCHEDULE structure is a vector has a construction as
 ;; follows:
 ;;
-;;     MHC-SCHEDULE ::= [ RECORD CONDITION SUBJECT LOCATION TIME ALARM CATEGORIES PRIORITY REGION ]
+;;     MHC-SCHEDULE ::= [ RECORD CONDITION SUBJECT LOCATION TIME ALARM CATEGORIES PRIORITY REGION RECURRENCE-TAG]
 ;;     RECORD       ::= MHC-RECORD
 ;;     CONDITION    ::= MHC-LOGIC
 ;;     SUBJECT      ::= string ( represents subject of schedule )
@@ -30,6 +30,7 @@
 ;;     REGION       ::= ( START . END )
 ;;     START        ::= integer ( represents start point of headers of schedule )
 ;;     END          ::= integer ( represents end point of headers of schedule )
+;;     RECURRENCE-TAG ::= string
 
 
 ;;; Codes:
