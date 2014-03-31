@@ -1,4 +1,4 @@
-#!@@MHC_RUBY_PATH@@
+#!/usr/bin/env ruby
 # -*- ruby -*-
 
 ## make.rb.in -- Installer for Ruby scripts.
@@ -14,12 +14,12 @@ require 'mhc-make'
 include MhcMake
 
 install_files = [
-  'adb2mhc:0755:@@MHC_BINDIR@@',
-  'gemcal:0755:@@MHC_BINDIR@@',
-  'mhc-sync:0755:@@MHC_BINDIR@@',
-  'mhc2palm:0755:@@MHC_BINDIR@@',
-  'palm2mhc:755:@@MHC_BINDIR@@',
-  'today:0755:@@MHC_BINDIR@@',
+  'bin/adb2mhc:0755:@@MHC_BINDIR@@',
+  'bin/gemcal:0755:@@MHC_BINDIR@@',
+  'bin/mhc-sync:0755:@@MHC_BINDIR@@',
+  'bin/mhc2palm:0755:@@MHC_BINDIR@@',
+  'bin/palm2mhc:755:@@MHC_BINDIR@@',
+  'bin/today:0755:@@MHC_BINDIR@@',
   'xpm/close.xpm:0644:@@MHC_XPM_PATH@@',
   'xpm/delete.xpm:0644:@@MHC_XPM_PATH@@',
   'xpm/exit.xpm:0644:@@MHC_XPM_PATH@@',
@@ -36,7 +36,7 @@ install_files = [
 ]
 
 if /cygwin|mingw32/ =~ RUBY_PLATFORM
-  install_files << 'mhc2ol:0755:@@MHC_BINDIR@@'
+  install_files << 'bin/mhc2ol:0755:@@MHC_BINDIR@@'
 end
 
 INSTALL_FILES = install_files

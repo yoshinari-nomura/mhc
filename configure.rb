@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/env ruby
 ## configure.rb -- Guess values for system-dependent variables.
 ##
 ## Author:  MIYOSHI Masanori <miyoshi@quickhack.net>
@@ -89,15 +89,8 @@ end
 ## replace keywords.
 
 infile_list = [
-  'mhc-sync.in:0755',
-  'mhc2palm.in:0755',
-  'palm2mhc.in:0755',
-  'adb2mhc.in:0755',
-  'gemcal.in:0755',
   'make.rb.in:0755',
-  'today.in:0755',
   'emacs/make.rb.in:0755',
-  'ruby-ext/lib/mhc-gtk.rb.in:0644',
   'ruby-ext/extconf.rb.in:0755'
 ]
 
