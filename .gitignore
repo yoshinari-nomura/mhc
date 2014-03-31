@@ -22,3 +22,8 @@ vendor/bundle
 .ruby-version
 .ruby-gemset
 .rvmrc
+configure.log
+emacs/make.rb
+make.rb
+ruby-ext/extconf.rb
+ruby-ext/make.rb
