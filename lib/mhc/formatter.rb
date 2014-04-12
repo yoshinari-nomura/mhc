@@ -76,14 +76,15 @@ module Mhc
       def format_item(context, date, item)
         format("%s%-11s %s%s\n",
                format_item_header(context, date, item),
-               MhcKconv::todisp(item.time_as_string),
-               MhcKconv::todisp(item.subject),
-               MhcKconv::todisp(append(enclose(item.location))))
+               item.time_range.to_mhc_string.toutf8,
+               item.subject.to_s.toutf8,
+               append(enclose(item.location)).toutf8
+               )
       end
 
       def format_item_header(context, date, item)
         if context[:number_in_day] == 1
-          format("%02d/%02d %s ", date.m, date.d, date.w_s)
+          date.strftime("%m/%d %a ")
         else
           " " * 10
         end
@@ -138,15 +139,16 @@ module Mhc
       end
 
       def format_day_header(context, date)
-        format("((%2d %2d %4d) . (", date.m, date.d, date.y)
+        # format("((%2d %2d %4d) . (", date.m, date.d, date.y)
+        date.strftime("((%2m %2d %Y) . (")
       end
 
       def format_item(context, date, item)
         '"' +
           format("%s%s%s",
-                 MhcKconv::todisp(prepend(item.time_as_string)),
-                 MhcKconv::todisp(item.subject),
-                 MhcKconv::todisp(append(enclose(item.location)))).gsub(/[\"\\]/, '\\\\\&') +
+                 prepend(item.time_range.to_s).toutf8,
+                 item.subject.to_s.toutf8,
+                 append(enclose(item.location)).toutf8).gsub(/[\"\\]/, '\\\\\&') +
           '" '
       end
 
@@ -157,20 +159,21 @@ module Mhc
 
     class Emacs < SymbolicExpression
       def format_day_header(context, date)
-        format("(%d . [%d %d %d %d nil (", date.absolute_from_epoch, date.y, date.m, date.d, date.w)
+        #format("(%d . [%d %d %d %d nil (", date.absolute_from_epoch, date.y, date.m, date.d, date.w)
+        format("(%d . [%d %d %d %d nil (", date.absolute_from_epoch, date.year, date.month, date.day, date.wday)
       end
 
       def format_item(context, date, item)
         # [ RECORD CONDITION SUBJECT LOCATION (TIMEB . TIMEE) ALARM CATEGORIES PRIORITY REGION RECURRENCE-TAG]
         format("[(%s . [%s nil nil]) nil %s %s (%s . %s) %s (%s) nil nil %s]",
                elisp_string(item.path.to_s),
-               elisp_string(item.rec_id.to_s),
+               elisp_string(item.uid.to_s),
                elisp_string(item.subject),
                elisp_string(item.location),
-               (item.time_b ? (item.time_b.to_i / 60) : "nil"),
-               (item.time_e ? (item.time_e.to_i / 60) : "nil"),
-               elisp_string(item.alarm_as_string),
-               item.category.map{|c| elisp_string(c.downcase)}.join(" "),
+               (item.time_range.first ? (item.time_range.first.to_i / 60) : "nil"),
+               (item.time_range.last  ? (item.time_range.last.to_i  / 60) : "nil"),
+               elisp_string(item.alarm.to_s),
+               item.categories.map{|c| elisp_string(c.to_s.downcase)}.join(" "),
                elisp_string(item.recurrence_tag))
       end
 
@@ -179,11 +182,9 @@ module Mhc
       end
 
       def elisp_string(string)
-        '"' + MhcKconv::todisp(string).gsub(/[\"\\]/, '\\\\\&') + '"'
+        '"' + string.to_s.toutf8.gsub(/[\"\\]/, '\\\\\&') + '"'
       end
     end
-
-
 
     class OrgTable < Base
       private
@@ -196,12 +197,12 @@ module Mhc
         # | No | Mission | Recurrence | Subject | Path | Date |
         format("  | %4d | %s | %s | %s | %s | [%04d-%02d-%02d%s] |\n",
                context[:number],
-               MhcKconv::todisp(item.mission_tag),
-               MhcKconv::todisp(item.recurrence_tag),
-               MhcKconv::todisp(item.subject),
+               item.mission_tag.to_s.toutf8,
+               item.recurrence_tag.to_s.toutf8,
+               item.subject.to_s.toutf8,
                item.path.to_s,
                date.y, date.m, date.d,
-               append(item.time_as_string))
+               append(item.time_range.to_s))
       end
     end # class OrgTable
 

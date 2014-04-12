@@ -1,15 +1,13 @@
+require "kconv"
 require "mhc/version"
+require "mhc/calendar"
 require "mhc/command/scan"
-
-require "mhc/mhc-date"
-require "mhc/mhc-kconv"
-require "mhc/mhc-schedule"
-require "mhc/mhc-signal"
+require "mhc/datastore"
+require "mhc/event"
 require "mhc/formatter"
+require "mhc/logger"
+require "mhc/property_value"
+require "mhc/query"
 
-# require "mhc/mhc-gtk"
-# require "mhc/mhc-palm"
-
-module Mhc
-  # Your code goes here...
+module Mhc # :nodoc:
 end
