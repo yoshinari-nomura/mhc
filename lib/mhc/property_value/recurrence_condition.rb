@@ -17,10 +17,10 @@ module Mhc
       WEK_L2V   = Hash[*WEK_LABEL.zip(WEK_VALUE).flatten]
       WEK_V2L   = WEK_L2V.invert
 
-      MON_REGEXP = /#{MON_LABEL.join('|')}/oi
-      ORD_REGEXP = /#{ORD_LABEL.join('|')}/oi
-      WEK_REGEXP = /#{WEK_LABEL.join('|')}/oi
-      NUM_REGEXP = /\d+/oi
+      MON_REGEXP = /^#{MON_LABEL.join('|')}$/oi
+      ORD_REGEXP = /^#{ORD_LABEL.join('|')}$/oi
+      WEK_REGEXP = /^#{WEK_LABEL.join('|')}$/oi
+      NUM_REGEXP = /^\d+$/oi
 
       def cond_mon; return @cond_mon; end
       def cond_ord; return @cond_ord; end
@@ -34,10 +34,10 @@ module Mhc
 
       def parse(string)
         o = self
-        string.scan(MON_REGEXP) {|mon| o.cond_mon << MON_L2V[mon.capitalize]}
-        string.scan(ORD_REGEXP) {|ord| o.cond_ord << ORD_L2V[ord.capitalize]}
-        string.scan(WEK_REGEXP) {|wek| o.cond_wek << WEK_L2V[wek.capitalize]}
-        string.scan(NUM_REGEXP) {|num| o.cond_num << num.to_i}
+        string.split.grep(MON_REGEXP) {|mon| o.cond_mon << MON_L2V[mon.capitalize]}
+        string.split.grep(ORD_REGEXP) {|ord| o.cond_ord << ORD_L2V[ord.capitalize]}
+        string.split.grep(WEK_REGEXP) {|wek| o.cond_wek << WEK_L2V[wek.capitalize]}
+        string.split.grep(NUM_REGEXP) {|num| o.cond_num << num.to_i}
         return o
       end
 
