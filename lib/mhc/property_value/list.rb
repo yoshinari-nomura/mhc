@@ -5,9 +5,8 @@ module Mhc
 
       ITEM_SEPARATOR = " "
 
-      def initialize(item_class, prefix = nil)
+      def initialize(item_class)
         @list = []
-        @prefix = prefix
         @item_class = item_class
       end
 
@@ -23,18 +22,14 @@ module Mhc
 
       def parse(string)
         string.strip.split(ITEM_SEPARATOR).each do |str|
-          if @prefix and /^#{Regexp.escape(@prefix)}(.+)/ =~ str
-            item = @item_class.parse($1)
-          elsif not @prefix
-            item = @item_class.parse(str)
-          end
+          item = @item_class.parse(str)
           @list << item if item
         end
         return self
       end
 
       def to_mhc_string
-        @list.map{|item| @prefix.to_s + item.to_mhc_string}.join(ITEM_SEPARATOR)
+        @list.map{|item| item.to_mhc_string}.join(ITEM_SEPARATOR)
       end
 
     end # class List

@@ -3,9 +3,11 @@ module Mhc
     class Range < Base
       ITEM_SEPARATOR = "-"
 
-      def initialize(item_class)
-        @item_class = item_class
-        @first, @last = nil, nil
+      attr_reader :first, :last
+
+      def initialize(item_class, prefix = nil, first = nil, last = nil)
+        @item_class, @prefix = item_class, prefix
+        @first, @last = first, last
       end
 
       # our Range acceps these 3 forms:
@@ -23,7 +25,17 @@ module Mhc
 
         @first = @item_class.parse(first) unless first.to_s == ""
         @last  = @item_class.parse(last)  unless last.to_s  == ""
-        return self
+        return self.class.new(@item_class, @prefix, @first, @last)
+      end
+
+      def to_a
+        array = []
+        i = first
+        while i <= last
+          array << i
+          i = i.succ
+        end
+        return array
       end
 
       def each
@@ -48,13 +60,6 @@ module Mhc
         return  0 if !self.first and !o.first
       end
 
-      def first
-        return @first
-      end
-
-      def last
-        return @last
-      end
 
       def infinit?
         return @first.nil? || @last.nil?
@@ -65,9 +70,9 @@ module Mhc
         last  = @last.nil?  ? "" : @last.to_mhc_string
 
         if first == last
-          return first
+          return @prefix.to_s + first
         else
-          return [first, last].join(ITEM_SEPARATOR)
+          return @prefix.to_s + [first, last].join(ITEM_SEPARATOR)
         end
       end
 

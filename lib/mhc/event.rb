@@ -147,11 +147,11 @@ module Mhc
     ## date list is a list of date range
     def dates
       return @dates ||=
-        # Mhc::PropertyValue::List.new(Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Date))
-        Mhc::PropertyValue::List.new(Mhc::PropertyValue::Date)
+        Mhc::PropertyValue::List.new(Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Date.new))
     end
 
     def dates=(string)
+      string = string.split.select {|s| /^!/ !~ s}.join(" ")
       return @dates = dates.parse(string)
     end
 
@@ -169,13 +169,11 @@ module Mhc
 
     def exceptions
       return @exceptions ||=
-        Mhc::PropertyValue::List.new(Mhc::PropertyValue::Date, "!")
-        # Mhc::PropertyValue::List.new(
-        #  Mhc::PropertyValue::Range.new(
-        #    Mhc::PropertyValue::Date, "!"))
+        Mhc::PropertyValue::List.new(Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Date.new, "!"))
     end
 
     def exceptions=(string)
+      string = string.split.select {|s| /^!/ =~ s}.map{|s| s[1..-1]}.join(" ")
       return @exceptions = exceptions.parse(string)
     end
 

@@ -75,6 +75,14 @@ module Mhc
         end
       end
 
+      def parse(string)
+        if /^\d{8}$/ =~ string
+          self.class.parse(string)
+        else
+          return nil # raise ParseError
+        end
+      end
+
       def add_time(time = nil)
         if time
           return ::Time.local(year, month, mday, time.hour, time.minute)

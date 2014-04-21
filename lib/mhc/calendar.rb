@@ -37,7 +37,7 @@ module Mhc
         date_to_search_keys(date).each do |key|
           next if @db[slot][key].nil?
           @db[slot][key].each do |ev|
-            next if !ev.duration.include?(date) or ev.exceptions.include?(date) or (block_given? and !yield(ev))
+            next if !ev.duration.include?(date) or ev.exceptions.map{|range| range.to_a}.flatten.include?(date) or (block_given? and !yield(ev))
             events << ev
           end
         end
@@ -72,7 +72,7 @@ module Mhc
     def event_to_search_keys(event)
       search_keys = []
 
-      day = event.dates.map{|d| d.to_mhc_string}
+      day = event.dates.map{|range| range.to_a.map(&:to_mhc_string) }.flatten
       mon = event.recurrence_condition.cond_mon.map{|m|
         Mhc::PropertyValue::RecurrenceCondition::MON_V2L[m]
       }
