@@ -20,6 +20,10 @@ module Mhc
         @list.include?(o)
       end
 
+      def empty?
+        @list.empty?
+      end
+
       def parse(string)
         string.strip.split(ITEM_SEPARATOR).each do |str|
           item = @item_class.parse(str)

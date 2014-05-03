@@ -140,9 +140,10 @@ module Mhc
       # no 5th Saturday exists on April 2010).
       #
       def self.new_by_day(year, month, nth, wday)
+        return nil if nth < -5 or nth > 5 or nth == 0
         direction = nth > 0 ? 1 : -1
 
-        edge      = Date.new(year, month,  direction)
+        edge      = Date.new(year, month, direction)
         y_offset  = nth - direction
         x_offset  = wday_difference(edge.wday, wday, direction)
         mday      = edge.mday + y_offset * 7 + x_offset

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 module Mhc
   class Calendar
-    ALL = 'all'
+
     attr_reader :datastore
+
     def initialize(datastore)
       @datastore = datastore
       @logger    = datastore.logger
@@ -31,28 +32,36 @@ module Mhc
       date_range.map {|date| [date, search1(date, &predicate_block)]}
     end
 
+    ################################################################
+    private
+    ################################################################
+
     def search1(date, &predicate_block)
-      events = []
+      occurrences = []
       date_to_slots(date).each do |slot|
-        date_to_search_keys(date).each do |key|
-          next if @db[slot][key].nil?
-          @db[slot][key].each do |ev|
-            next if !ev.duration.include?(date) or ev.exceptions.map{|range| range.to_a}.flatten.include?(date) or (block_given? and !yield(ev))
-            events << ev
+        occurrences += @db[slot][date] || []
+      end
+      occurrences.select!{|oc| yield oc } if block_given?
+      occurrences.sort{|a,b| a.time_range <=> b.time_range}.uniq
+    end
+
+    # for debug
+    def dump_db
+      @db.keys.each do |slot|
+        puts "* #{slot}"
+        @db[slot].keys.sort.each do |date|
+          puts "** #{date}"
+          @db[slot][date].each do |oc|
+            puts "*** #{oc.subject}"
           end
         end
       end
-      return events.sort{|a,b| a.time_range <=> b.time_range}.uniq
     end
 
-    ################
-    #private
-    ################
-    def register_event(slot, event)
-      @db[slot] ||= {}
-      event_to_search_keys(event).each do |key|
-        @db[slot][key] ||= []
-        @db[slot][key] << event
+    def register_event(slot, event, date_range)
+      event.occurrences(range:date_range).each do |oc|
+        @db[slot][oc.date] ||= []
+        @db[slot][oc.date] << oc
       end
     end
 
@@ -61,70 +70,13 @@ module Mhc
         @db[slot] = {}
         @datastore.entries(slot).each do |path, header|
           if path
-            register_event(slot, Mhc::Event.new.parse_file(path))
+            register_event(slot, Mhc::Event.new.parse_file(path), date_range)
           else
-            register_event(slot, Mhc::Event.new.parse(header))
+            register_event(slot, Mhc::Event.new.parse(header), date_range)
           end
         end
       end
     end
-
-    def event_to_search_keys(event)
-      search_keys = []
-
-      day = event.dates.map{|range| range.to_a.map(&:to_mhc_string) }.flatten
-      mon = event.recurrence_condition.cond_mon.map{|m|
-        Mhc::PropertyValue::RecurrenceCondition::MON_V2L[m]
-      }
-      ord = event.recurrence_condition.cond_ord.map{|o|
-        Mhc::PropertyValue::RecurrenceCondition::ORD_V2L[o]
-      }
-      wek = event.recurrence_condition.cond_wek.map{|w|
-        Mhc::PropertyValue::RecurrenceCondition::WEK_V2L[w]
-      }
-      num = event.recurrence_condition.cond_num.map{|n| format("%02d", n)}
-
-      mon = [ALL] if (mon.empty?)
-      ord = [ALL] if (ord.empty?)
-
-      # 20140301
-      day.each{|yymmdd| search_keys << yymmdd}
-
-      mon.each do |mon|
-        # Aug 2nd Thu
-        ord.each{|ord| wek.each{|wek| search_keys << mon+ord+wek}}
-        # Aug 13
-        num.each{|num| search_keys << mon+num}
-      end
-      return search_keys
-    end
-
-    def date_to_search_keys(date)
-      mon = date.strftime("%b")
-      wek = date.strftime("%a")
-      ord = [0, '1st', '2nd', '3rd', '4th', 'Last'].slice(date.week_number_of_month)
-      day = date.strftime("%d")
-      last = "Last"
-
-      search_keys = [
-                     date.strftime("%Y%m%d"),         # 20140328
-                     mon+ord+wek,  # Mar 4th Fri
-                     mon+ALL+wek,  # Mar Fri (every Friday in March)
-                     ALL+ord+wek,  # 4th Fri (every 4th Friday)
-                     ALL+ALL+wek,  # Fri     (every Friday)
-                     mon+day,      # Mar 28  (March 28 every year)
-                     ALL+day       # 28      (28 every month)
-                    ]
-
-      if date.last_week_of_month?
-        search_keys += [
-                        mon+last+wek, # Mar Last Fri
-                        ALL+last+wek  # Last Fri
-                       ]
-      end
-      return search_keys
-    end
-
 
     # determine slots from which the events in date_rage can be picked
     def date_range_to_slots(date_range)

@@ -16,6 +16,7 @@ module Mhc
   # * X-SC-Day:
   # * X-SC-Time:
   # * X-SC-Category:
+  # * X-SC-Recurrence-Tag:
   # * X-SC-Priority:
   # * X-SC-Cond:
   # * X-SC-Duration:
@@ -184,7 +185,8 @@ module Mhc
     end
 
     def time_range=(string)
-      return @time_range =  time_range.parse(string)
+      @time_range = time_range.parse(string)
+      return @time_range
     end
 
     ## duration
@@ -215,31 +217,34 @@ module Mhc
       return @recurrence_tag = recurrence_tag.parse(string)
     end
 
-    ################################################################
-    ## occurrence_caluculator
-
-    def occurrence_caluculator
-      @oc ||= Mhc::OccurrenceCalculator.new(dates,
-                                            time_range,
-                                            exceptions,
-                                            recurrence_condition,
-                                            duration)
-      return @oc
+    def occurrences(range:nil)
+      Mhc::OccurrenceEnumerator.new(self, dates, exceptions, recurrence_condition, duration, range)
     end
 
+    # DTSTART (RFC5445:iCalendar) has these two meanings:
+    # 1) first ocurrence date of recurrence event
+    # 2) start date of a single-shot event
+    #
+    # In MHC, DTSTART is calculated as:
+    #
+    # if a MHC article has a Cond: field,
+    #   + DTSTART is calculated from Duration: and Cond: field.
+    #   + Additional Day: field is recognized as RDATE (RFC5445).
+    # else
+    #   + DTSTART is calculated from a first entry of Days: field.
+    #   + Remains in Day: field is recognized as RDATE (RFC5445).
+    # end
+    #
     def dtstart
-      @oc.dtstart
+      if self.recurring?
+        return duration.first
+      else
+        return dates.first.first
+      end
     end
 
-    def dtend
-      @oc.dtend
-    end
-
-    ################################################################
-    ## predicates
-
-    def todo?
-      return categories.include?("Todo")
+    def allday?
+      time_range.blank?
     end
 
     ################################################################

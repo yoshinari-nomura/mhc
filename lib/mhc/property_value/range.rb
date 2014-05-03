@@ -1,6 +1,7 @@
 module Mhc
   module PropertyValue
     class Range < Base
+      include Comparable
       ITEM_SEPARATOR = "-"
 
       attr_reader :first, :last
@@ -46,6 +47,12 @@ module Mhc
         end
       end
 
+      def narrow(from, to)
+        from = @first if from.nil? or (@first and from < @first)
+        to   = @last  if to.nil?   or (@last  and to   > @last)
+        self.class.new(@item_class, @prefix, from, to)
+      end
+
       def include?(item)
         return false if @first && item < @first
         return false if @last  && item > @last
@@ -60,9 +67,12 @@ module Mhc
         return  0 if !self.first and !o.first
       end
 
-
       def infinit?
         return @first.nil? || @last.nil?
+      end
+
+      def blank?
+        @first.nil? && @last.nil?
       end
 
       def to_mhc_string
@@ -75,6 +85,8 @@ module Mhc
           return @prefix.to_s + [first, last].join(ITEM_SEPARATOR)
         end
       end
+
+      alias_method :to_s, :to_mhc_string
 
     end # class Range
   end # module PropertyValue

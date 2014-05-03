@@ -29,7 +29,6 @@ module Mhc
 
       def initialize
         @cond_mon, @cond_ord, @cond_wek, @cond_num = [], [], [], []
-        @enumrator = nil
       end
 
       def parse(string)
@@ -41,58 +40,56 @@ module Mhc
         return o
       end
 
-      def weekly?
-        return cond_mon.length == 0 &&
-          cond_num.length == 0 &&
-          cond_ord.length == 0
-      end
-
-      def yearly?
-        return ond_mon.length > 0
-      end
-
-
       ##
       ##  MON NUM ORD WEK  RFC2445-TYPE (!: invalid)
       ## ------------------------------------------------------------------
-      ##   -   -   -   -   !EMPTY
-      ##   -   -   -   Y    WEEKLY  BYDAY=wek
-      ##   -   -   Y   -   !MONTHLY BYDAY=ord*ALL
-      ##   -   -   Y   Y    MONTHLY BYDAY=ord*wek
-      ##   -   Y   -   -    MONTHLY BYMONTHDAY=num
-      ##   -   Y   -   Y    MONTHLY BYMONTHDAY=num,BYDAY=wek
-      ##   -   Y   Y   -   !MONTHLY BYMONTHDAY=num,BYDAY=ord*ALL
-      ##   -   Y   Y   Y    MONTHLY BYMONTHDAY=num,BYDAY=ord*wek
-      ##   Y   -   -   -   !YEARLY  BYMONTH=mon,BYDAY=ALL
-      ##   Y   -   -   Y    YEARLY  BYMONTH=mon,BYDAY=wek
-      ##   Y   -   Y   -   !YEARLY  BYMONTH=mon,BYDAY=ord*ALL
-      ##   Y   -   Y   Y    YEARLY  BYMONTH=mon,BYDAY=ord*wek
-      ##   Y   Y   -   -    YEARLY  BYMONTH=mon,BYMONTHDAY=num
-      ##   Y   Y   -   Y    YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=wek
-      ##   Y   Y   Y   -   !YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*ALL
-      ##   Y   Y   Y   Y    YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*wek
+      ##   -   -   -   -   ! EMPTY
+      ##   -   -   -   Y     WEEKLY  BYDAY=wek
+      ##   -   -   Y   -   ! MONTHLY BYDAY=ord*ALL
+      ##   -   -   Y   Y     MONTHLY BYDAY=ord*wek
+      ##   -   Y   -   -     MONTHLY BYMONTHDAY=num
+      ##   -   Y   -   Y     MONTHLY BYMONTHDAY=num,BYDAY=wek
+      ##   -   Y   Y   -   ! MONTHLY BYMONTHDAY=num,BYDAY=ord*ALL
+      ##   -   Y   Y   Y     MONTHLY BYMONTHDAY=num,BYDAY=ord*wek
+      ##   Y   -   -   -   ! YEARLY  BYMONTH=mon,BYDAY=ALL
+      ##   Y   -   -   Y     YEARLY  BYMONTH=mon,BYDAY=wek
+      ##   Y   -   Y   -   ! YEARLY  BYMONTH=mon,BYDAY=ord*ALL
+      ##   Y   -   Y   Y     YEARLY  BYMONTH=mon,BYDAY=ord*wek
+      ##   Y   Y   -   -     YEARLY  BYMONTH=mon,BYMONTHDAY=num
+      ##   Y   Y   -   Y     YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=wek
+      ##   Y   Y   Y   -   ! YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*ALL
+      ##   Y   Y   Y   Y     YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*wek
       ##
       def recurrence_frequency
-        return :yearly  if yearly?
-        return :monthly if monthly?
+        return :none    if empty?
+        return :daily   if daily?
         return :weekly  if weekly?
-        return :none    # happens if cond: is empty.
+        return :monthly if monthly?
+        return :yearly  if yearly?
       end
 
-      def yearly?
-        return !cond_mon.empty?
-      end
-
-      def monthly?
-        return !yearly? && (!cond_num.empty? || !cond_ord.empty?)
+      def daily?
+        false
       end
 
       def weekly?
-        return !yearly? && !monthly? && !cond_wek.empty?
+        !yearly? && !monthly? && !cond_wek.empty?
+      end
+
+      def monthly?
+        !yearly? && (!cond_num.empty? || !cond_ord.empty?)
+      end
+
+      def yearly?
+        !cond_mon.empty?
       end
 
       def valid?
-        return false if !cond_ord.empty? && cond_wek.empty?
+        recurrence_frequency != :none
+      end
+
+      def empty?
+        [@cond_mon, @cond_ord, @cond_wek, @cond_num].all?{|cond| cond.empty?}
       end
 
       def to_mhc_string
@@ -102,34 +99,6 @@ module Mhc
                 cond_num.map{|num| num.to_s}
                 ).join(" ")
       end
-
-      def occrrence_enumerator
-        raise "invalid recurrence condition: #{to_mhc_string}"
-
-        @enumerator = Mhc::OcurrenceEnumerator::Empty.new
-
-        mon_list = cond_mon.empty? ? EVERY_MONTH : cond_mon
-        ord_list = cond_ord.empty? ? EVERY_ORDER : cond_ord
-
-        mon_list.each do |mon|
-          ord_list.each do |ord|
-            cond_wek.each do |wek|
-              enumerator = Mhc::OcurrenceEnumerator::ByDay.new(mon, ord, wek)
-              @enumerator.merge(enumerator)
-            end
-          end
-        end
-
-        mon_list.each do |mon|
-          cond_num.each do |num|
-            enumerator = Mhc::OcurrenceEnumerator::ByMonthDay.new(mon, num)
-            @enumerator.merge(enumerator)
-          end
-        end
-
-        return @enumerator
-      end
-
     end # class RecurrenceCondition
   end # module PropertyValue
 end # module Mhc

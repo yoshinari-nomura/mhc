@@ -109,7 +109,7 @@
 
    5) Check if TODAY is good.
       #+BEGIN_SRC shell-script
-        $ ~/src/mhc/bin/today
+        $ ~/src/mhc/bin/mhc scan today
       #+END_SRC
 
    You may add ~/src/mhc/bin directory your $PATH for dogfooding
