@@ -29,13 +29,12 @@ module Mhc
 
       # Since some articles with RECURRENCE_CONDITION and without DURATION
       # makes infinit entries, we have to clip the range by some artificial values
-      # It will make 101 enum entries from now-50 years to now+50 years:
+      # It will make 101 enum entries from 1970-1-1 to now+50 years:
       #
       #   X-SC-Subject: New Year's Day
       #   X-SC-Cond: Jan 1
       #
-      year  = Date.today.year
-      range = (Date.new(year - 50) .. Date.new(year + 50)) unless range
+      range = (Date.new(1970, 1, 1) .. Date.new(Date.today.year + 50)) unless range
 
       # If we have both DURATION and RANGE, we can take narrower term
       # by the combination of the both.
