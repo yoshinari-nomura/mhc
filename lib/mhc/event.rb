@@ -217,6 +217,15 @@ module Mhc
       return @recurrence_tag = recurrence_tag.parse(string)
     end
 
+    ## mission-tag
+    def mission_tag
+      return @mission_tag ||= Mhc::PropertyValue::Text.new
+    end
+
+    def mission_tag=(string)
+      return @mission_tag = mission_tag.parse(string)
+    end
+
     def occurrences(range:nil)
       Mhc::OccurrenceEnumerator.new(self, dates, exceptions, recurrence_condition, duration, range)
     end
@@ -266,6 +275,7 @@ module Mhc
         "X-SC-Day: " + "#{dates.to_mhc_string} #{exceptions.to_mhc_string}".strip + "\n" +
         "X-SC-Time: #{time_range.to_mhc_string}\n"           +
         "X-SC-Category: #{categories.to_mhc_string}\n"       +
+        "X-SC-Mission-Tag: #{mission_tag.to_mhc_string}\n"   +
         "X-SC-Recurrence-Tag: #{recurrence_tag.to_mhc_string}\n"       +
         "X-SC-Priority: #{priority.to_mhc_string}\n"         +
         "X-SC-Cond: #{recurrence_condition.to_mhc_string}\n" +
@@ -349,6 +359,7 @@ module Mhc
         when "time"      ; self.time_range = val
         when "duration"  ; self.duration   = val
         when "category"  ; self.categories = val
+        when "mission-tag"  ; self.mission_tag = val
         when "recurrence-tag"  ; self.recurrence_tag = val
         when "cond"      ; self.recurrence_condition  = val
         when "alarm"     ; self.alarm      = val
