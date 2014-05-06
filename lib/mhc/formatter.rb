@@ -139,7 +139,6 @@ module Mhc
       end
 
       def format_day_header(context, date)
-        # format("((%2d %2d %4d) . (", date.m, date.d, date.y)
         date.strftime("((%2m %2d %Y) . (")
       end
 
@@ -159,7 +158,6 @@ module Mhc
 
     class Emacs < SymbolicExpression
       def format_day_header(context, date)
-        #format("(%d . [%d %d %d %d nil (", date.absolute_from_epoch, date.y, date.m, date.d, date.w)
         format("(%d . [%d %d %d %d nil (", date.absolute_from_epoch, date.year, date.month, date.day, date.wday)
       end
 

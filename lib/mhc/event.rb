@@ -225,7 +225,7 @@ module Mhc
     # 1) first ocurrence date of recurrence event
     # 2) start date of a single-shot event
     #
-    # In MHC, DTSTART is calculated as:
+    # In MHC, DTSTART should be calculated as:
     #
     # if a MHC article has a Cond: field,
     #   + DTSTART is calculated from Duration: and Cond: field.

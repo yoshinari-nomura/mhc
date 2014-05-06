@@ -60,7 +60,7 @@ module Mhc
       ##   Y   Y   Y   -   ! YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*ALL
       ##   Y   Y   Y   Y     YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*wek
       ##
-      def recurrence_frequency
+      def frequency
         return :none    if empty?
         return :daily   if daily?
         return :weekly  if weekly?
@@ -85,7 +85,7 @@ module Mhc
       end
 
       def valid?
-        recurrence_frequency != :none
+        frequency != :none
       end
 
       def empty?

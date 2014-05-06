@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+
 require "pp"
 require "shellwords"
 
@@ -114,13 +115,6 @@ class MhcCLI < Thor
     Hash[hash.map {|k,v| [k.to_sym, v]}]
   end
 end
-
-# mhc scan range --format=format --
-# GitCLI::Git.start(ARGV)
-#command = MhcCLI.start(ARGV)
-#command = MhcCLI.new
-#command.invoke_command(:scan, ARGV)
-#exit 0
 
 begin
   command = MhcCLI.start(ARGV)
