@@ -116,9 +116,4 @@ class MhcCLI < Thor
   end
 end
 
-begin
-  command = MhcCLI.start(ARGV)
-rescue ArgumentError => e
-  STDERR.print e.message, "\n"
-  exit 1
-end
+command = MhcCLI.start(ARGV)
