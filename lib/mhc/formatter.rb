@@ -199,7 +199,7 @@ module Mhc
                item.recurrence_tag.to_s.toutf8,
                item.subject.to_s.toutf8,
                item.path.to_s,
-               date.y, date.m, date.d,
+               date.year, date.month, date.mday,
                append(item.time_range.to_s))
       end
     end # class OrgTable
