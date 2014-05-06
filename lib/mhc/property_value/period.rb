@@ -1,9 +1,10 @@
 module Mhc
   module PropertyValue
     class Period < Base
-      UNIT_TO_MIN = {'minute' => 1, 'hour' => 60, 'day' => 60*24}
-      UNITS       = UNIT_TO_MIN.keys
-      REGEXP      = /(\d+)(#{UNITS.join("|")})s?/o
+
+      UNIT2MIN = {'minute' => 1, 'hour' => 60, 'day' => 60*24}
+      UNITS    = UNIT2MIN.keys
+      REGEXP   = /(\d+)\s*(#{UNITS.join("|")})s?/
 
       def initialize
         @minutes = 0
@@ -15,7 +16,7 @@ module Mhc
 
       def parse(string)
         if REGEXP =~ string
-          @minutes = (UNIT_TO_MIN[$2] * $1.to_i)
+          @minutes = (UNIT2MIN[$2] * $1.to_i)
         end
         return self
       end
@@ -24,19 +25,19 @@ module Mhc
         return @minutes
       end
 
-      def to_mhc
+      def to_mhc_string
         return "" unless @minutes
 
-        value, unit_size = @minutes, 1
+        value, unit_size, unit_name = @minutes, 1, "minute"
 
-        UNIT_TO_MIN.each do |unit,minutes|
-          if @minutes % minutes == 0 && minutes <= unit_size
+        UNIT2MIN.each do |unit,minutes|
+          if @minutes % minutes == 0
             value = @minutes / minutes
             unit_size = minutes
             unit_name = unit
           end
         end
-        return "#{value} #{unit_name}"
+        return "#{value} #{unit_name}" + (value > 1 ? "s" : "")
       end
 
       def alarm_trigger
