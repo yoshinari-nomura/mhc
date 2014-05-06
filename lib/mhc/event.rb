@@ -246,10 +246,40 @@ module Mhc
     #
     def dtstart
       if self.recurring?
-        return duration.first
+        Mhc::OccurrenceEnumerator.new(self, empty_dates, empty_dates, recurrence_condition, duration).first.dtstart
       else
-        return dates.first.first
+        Mhc::OccurrenceEnumerator.new(self, dates, empty_dates, empty_condition, empty_duration).first.dtstart
       end
+    end
+
+    def dtend
+      if self.recurring?
+        Mhc::OccurrenceEnumerator.new(self, empty_dates, empty_dates, recurrence_condition, duration).first.dtend
+      else
+        Mhc::OccurrenceEnumerator.new(self, dates, empty_dates, empty_condition, empty_duration).first.dtend
+      end
+    end
+
+    def rdates
+      return nil if dates.empty?
+      ocs = Mhc::OccurrenceEnumerator.new(self, dates, empty_dates, empty_condition, empty_duration).map {|oc| oc.dtstart}
+      if recurring?
+        ocs
+      else
+        ocs = ocs[1..-1]
+        return nil if ocs.empty?
+        return ocs
+      end
+    end
+
+    def exdates
+      return nil if exceptions.empty?
+      ocs = Mhc::OccurrenceEnumerator.new(self, exceptions, empty_dates, empty_condition, empty_duration).map {|oc| oc.dtstart }
+      return ocs
+    end
+
+    def recurring?
+      not recurrence_condition.empty?
     end
 
     def allday?
@@ -289,47 +319,66 @@ module Mhc
     ################################################################
     ### converter
 
-    def to_ics_string
-      result = self.to_ics_calendar.to_s
-      STDERR.print "Event#to_ics_string #{result}\n"
-      return result
+    def to_ics
+      return self.to_icalendar.to_s
     end
 
-    def to_ics_event
-      ev = self
-      event = RiCal.Event do |iev|
-        if ev.allday?
-          dtstart = ev.start_time.to_date
-          dtend   = ev.end_time.to_date + 1
-        else
-          dtstart = ev.start_time
-          dtend   = ev.end_time
-        end
-
-        description = ''
-        unless ev.recurrence_id.blank?
-          if /^(#![a-zA-Z ]+)/ =~ ev.description.to_s
-            description = ev.description.to_s.sub($1, '#!' + ev.recurrence_id)
-          else
-            description = '#!' + ev.recurrence_id.to_s + "\n" + ev.description.to_s
-          end
-        end
-
-        iev.created       = ev.created_at
-        iev.last_modified = ev.updated_at
-        iev.uid           = ev.uid
+    def to_icalendar
+      icalendar = RiCal.Event do |iev|
+        iev.rrule         = recurrence_condition.to_ics(duration.last) if recurring?
+        iev.exdates       = [exdates] if exdates
+        iev.rdates        = [rdates]  if rdates
+        iev.created       = created
+        iev.last_modified = last_modified
+        iev.uid           = uid.to_s
         iev.dtstart       = dtstart
         iev.dtend         = dtend
-        iev.summary       = ev.name.to_s
-        iev.description   = description
-        iev.sequence      = (ev.sequence || 0)
-        iev.dtstamp       = Time.now
+        iev.summary       = subject.to_s
+        iev.description   = self.description.to_mhc_string
+        iev.sequence      = (sequence || 0)
+        iev.dtstamp       = dtstamp
       end
-      return event
+      return icalendar
     end
 
     ################################################################
     private
+
+    def empty_duration
+      Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Date)
+    end
+
+    def empty_dates
+      Mhc::PropertyValue::List.new(Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Date.new))
+    end
+
+    def empty_condition
+      Mhc::PropertyValue::RecurrenceCondition.new
+    end
+
+    def sequence
+      0
+    end
+
+    def dtstamp
+      ::Time.now
+    end
+
+    def created
+      if @path
+        File.ctime(@path)
+      else
+        Time.utc(2014, 1, 1)
+      end
+    end
+
+    def last_modified
+      if @path
+        File.mtime(@path)
+      else
+        Time.utc(2014, 1, 1)
+      end
+    end
 
     def lazy?
       return !@path.nil?

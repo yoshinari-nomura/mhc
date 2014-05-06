@@ -32,9 +32,9 @@ module Mhc
         return [hour, minute]
       end
 
-      def to_time(date = Mhc::PropertyValue::Date.new(1970, 1, 2))
+      def to_datetime(date = Mhc::PropertyValue::Date.new(1970, 1, 2))
         date = date + days
-        ::Time.local(date.year, date.month, date.day, hour, minute)
+        ::DateTime.new(date.year, date.month, date.day, hour, minute, 0, '+0900')
       end
     end
   end # module PropertyValue

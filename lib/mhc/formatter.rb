@@ -15,6 +15,8 @@ module Mhc
       when :emacs
         # SymbolicExpression.new(options)
         Emacs.new(options)
+      when :icalendar
+        ICalendar.new(options)
       else
         raise FormatterNameError.new("Unknown format: #{formatter} (#{formatter.class})")
       end
@@ -181,6 +183,28 @@ module Mhc
 
       def elisp_string(string)
         '"' + string.to_s.toutf8.gsub(/[\"\\]/, '\\\\\&') + '"'
+      end
+    end
+
+    class ICalendar < Base
+      def initialize(options = nil)
+        super(options)
+        @ical = RiCal.Calendar
+        @ical.default_tzid = "Asia/Tokyo"
+        @events = {}
+      end
+
+      private
+
+      def format_item(context, date, item)
+        return "" if @events[item.event] == true
+        @ical.events << item.event.to_icalendar
+        @events[item.event] = true
+        return ""
+      end
+
+      def format_footer(context)
+        @ical.to_s
       end
     end
 

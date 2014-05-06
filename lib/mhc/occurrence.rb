@@ -25,5 +25,21 @@ module Mhc
     def initialize(event, date)
       @event, @date = event, date
     end
+
+    def dtstart
+      if allday?
+        @date
+      else
+        time_range.first.to_datetime(@date)
+      end
+    end
+
+    def dtend
+      if allday?
+        @date + 1
+      else
+        time_range.last.to_datetime(@date)
+      end
+    end
   end # class Event
 end # module Mhc

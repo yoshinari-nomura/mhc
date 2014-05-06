@@ -162,6 +162,10 @@ module Mhc
         return date
       end
 
+      def to_ics
+        return strftime("%Y%m%d")
+      end
+
       private
       #
       # Returns diff of days between 2 wdays: FROM and TO.

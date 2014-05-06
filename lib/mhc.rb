@@ -1,3 +1,5 @@
+require 'tzinfo'
+require 'ri_cal'
 require "kconv"
 require "mhc/version"
 require "mhc/calendar"
@@ -13,6 +15,10 @@ require "mhc/date_frame"
 require "mhc/date_enumerator"
 require "mhc/property_value"
 require "mhc/query"
+
+if ENV["MHC_TZINFO"]
+  RiCal::PropertyValue::DateTime.default_tzid = ENV["MHC_TZINFO"]
+end
 
 module Mhc # :nodoc:
 end

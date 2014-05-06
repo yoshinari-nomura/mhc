@@ -16,6 +16,7 @@ module Mhc
       WEK_VALUE = [0, 1, 2, 3, 4, 5, 6]
       WEK_L2V   = Hash[*WEK_LABEL.zip(WEK_VALUE).flatten]
       WEK_V2L   = WEK_L2V.invert
+      WEK_V2I   = Hash[*WEK_VALUE.zip(%w(SU MO TU WE TH FR SA)).flatten]
 
       MON_REGEXP = /^#{MON_LABEL.join('|')}$/oi
       ORD_REGEXP = /^#{ORD_LABEL.join('|')}$/oi
@@ -99,6 +100,23 @@ module Mhc
                 cond_num.map{|num| num.to_s}
                 ).join(" ")
       end
+
+      def to_ics(until_date = nil)
+        return nil unless valid?
+
+        ord_wek = (cond_ord.empty? ? [""] : cond_ord).product(cond_wek)
+        day = ord_wek.map {|o,w| o.to_s + WEK_V2I[w] }.join(',')
+
+        ics = "FREQ=#{frequency.to_s.upcase};INTERVAL=1;WKST=MO"
+
+        ics += ";BYMONTH=#{cond_mon.join(',')}"    unless cond_mon.empty?
+        ics += ";BYDAY=#{day}"                     unless day.empty?
+        ics += ";BYMONTHDAY=#{cond_num.join(',')}" unless cond_num.empty?
+        ics += ";UNTIL=#{until_date.to_ics}"       unless until_date.nil?
+
+        return ics
+      end
+
     end # class RecurrenceCondition
   end # module PropertyValue
 end # module Mhc
