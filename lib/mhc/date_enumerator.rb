@@ -162,7 +162,7 @@ module Mhc
       end
 
       def occurrence_in_frame(date)
-        Date.new(date.year, @month, @mday) rescue nil
+        Mhc::PropertyValue::Date.new(date.year, @month, @mday) rescue nil
       end
     end # class YearlyByMonthday
 
@@ -200,7 +200,7 @@ module Mhc
       end
 
       def occurrence_in_frame(date)
-        Date.new(date.year, date.month, @mday) rescue nil
+        Mhc::PropertyValue::Date.new(date.year, date.month, @mday) rescue nil
       end
     end # class MonthlyMonthday
 

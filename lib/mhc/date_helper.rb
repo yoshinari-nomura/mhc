@@ -13,21 +13,21 @@ module Mhc
     def make_date_by_day(year:, month:, nth:, wday:)
       direction = nth > 0 ? 1 : -1
 
-      edge  = Date.new(year, month, direction)
+      edge  = Mhc::PropertyValue::Date.new(year, month, direction)
       ydiff = nth - direction
       xdiff = direction * ((direction * (wday - edge.wday)) % 7)
       mday  = edge.mday + ydiff * 7 + xdiff
 
       raise ArgumentError if mday < 1
-      return Date.new(year, month, mday)
+      return Mhc::PropertyValue::Date.new(year, month, mday)
     end
 
     def beginning_of_year(date)
-      Date.new(date.year, 1, 1)
+      date.class.new(date.year, 1, 1)
     end
 
     def beginning_of_month(date)
-      Date.new(date.year, date.month, 1)
+      date.class.new(date.year, date.month, 1)
     end
 
     def beginning_of_week(date, wkst = 1)
