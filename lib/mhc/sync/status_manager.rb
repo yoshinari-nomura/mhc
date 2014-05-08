@@ -71,8 +71,6 @@ module Mhc
 
       def put(modified_record)
         current_record = syncinfo(modified_record.uid)
-        STDERR.print "PUT #{current_record.sync_status} (#{current_record.ex_etag})\n"
-        STDERR.print "putting '#{modified_record}'"
         if @db.put_if_match(current_record.uid, modified_record.to_ics_string, current_record.ex_etag)
           ## XXX: put_if_match should return the new etag value, and we
           ## have to use it as a new etag for the current record.

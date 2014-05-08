@@ -5,7 +5,7 @@ module Mhc
     end
 
     def put(key, value)
-      print "EtagStore#put(#{key} => #{value})\n"
+      print "ETAG put #{key} => #{value} in #{@top_directory}\n"
       if value.nil?
         unlink(key)
       else

@@ -39,7 +39,6 @@ module Mhc
         when :delete_side2
           delete(uid, @db2, @db1)
         when :side1_to_side2
-          puts "COPY #{uid} #{@db1} to #{@db2}"
           copy(uid, @db1, @db2)
         when :side2_to_side1
           copy(uid, @db2, @db1)

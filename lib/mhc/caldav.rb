@@ -143,14 +143,14 @@ module Mhc
       # return value : true   ... successful but etag is not available
       # return value : String ... successful with new etag
       def put_if_match(uid, ics_string, etag)
-        STDERR.print "CALDAV put_if_match(:uid => #{uid}, :etag => #{etag} ..."
+        STDERR.print "CALDAV put_if_match :uid => #{uid}, :etag => #{etag} ..."
         begin
         res = put(ics_string, uid, etag)
         rescue Exception => e
           STDERR.print "failed: (#{e.to_s})\n"
           return false
         end
-        STDERR.print "succeeded: #{res}\n"
+        STDERR.print "succeeded #{res['etag']}\n"
         return res['etag'] || true
       end
 

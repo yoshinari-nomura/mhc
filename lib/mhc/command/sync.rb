@@ -8,7 +8,7 @@ module Mhc
         channel = config.sync_channels[channel_name]
 
         unless channel
-          STDERR.print "No sync channel definition about #{channel_name} was found in ~/.mhc/config.yml"
+          STDERR.print "Error: Not found '#{channel_name}' in ~/.mhc/config.yml\n"
           exit 1
         end
 
