@@ -47,13 +47,10 @@ module Mhc
 
       ### as a calendar DB redord
       def to_ics_string
-        STDERR.print "->>>>>>>>>>wrapped_record\n"
-
         # LastNote or mhc is assumed.
         if  @wrapped_record.respond_to?(:to_ics_string)
           result = @wrapped_record.to_ics_string
-          STDERR.print "@wrapped_record: #{result}\n"
-          return result
+           return result
         end
 
         # HTTP::Response from caldav server is assumed.

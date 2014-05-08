@@ -81,7 +81,7 @@ module Mhc
         else
           @value = context.expect(:string).value[1..-2]
         end
-        raise ParseError, "Unknown keyword ``#{@name}''" unless KEYWORDS.member?(@name)
+        raise ParseError, "unknown keyword '#{@name}'" unless KEYWORDS.member?(@name)
       end
 
       def to_proc
@@ -140,7 +140,7 @@ module Mhc
           tokens << token
         end
 
-        raise ParseError, "Can not tokenize #{string}" unless string.length == 0
+        raise ParseError, "can not tokenize '#{string}'" unless string.length == 0
         return tokens
       end
 

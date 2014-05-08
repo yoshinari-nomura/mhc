@@ -10,11 +10,15 @@ module Mhc
       end
 
       def format_range(calendar, formatter, date_range, search: nil, **options)
+        if options[:category] and not search
+          search = "category:\"#{options[:category]}\""
+        end
+
         if search
           begin
             search_proc = Mhc::Query.new(search).to_proc
           rescue Mhc::Query::ParseError => e
-            STDERR.print "Error: " + e.message + " in search option.\n"
+            STDERR.print "Error: " + e.message.capitalize + " in search string\n"
             exit 1
           end
         end

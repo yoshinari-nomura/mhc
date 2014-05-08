@@ -31,7 +31,6 @@ class MhcCLI < Thor
   package_name 'MHC'
 
   class_option :repository, :desc => "Set MHC top directory"
-  class_option :version, :type => :boolean, :desc => "Show version"
   map ["--version", "-v"] => :version
 
   default_command :help
@@ -65,33 +64,22 @@ class MhcCLI < Thor
     Examples:
     \x5 mhc scan 20140101-20141231
     \x5 mhc scan 2140101+3d
-    \x5 mhc scan today
-    \x5 mhc scan thismonth
+    \x5 mhc scan today --category 'Business'
+    \x5 mhc scan thismonth --search 'category:Business & !subject:"Trip"'
   LONGDESC
-  method_option :format,   :desc => "Set printing format (text, emacs, ...)"
+  method_option :format,   :desc => "Set printing format (text, icalendar,...)"
   method_option :category, :desc => "Pick items only in CATEGORY"
-  method_option :subject,  :desc => "Search by Subject string"
   method_option :search,   :desc => "Search by complex expression"
   def scan(range)
     begin
       Mhc::Command::Scan.new(self.class.mhcdb, range, **symbolize_keys(options))
     rescue Mhc::PropertyValue::ParseError, Mhc::FormatterNameError => e
-      STDERR.print e.message, "\n"
+      STDERR.print "Error: " + e.message.capitalize, "\n"
     end
     return self
   end
 
-  desc "add FILE", "add MHC article to MHC DB"
-  def add(file)
-    if file == "-"
-      puts "Add MHC DB from STDIN"
-    end
-    if file and File.exists?(file)
-      puts "Add file #{file} to MHC DB"
-    end
-  end
-
-  desc "server", "invoked as Server"
+  desc "server", "invoked as server (backend of emacs)"
   def server
     while line = STDIN.noecho(&:gets)
       argv = line.chomp.shellsplit

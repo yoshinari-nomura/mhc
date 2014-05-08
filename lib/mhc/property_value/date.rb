@@ -37,7 +37,7 @@ module Mhc
           return self.today.first_day_of_month.next_month
 
         else
-          raise ParseError
+          raise ParseError, "invalid date string '#{date_string}'"
         end
       end
 
@@ -60,7 +60,7 @@ module Mhc
           date = parse_relative($1)
           return date..date
         else
-          raise ParseError
+          raise ParseError, "invalid date range string '#{range_string}'"
         end
       end
 
