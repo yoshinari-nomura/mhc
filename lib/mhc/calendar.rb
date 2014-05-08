@@ -125,7 +125,7 @@ module Mhc
 
     # determine slots from which the events in date can be picked
     def date_to_slots(date)
-      return ["intersect", "anniversaries", date_to_slot(date)]
+      return ["intersect", "anniversaries.mhcc", date_to_slot(date)]
     end
 
     # determine slots from which the events in date can be picked

@@ -1,0 +1,46 @@
+################################################################
+# Setup config file ~/.mhc/config.yml
+#
+# Google Calenar URL for CalDAV is in the form of:
+#   https://www.google.com/calendar/dav/{calendar_id}/events
+#
+# calendar_id:
+#  for primary calendar is just your email address.
+#  for others will be in the form of:
+#    [long-string-of-characters]@group.calendar.google.com
+#
+# You can get them by clicking the down arrow next to your
+# calendar at calendar.google.com and selecting 'Calendar Settings'.
+# Be sure to use HTTPS in your URL, as an http address will not work.
+#
+# for more details about google caelndar settings:
+#   http://www.google.com/support/calendar/bin/answer.py?answer=99358
+#   and click Sunbird section.
+#
+# Fill in the blanks indicated as *****,
+# and invoke the command:
+#
+#   $ mhc sync mirror-mhc-to-google
+#
+# Articles in past 14 days and future 30 days in MHC
+# will be mirrored to target Google Calendar.
+# Also other articles in Google calendar will be DELETED.
+#
+# Before the first try, I recommend you to
+# make a new calendar on your google calendar,
+# and backup MHC folder ~/Mai/schedule.
+#
+---
+SYNC_CHANNELS:
+- NAME: mirror-mhc-to-google
+  CALENDAR1: mhc
+  CALENDAR2: google-mhc
+  STRATEGY: mirror
+CALENDARS:
+- NAME: mhc
+  TYPE: mhc
+- NAME: google-mhc
+  TYPE: caldav
+  USER: *****@gmail.com
+  PASSWORD: *********
+  URL: https://calendar.google.com/calendar/dav/***************@group.calendar.google.com/events/
