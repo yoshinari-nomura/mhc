@@ -1,5 +1,7 @@
 (defvar mhc-process nil)
 
+(add-to-list 'process-coding-system-alist '("^mhc$" . utf-8))
+
 (defun mhc-db-scan (b e &optional nosort category)
   (let ((command nil))
     (unless (and (processp mhc-process)

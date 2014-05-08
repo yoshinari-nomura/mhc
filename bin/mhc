@@ -92,7 +92,7 @@ class MhcCLI < Thor
 
   desc "server", "invoked as Server"
   def server
-    while line = STDIN.gets
+    while line = STDIN.noecho(&:gets)
       argv = line.chomp.shellsplit
       self.class.start(argv)
     end
