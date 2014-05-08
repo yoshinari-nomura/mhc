@@ -21,6 +21,7 @@ module Mhc
   # * X-SC-Duration:
   # * X-SC-Alarm:
   # * X-SC-Record-Id:
+  # * X-SC-Sequence:
   #
   class Event
     ################################################################
@@ -216,6 +217,15 @@ module Mhc
       return @mission_tag = mission_tag.parse(string)
     end
 
+    ## sequence
+    def sequence
+      return @sequence ||= Mhc::PropertyValue::Integer.new.parse("0")
+    end
+
+    def sequence=(string)
+      return @sequence = sequence.parse(string)
+    end
+
     def occurrences(range:nil)
       Mhc::OccurrenceEnumerator.new(self, dates, exceptions, recurrence_condition, duration, range)
     end
@@ -324,8 +334,8 @@ module Mhc
         iev.dtend         = dtend
         iev.summary       = subject.to_s
         iev.description   = self.description.to_mhc_string
-        iev.sequence      = (sequence || 0)
         iev.dtstamp       = dtstamp
+        iev.sequence      = (sequence.to_i || 0)
       end
       return icalendar
     end
@@ -343,10 +353,6 @@ module Mhc
 
     def empty_condition
       Mhc::PropertyValue::RecurrenceCondition.new
-    end
-
-    def sequence
-      0
     end
 
     def dtstamp
@@ -402,6 +408,7 @@ module Mhc
         when "cond"      ; self.recurrence_condition  = val
         when "alarm"     ; self.alarm      = val
         when "record-id" ; self.record_id  = val
+        when "sequence"  ; self.sequence   = val
         else
           # raise NotImplementedError, "X-SC-#{key.capitalize}"
           # STDERR.print "Obsolete: X-SC-#{key.capitalize}\n"
