@@ -3,7 +3,6 @@ require 'ri_cal'
 require "kconv"
 require "mhc/version"
 require "mhc/calendar"
-require "mhc/command/scan"
 require "mhc/datastore"
 require "mhc/event"
 require "mhc/formatter"

@@ -16,6 +16,7 @@ require 'rubygems'
 require 'bundler/setup'
 # Bundler.require
 require "mhc"
+require "mhc/command/scan"
 require "thor"
 
 Encoding.default_external="UTF-8"

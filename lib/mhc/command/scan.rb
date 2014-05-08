@@ -1,5 +1,3 @@
-require 'mhc'
-
 module Mhc
   module Command
     class Scan
