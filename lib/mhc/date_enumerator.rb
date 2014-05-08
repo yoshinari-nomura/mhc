@@ -256,11 +256,10 @@ module Mhc
 
       def each
         head, tail = range
-        date_list =  @range_list.map{|range| range.to_a }.flatten
-        date_list.each do |date|
-          break if date > tail
-          next  if date < head
-          yield date
+        @range_list.each do |date_range|
+          break if date_range.first > tail
+          next  if date_range.last  < head
+          yield date_range
         end
       end
 
