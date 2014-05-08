@@ -17,7 +17,6 @@ module Mhc
   # * X-SC-Time:
   # * X-SC-Category:
   # * X-SC-Recurrence-Tag:
-  # * X-SC-Priority:
   # * X-SC-Cond:
   # * X-SC-Duration:
   # * X-SC-Alarm:
@@ -115,15 +114,6 @@ module Mhc
 
     def location=(string)
       return @location = location.parse(string)
-    end
-
-    ## priority
-    def priority
-      return @priority ||= Mhc::PropertyValue::Integer.new
-    end
-
-    def priority=(string)
-      return @priority = priority.parse(string)
     end
 
     ## record-id
@@ -307,7 +297,6 @@ module Mhc
         "X-SC-Category: #{categories.to_mhc_string}\n"       +
         "X-SC-Mission-Tag: #{mission_tag.to_mhc_string}\n"   +
         "X-SC-Recurrence-Tag: #{recurrence_tag.to_mhc_string}\n"       +
-        "X-SC-Priority: #{priority.to_mhc_string}\n"         +
         "X-SC-Cond: #{recurrence_condition.to_mhc_string}\n" +
         "X-SC-Duration: #{duration.to_mhc_string}\n"         +
         "X-SC-Alarm: #{alarm.to_mhc_string}\n"               +
@@ -386,7 +375,7 @@ module Mhc
 
     def clear
       @alarm, @categories, @description, @location = [nil]*4
-      @priority, @record_id, @subject = [nil]*3
+      @record_id, @subject = [nil]*2
       @dates, @exceptions, @time_range, @duration, @cond, @oc = [nil]*6
       @non_xsc_header, @path = [nil]*2
       return self
@@ -413,7 +402,6 @@ module Mhc
         when "cond"      ; self.recurrence_condition  = val
         when "alarm"     ; self.alarm      = val
         when "record-id" ; self.record_id  = val
-        when "priority"  ; self.priority   = val
         else
           # raise NotImplementedError, "X-SC-#{key.capitalize}"
           # STDERR.print "Obsolete: X-SC-#{key.capitalize}\n"
