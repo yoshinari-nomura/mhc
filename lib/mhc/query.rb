@@ -2,10 +2,15 @@ module Mhc
   class Query
     def initialize(query_string)
       @expression = Expression.new(Context.new(query_string))
+      @query_string = query_string
     end
 
     def to_proc
       return @expression.to_proc
+    end
+
+    def to_s
+      @query_string.to_s
     end
 
     class ParseError < StandardError; end

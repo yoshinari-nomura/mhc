@@ -60,11 +60,8 @@ module Mhc
       end
 
       def <=>(o)
-        # nil is minimum
-        return self.first <=> o.first if self.first and o.first
-        return -1 if !self.first and  o.first
-        return  1 if  self.first and !o.first
-        return  0 if !self.first and !o.first
+        o = o.first if o.respond_to?(:first)
+        safe_comp(self.first, o)
       end
 
       def infinit?
@@ -87,6 +84,16 @@ module Mhc
       end
 
       alias_method :to_s, :to_mhc_string
+
+      private
+
+      def safe_comp(a, o)
+        # nil is minimum
+        return (a <=> o) if  a and  o
+        return -1        if !a and  o
+        return  1        if  a and !o
+        return  0        if !a and !o
+      end
 
     end # class Range
   end # module PropertyValue

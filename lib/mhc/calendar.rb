@@ -4,9 +4,9 @@ module Mhc
 
     attr_reader :datastore
 
-    def initialize(datastore)
-      @datastore = datastore
-      @logger    = datastore.logger
+    def initialize(datastore = nil)
+      @datastore = datastore || Mhc::DataStore.new
+      @logger    = @datastore.logger
       @db = {}
     end
 
@@ -30,6 +30,37 @@ module Mhc
     def scan(date_range, &predicate_block)
       update(date_range)
       date_range.map {|date| [date, search1(date, &predicate_block)]}
+    end
+
+    def occurrences(date_range, &predicate_block)
+      ocs = []
+      date_range_to_slots(date_range).each do |slot|
+        @datastore.entries(slot).each do |path, header|
+          if path
+            event = Mhc::Event.parse_file(path)
+          else
+            event = Mhc::Event.parse(header)
+          end
+          event.occurrences(range:date_range).map{|oc| ocs << oc if date_range.include?(oc.first) or date_range.include?(oc.last)}
+        end
+      end
+      ocs.select!{|oc| yield oc } if block_given?
+      return ocs.sort
+    end
+
+    def report_etags(uid = nil)
+      @events = {}
+      scan((Date.today - 14)..(Date.today + 30)).each do |date, occs|
+        occs.each do |occ|
+          next if @events[occ.uid]
+          @events[occ.uid] = occ.event
+        end
+      end
+      return @events.values
+    end
+
+    def get_with_etag(uid)
+      @events[uid]
     end
 
     ################################################################

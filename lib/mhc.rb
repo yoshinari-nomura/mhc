@@ -14,6 +14,11 @@ require "mhc/date_frame"
 require "mhc/date_enumerator"
 require "mhc/property_value"
 require "mhc/query"
+require "mhc/sync"
+require "mhc/config"
+require "mhc/builder"
+require "mhc/etag"
+require "mhc/caldav"
 
 if ENV["MHC_TZINFO"]
   RiCal::PropertyValue::DateTime.default_tzid = ENV["MHC_TZINFO"]

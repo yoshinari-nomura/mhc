@@ -17,6 +17,7 @@ require 'bundler/setup'
 # Bundler.require
 require "mhc"
 require "mhc/command/scan"
+require "mhc/command/sync"
 require "thor"
 
 Encoding.default_external="UTF-8"
@@ -96,6 +97,12 @@ class MhcCLI < Thor
       argv = line.chomp.shellsplit
       self.class.start(argv)
     end
+  end
+
+  desc "sync <channel_name>", "Sync DB"
+  def sync(channel_name)
+    Mhc::Command::Sync.new(channel_name)
+    return self
   end
 
   no_commands do

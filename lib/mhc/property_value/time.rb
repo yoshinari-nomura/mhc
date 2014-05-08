@@ -1,3 +1,7 @@
+class DateTime
+  alias_method :to_mhc_string, :to_s
+end
+
 module Mhc
   module PropertyValue
     class Time < Base

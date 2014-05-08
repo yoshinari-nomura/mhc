@@ -4,8 +4,8 @@ module Mhc
       Encoding.default_external = "UTF-8"
 
       def initialize(calendar, range_string, format: :text, search: nil, **options)
-        formatter = Mhc::Formatter.build(formatter: format, **options)
         date_range = Mhc::PropertyValue::Date.parse_range(range_string)
+        formatter = Mhc::Formatter.build(formatter: format, date_range: date_range, **options)
         format_range(calendar, formatter, date_range, search: search, **options)
       end
 
@@ -19,8 +19,8 @@ module Mhc
           end
         end
 
-        calendar.scan(date_range, &search_proc).each do |date, items|
-          formatter << [date, items]
+        calendar.occurrences(date_range, &search_proc).each do |oc|
+          formatter << oc
         end
         print formatter.to_s
       end

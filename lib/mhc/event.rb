@@ -17,6 +17,7 @@ module Mhc
   # * X-SC-Time:
   # * X-SC-Category:
   # * X-SC-Recurrence-Tag:
+  # * X-SC-Mission-Tag:
   # * X-SC-Cond:
   # * X-SC-Duration:
   # * X-SC-Alarm:
@@ -121,10 +122,13 @@ module Mhc
     def record_id
       return @record_id ||= Mhc::PropertyValue::Text.new
     end
-    alias_method :uid, :record_id
 
     def record_id=(string)
       return @record_id = record_id.parse(string)
+    end
+
+    def uid
+      record_id.to_s
     end
 
     ## subject
@@ -278,6 +282,10 @@ module Mhc
       return ocs
     end
 
+    def etag
+      return "#{uid.to_s}-#{sequence.to_s}"
+    end
+
     def recurring?
       not recurrence_condition.empty?
     end
@@ -310,7 +318,8 @@ module Mhc
         "X-SC-Cond: #{recurrence_condition.to_mhc_string}\n" +
         "X-SC-Duration: #{duration.to_mhc_string}\n"         +
         "X-SC-Alarm: #{alarm.to_mhc_string}\n"               +
-        "X-SC-Record-Id: #{record_id.to_mhc_string}\n"
+        "X-SC-Record-Id: #{record_id.to_mhc_string}\n"       +
+        "X-SC-Sequence: #{sequence.to_mhc_string}\n"
     end
 
     alias_method :to_mhc_string, :dump
@@ -320,6 +329,12 @@ module Mhc
 
     def to_ics
       return self.to_icalendar.to_s
+    end
+
+    def to_ics_string
+      ical = RiCal.Calendar
+      ical.events << self.to_icalendar
+      return ical.to_s
     end
 
     def to_icalendar
@@ -334,10 +349,38 @@ module Mhc
         iev.dtend         = dtend
         iev.summary       = subject.to_s
         iev.description   = self.description.to_mhc_string
-        iev.dtstamp       = dtstamp
         iev.sequence      = (sequence.to_i || 0)
+        iev.dtstamp       = ::Time.now
       end
       return icalendar
+    end
+
+    def self.new_from_ics(ics)
+      ical = RiCal.parse_string(ics).first
+      return nil unless ical
+
+      iev = ical.events.first
+      ev = self.new
+
+      allday = !iev.dtstart.respond_to?(:hour)
+
+      ev.uid           = iev.uid
+      ev.created       = iev.created
+      ev.last_modified = iev.last_modified
+      ev.sequence    = iev.sequence.to_i
+
+      ev.subject     = iev.summary
+      ev.location    = iev.location
+      ev.description = iev.description
+
+      ev.start_time  = iev.dtstart.to_time
+      if allday
+        ev.end_time    = (iev.dtend - 1).to_time
+      else
+        ev.end_time    = iev.dtend.to_time
+      end
+
+      return ev
     end
 
     ################################################################
@@ -353,10 +396,6 @@ module Mhc
 
     def empty_condition
       Mhc::PropertyValue::RecurrenceCondition.new
-    end
-
-    def dtstamp
-      ::Time.now
     end
 
     def created

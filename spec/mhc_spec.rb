@@ -31,11 +31,11 @@ describe Mhc::Event do
       X-SC-Category: Work
       X-SC-Mission-Tag: TEST-Mission
       X-SC-Recurrence-Tag: TEST
-      X-SC-Priority: 1
       X-SC-Cond: Mon Thu
       X-SC-Duration: 20140401-20140430
       X-SC-Alarm: 5 minutes
       X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      X-SC-Sequence: 0
 
       this is description
     EOF
@@ -81,8 +81,6 @@ describe Mhc::Event do
       X-SC-Subject: Party
       X-SC-Day: 20140509
       X-SC-Time: 18:00-22:00
-      X-SC-Cond:
-      X-SC-Duration:
       X-SC-Record-Id: 1653B99D-DED2-4758-934F-B868BFCA9E9F
     EOF
     expect(ev.occurrences.take(30).map{|o| o.date.to_s}).to eq \
@@ -92,12 +90,12 @@ describe Mhc::Event do
   it "should show three enumerated days listed in X-SC-Day:" do
     ev = Mhc::Event.parse <<-EOF.strip_heredoc
       X-SC-Subject: Three enumerated events in X-SC-Day:
-      X-SC-Day: 20140203 20140509 20140831
+      X-SC-Day: 20140203 20140509 20140831 20140901-20140902
       X-SC-Duration: 20140101-20141231
       X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
     EOF
-    expect(ev.occurrences.take(30).map{|o| o.date.to_s}).to eq \
-      ["2014-02-03", "2014-05-09", "2014-08-31"]
+    expect(ev.occurrences.take(30).map{|o| o.to_s}).to eq \
+      ["20140203", "20140509", "20140831", "20140901-20140902"]
   end
 
   it "should produce a list of occurrences, and each occurrence has different date" do
@@ -272,6 +270,49 @@ describe Mhc::Event do
       DESCRIPTION:
       SUMMARY:CS1
       RRULE:FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE;UNTIL=20140723
+      SEQUENCE:0
+      END:VEVENT
+    EOF
+  end
+
+  it "should return icalendar VEVENT over 24h event" do
+    ev = Mhc::Event.parse <<-EOF.strip_heredoc
+      X-SC-Subject: CS1
+      X-SC-Time: 12:00-10:10
+      X-SC-Day: 20140508-20140509
+      X-SC-Record-Id: 69CFD0DF-4058-425B-8C2B-40D81E6A2392
+    EOF
+    expect(ev.to_ics).to eq <<-'EOF'.strip_heredoc
+      BEGIN:VEVENT
+      CREATED;VALUE=DATE-TIME:20140101T000000Z
+      DTEND;VALUE=DATE-TIME:20140509T101000Z
+      DTSTART;VALUE=DATE-TIME:20140508T120000Z
+      DTSTAMP;VALUE=DATE-TIME:20140101T000000Z
+      LAST-MODIFIED;VALUE=DATE-TIME:20140101T000000Z
+      UID:69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      DESCRIPTION:
+      SUMMARY:CS1
+      SEQUENCE:0
+      END:VEVENT
+    EOF
+  end
+
+  it "should return icalendar VEVENT two day's allday event" do
+    ev = Mhc::Event.parse <<-EOF.strip_heredoc
+      X-SC-Subject: CS1
+      X-SC-Day: 20140508-20140509
+      X-SC-Record-Id: 69CFD0DF-4058-425B-8C2B-40D81E6A2392
+    EOF
+    expect(ev.to_ics).to eq <<-'EOF'.strip_heredoc
+      BEGIN:VEVENT
+      CREATED;VALUE=DATE-TIME:20140101T000000Z
+      DTEND;VALUE=DATE:20140510
+      DTSTART;VALUE=DATE:20140508
+      DTSTAMP;VALUE=DATE-TIME:20140101T000000Z
+      LAST-MODIFIED;VALUE=DATE-TIME:20140101T000000Z
+      UID:69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      DESCRIPTION:
+      SUMMARY:CS1
       SEQUENCE:0
       END:VEVENT
     EOF

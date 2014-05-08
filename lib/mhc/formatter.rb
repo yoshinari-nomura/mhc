@@ -4,34 +4,36 @@ module Mhc
   class FormatterNameError < StandardError; end
 
   class Formatter
-    def self.build(formatter:, **options)
+    def self.build(formatter:, date_range: date_range, **options)
       case formatter.to_sym
       when :text
-        Text.new(options)
+        Text.new(date_range: date_range, options:options)
       when :mail
-        Mail.new(options)
+        Mail.new(date_range: date_range, options:options)
       when :orgtable
-        OrgTable.new(options)
+        OrgTable.new(date_range: date_range, options:options)
       when :emacs
         # SymbolicExpression.new(options)
-        Emacs.new(options)
+        Emacs.new(date_range: date_range, options:options)
       when :icalendar
-        ICalendar.new(options)
+        ICalendar.new(date_range: date_range, options:options)
       else
         raise FormatterNameError.new("Unknown format: #{formatter} (#{formatter.class})")
       end
     end
 
     class Base
-      def initialize(options = nil)
+      def initialize(date_range: date_range, options:nil)
         @items = {}
         @options = options
+        @date_range = date_range
       end
 
-      def <<(date_items)
-        date, items = date_items
-        @items[date] ||= []
-        @items[date] += items
+      def <<(occurrence)
+        (occurrence.first..occurrence.last).each do |date|
+          @items[date] ||= []
+          @items[date] << occurrence
+        end
       end
 
       def to_s
@@ -52,6 +54,12 @@ module Mhc
 
       def format_body(context)
         context[:number] = 0
+
+        # XXX for padding empty days
+        @date_range.each do |date|
+          @items[date] ||= []
+        end
+
         @items.keys.sort.map{|date| format_day(context, date, @items[date]) }.join
       end
 
