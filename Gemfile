@@ -5,3 +5,4 @@ gemspec
 gem "thor"
 gem "ri_cal", :git => 'https://github.com/yoshinari-nomura/ri_cal.git'
 gem "tzinfo"
+gem "tzinfo-data"
