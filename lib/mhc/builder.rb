@@ -14,7 +14,7 @@ module Mhc
 
     def calendar(calname)
       calendar = @calendars[calname]
-      raise "#{calname} not found" unless calendar
+      raise "calendar '#{calname}' not found" unless calendar
 
       case calendar.type
       when "caldav"
