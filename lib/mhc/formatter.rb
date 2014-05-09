@@ -13,10 +13,11 @@ module Mhc
       when :orgtable
         OrgTable.new(date_range: date_range, options:options)
       when :emacs
-        # SymbolicExpression.new(options)
         Emacs.new(date_range: date_range, options:options)
       when :icalendar
         ICalendar.new(date_range: date_range, options:options)
+      when :calfw
+        SymbolicExpression.new(date_range: date_range, options:options)
       when :howm
         Howm.new(date_range: date_range, options:options)
       else
@@ -26,63 +27,72 @@ module Mhc
 
     class Base
       def initialize(date_range: date_range, options:nil)
-        @items = {}
-        @options = options
         @date_range = date_range
+        @options = options
+        @occurrences, @events, @items = [], [], {}
+        @event_hash = {}
       end
 
       def <<(occurrence)
-        (occurrence.first..occurrence.last).each do |date|
-          @items[date] ||= []
-          @items[date] << occurrence
-        end
+        event = occurrence.event
+        @occurrences << occurrence
+        @events << event unless @event_hash[event]
+        @event_hash[event] = true
+
+        @items[occurrence.date] ||= []
+        @items[occurrence.date] << occurrence
       end
 
       def to_s
         context = {:items => @items}.merge(@options)
-        return format_header(context) + format_body(context) + format_footer(context)
+        prepare(context)
+        string = format_header(context) + format_body(context) + format_footer(context)
+        teardown(context)
+        return string
       end
 
       ################################################################
       private
 
-      def format_header(context)
-        ""
-      end
+      def prepare(context);  end
+      def teardown(context); end
 
-      def format_footer(context)
-        ""
-      end
-
-      def format_body(context)
-        context[:number] = 0
-
-        # XXX for padding empty days
+      def pad_empty_dates
         @date_range.each do |date|
           @items[date] ||= []
         end
+      end
 
+      def expand_multiple_days_occurrences
+        @occurrences.each do |oc|
+          next if oc.oneday?
+          ((oc.first + 1) .. oc.last).each do |date|
+            @items[date] ||= []
+            @items[date] << oc
+          end
+        end
+      end
+
+      def format_header(context); ""; end
+      def format_footer(context); ""; end
+      def format_day_header(context, date); ""; end
+      def format_day_footer(context, date); ""; end
+
+      def format_body(context)
+        context[:number] = 0
         @items.keys.sort.map{|date| format_day(context, date, @items[date]) }.join
       end
 
       def format_day(context, date, items)
         string = format_day_header(context, date)
 
-        items.each_with_index do |schedule, count|
+        items.each_with_index do |occurrence, count|
           context[:number] += 1
           context[:number_in_day] = count + 1
-          string += format_item(context, date, schedule)
+          string += format_item(context, date, occurrence)
         end
 
         return string + format_day_footer(context, date)
-      end
-
-      def format_day_header(context, date)
-        ""
-      end
-
-      def format_day_footer(context, date)
-        ""
       end
 
       def format_item(context, date, item)
@@ -121,6 +131,9 @@ module Mhc
     end
 
     class Text < Base
+      def prepare(context)
+        expand_multiple_days_occurrences
+      end
     end # class Text
 
     class Mail < Base
@@ -142,33 +155,52 @@ module Mhc
     class SymbolicExpression < Base
       private
 
-      def format_header(context)
-        "("
-      end
-
-      def format_footer(context)
-        ")\n"
-      end
+      def format_header(context);  "(";   end
+      def format_footer(context);  "(periods #{@periods}))\n"; end
 
       def format_day_header(context, date)
         date.strftime("((%2m %2d %Y) . (")
       end
 
       def format_item(context, date, item)
+        unless item.oneday?
+          format_multiple_days_item(context, date, item)
+          return ""
+        end
+        format_item_line(item)
+      end
+
+      def format_multiple_days_item(context, date, item)
+        @periods ||= ""
+        @periods +=  item.first.strftime("((%2m %2d %Y) ") +
+                    item.last.strftime(" (%2m %2d %Y) ") +
+          format_item_line(item) + ') '
+      end
+
+      def format_day_footer(context, date); ")) "; end
+
+      def format_item_line(item)
         '"' +
           format("%s%s%s",
-                 prepend(item.time_range.to_s).toutf8,
+                 prepend(item.time_range.first.to_s).toutf8,
                  item.subject.to_s.toutf8,
                  append(enclose(item.location)).toutf8).gsub(/[\"\\]/, '\\\\\&') +
           '" '
-      end
 
-      def format_day_footer(context, date)
-        ")) "
       end
     end
 
     class Emacs < SymbolicExpression
+      private
+
+      def prepare(context)
+        expand_multiple_days_occurrences
+        pad_empty_dates
+      end
+
+      def format_header(context);  "(";   end
+      def format_footer(context);  ")\n"; end
+
       def format_day_header(context, date)
         format("(%d . [%d %d %d %d nil (", date.absolute_from_epoch, date.year, date.month, date.day, date.wday)
       end
@@ -197,24 +229,14 @@ module Mhc
     end
 
     class ICalendar < Base
-      def initialize(options = nil)
-        super(options)
-        @ical = RiCal.Calendar
-        @ical.default_tzid = "Asia/Tokyo"
-        @events = {}
-      end
-
       private
 
-      def format_item(context, date, item)
-        return "" if @events[item.event] == true
-        @ical.events << item.event.to_icalendar
-        @events[item.event] = true
-        return ""
-      end
-
-      def format_footer(context)
-        @ical.to_s
+      def format_body(context)
+        ical = RiCal.Calendar
+        @events.each do |event|
+          ical.events << event.to_icalendar
+        end
+        return ical.to_s
       end
     end
 
