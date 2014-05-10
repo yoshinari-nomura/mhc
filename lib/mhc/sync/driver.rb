@@ -42,6 +42,10 @@ module Mhc
           copy(uid, @db1, @db2)
         when :side2_to_side1
           copy(uid, @db2, @db1)
+        when :ow_side1_to_side2
+          copy(uid, @db1, @db2, :overwrite)
+        when :ow_side2_to_side1
+          copy(uid, @db2, @db1, :overwrite)
         end
       end
 
@@ -67,11 +71,13 @@ module Mhc
         end
       end
 
-      def copy(uid, db1, db2)
+      def copy(uid, db1, db2, overwrite = false)
         ev = db1.get(uid)
-        STDERR.print "COPYING: #{ev.uid}\n"
+        STDERR.print "COPYING:#{overwrite ? ' (overwrite)' : ''} #{ev.uid}\n"
 
-        if new_info = db2.put(ev)
+        db2.delete(uid) if overwrite
+
+        if new_info = db2.put(ev, overwrite)
           db1.syncinfo(uid).mark_synced(ev.etag)
           db2.syncinfo(uid).mark_synced(new_info.etag)
         else

@@ -142,11 +142,11 @@ module Mhc
             "DD" => :ignore,
             "DM" => :delete_side2,
             "DN" => :delete_side2,
-            "MD" => :side1_to_side2,
-            "MM" => :side1_to_side2,
-            "MN" => :side1_to_side2,
-            "ND" => :side1_to_side2,
-            "NM" => :side1_to_side2,
+            "MD" => :ow_side1_to_side2,
+            "MM" => :ow_side1_to_side2,
+            "MN" => :ow_side1_to_side2,
+            "ND" => :ow_side1_to_side2,
+            "NM" => :ow_side1_to_side2,
             "NN" => :ignore
           }
           return actions[status_pair(side1, side2)]

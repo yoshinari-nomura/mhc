@@ -69,9 +69,11 @@ module Mhc
         return Status.new(uid, self, res)
       end
 
-      def put(modified_record)
+      def put(modified_record, overwrite = false)
         current_record = syncinfo(modified_record.uid)
-        if @db.put_if_match(current_record.uid, modified_record.to_ics_string, current_record.ex_etag)
+        expected_etag = overwrite ? nil : current_record.ex_etag
+
+        if @db.put_if_match(current_record.uid, modified_record.to_ics_string, expected_etag)
           ## XXX: put_if_match should return the new etag value, and we
           ## have to use it as a new etag for the current record.
           ## However, some CalDAV servers (Google Calendar) do not
