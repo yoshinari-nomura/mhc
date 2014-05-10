@@ -333,6 +333,7 @@ module Mhc
 
     def to_ics_string
       ical = RiCal.Calendar
+      ical.prodid = Mhc::PRODID
       ical.events << self.to_icalendar
       return ical.to_s
     end

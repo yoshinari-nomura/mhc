@@ -233,6 +233,7 @@ module Mhc
 
       def format_body(context)
         ical = RiCal.Calendar
+        ical.prodid = Mhc::PRODID
         @events.each do |event|
           ical.events << event.to_icalendar
         end
