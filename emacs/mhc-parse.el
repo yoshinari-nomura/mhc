@@ -140,6 +140,22 @@
    (mhc-eword-decode-string (mhc-parse/continuous-lines)))
   schedule)
 
+(defun mhc-parse/sequence (record schedule)
+  (if (looking-at mhc-logic/space-regexp)
+      (goto-char (match-end 0)))
+  (let ((content (buffer-substring
+                  (point)
+                  (progn (skip-chars-forward "0-9") (point)))))
+    (if (looking-at mhc-logic/space-regexp)
+        (goto-char (match-end 0)))
+    (if (eobp)
+        (mhc-schedule/set-sequence schedule
+                                   (if (eq (length content) 0)
+                                       nil
+                                     (string-to-number content)))
+      (error "Parse ERROR !!!(at X-SC-Sequence:)")))
+  schedule)
+
 ;; FIXME: 要削除
 (defun mhc-parse/next (record schedule)
   (let ((new (mhc-schedule-new record)))

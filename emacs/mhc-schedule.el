@@ -17,7 +17,7 @@
 ;; Each MHC-SCHEDULE structure is a vector has a construction as
 ;; follows:
 ;;
-;;     MHC-SCHEDULE ::= [ RECORD CONDITION SUBJECT LOCATION TIME ALARM CATEGORIES PRIORITY REGION RECURRENCE-TAG]
+;;     MHC-SCHEDULE ::= [ RECORD CONDITION SUBJECT LOCATION TIME ALARM CATEGORIES PRIORITY REGION RECURRENCE-TAG SEQUENCE]
 ;;     RECORD       ::= MHC-RECORD
 ;;     CONDITION    ::= MHC-LOGIC
 ;;     SUBJECT      ::= string ( represents subject of schedule )
@@ -31,11 +31,12 @@
 ;;     START        ::= integer ( represents start point of headers of schedule )
 ;;     END          ::= integer ( represents end point of headers of schedule )
 ;;     RECURRENCE-TAG ::= string
+;;     SEQUENCE     ::= integer
 
 
 ;;; Codes:
 (defun mhc-schedule-new
-  (record &optional condition subject location time alarm categories priority region recurrence-tag)
+  (record &optional condition subject location time alarm categories priority region recurrence-tag sequence)
   "Constructor of MHC-SCHEDULE structure."
   (let ((new (vector record
                      (or condition (mhc-logic-new))
@@ -46,7 +47,8 @@
                      categories
                      priority
                      (or region (cons nil nil))
-                     recurrence-tag)))
+                     recurrence-tag
+                     sequence)))
     (mhc-record-set-schedules record (cons new (mhc-record-schedules record)))
     new))
 
@@ -70,6 +72,8 @@
   (if schedule (aref schedule 8)))
 (defsubst mhc-schedule-recurrence-tag (schedule)
   (if schedule (aref schedule 9)))
+(defsubst mhc-schedule-sequence (schedule)
+  (if schedule (aref schedule 10)))
 
 (defmacro mhc-schedule-time-begin (schedule)
   `(car (mhc-schedule-time ,schedule)))
@@ -115,7 +119,8 @@
   `(setcdr (aref ,schedule 8) ,end))
 (defmacro mhc-schedule/set-recurrence-tag (schedule tag)
   `(aset ,schedule 9 ,tag))
-
+(defmacro mhc-schedule/set-sequence (schedule sequence)
+  `(aset ,schedule 10 ,sequence))
 
 (defun mhc-schedule-append-default (schedule default)
   (or (mhc-schedule-subject schedule)

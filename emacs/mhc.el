@@ -793,7 +793,8 @@ Returns t if the importation was succeeded."
                   "\nX-SC-Cond: "
                   "\nX-SC-Duration: "
                   "\nX-SC-Alarm: " (or alarm "")
-                  "\nX-SC-Record-Id: " (mhc-record-create-id) "\n")
+                  "\nX-SC-Record-Id: " (mhc-record-create-id)
+                  "\nX-SC-Sequence: 0\n")
           (goto-char (point-min))
           (mhc-draft-mode)
           succeed))))

@@ -30,6 +30,7 @@
     ("x-sc-priority"    "X-SC-Priority:"        mhc-parse/priority)
     ("x-sc-record-id"   "X-SC-Record-Id:"       mhc-parse/record-id)
     ("x-sc-schedule"    "X-SC-Schdule:"         mhc-parse/schedule)
+    ("x-sc-sequence"    "X-SC-Sequence:"        mhc-parse/sequence)
     ;; For backward compatibility
     ("x-sc-date"        "X-SC-Date:"            mhc-parse/old-style-date)
     ;; FIXME: 要削除

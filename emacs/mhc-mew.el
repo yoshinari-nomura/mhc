@@ -51,7 +51,11 @@
   (mhc-setup)
   (add-hook 'mew-summary-mode-hook 'mhc-mode)
   (add-hook 'mew-virtual-mode-hook 'mhc-mode)
-  (add-hook 'mew-quit-hook 'mhc-exit))
+  (add-hook 'mew-quit-hook 'mhc-exit)
+  (add-hook 'mhc-draft-mode-hook
+            '(lambda ()
+               (set (make-local-variable 'mail-header-separator)
+                    mew-header-separator))))
 
 (if (fboundp 'mew-match)
     (defalias 'mhc-mew/match-string 'mew-match)

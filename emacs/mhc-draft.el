@@ -171,6 +171,13 @@ If optional argument NO-CONFIRM is non-nil, kill without confirmation."
           (setq categories (substring categories 0 (match-beginning 0))))
         (mhc-header-put-value "X-SC-Category" categories)))))
 
+(defun mhc-draft-increment-sequence ()
+  "Increment X-SC-Sequence in mhc-draft buffer."
+  (mhc-header-narrowing
+    (let ((sequence (or (mhc-header-get-value "x-sc-sequence") "0")))
+      (mhc-header-put-value "x-sc-sequence"
+                            (1+ (string-to-number sequence))))))
+
 (defun mhc-draft-finish ()
   "Add current draft as a schedule."
   (interactive)
@@ -178,6 +185,7 @@ If optional argument NO-CONFIRM is non-nil, kill without confirmation."
          (mhc-parse-buffer (mhc-record-new mhc-draft-buffer-file-name)
                            'strict)))
     (mhc-calendar-input-exit)
+    (mhc-draft-increment-sequence)
     (if (mhc-db-add-record-from-buffer record (current-buffer)
                                        (not (interactive-p)))
         (progn
