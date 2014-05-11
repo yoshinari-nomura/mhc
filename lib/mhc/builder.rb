@@ -31,7 +31,7 @@ module Mhc
 
     def sync_driver(channel_name, strategy = :sync)
       channel = @sync_channels[channel_name]
-      raise "#{channel_name} not found" unless channel
+      raise "sync channel '#{channel_name}' not found" unless channel
 
       directory1, directory2 = cache_directory_pair(channel)
       strategy ||= channel.strategy.to_s.downcase.to_sym

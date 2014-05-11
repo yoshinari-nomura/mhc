@@ -103,4 +103,4 @@
         $ ~/src/mhc/bin/mhc scan today
       #+END_SRC
 
-   You may add ~/src/mhc/bin directory your $PATH for dogfooding
+   You may add ~/src/mhc/bin directory to your $PATH for dogfooding

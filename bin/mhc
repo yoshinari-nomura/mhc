@@ -41,7 +41,7 @@ class MhcCLI < Thor
     puts Mhc::VERSION
   end
 
-  desc "scan RANGE", "Scan schedule in date RANGE"
+  desc "scan RANGE", "Scan events in date RANGE"
   long_desc <<-LONGDESC
     scan events in date RANGE.
 
@@ -58,7 +58,7 @@ class MhcCLI < Thor
     \x5 + w (weeks)
     \x5 + m (months)
 
-    If LENGTH is ommited, it is treated as '1d' or '1m' depending on
+    If LENGTH is omitted, it is treated as '1d' or '1m' depending on
     which type of START is set.
 
     Examples:
@@ -67,19 +67,19 @@ class MhcCLI < Thor
     \x5 mhc scan today --category 'Business'
     \x5 mhc scan thismonth --search 'category:Business & !subject:"Trip"'
   LONGDESC
-  method_option :format,   :desc => "Set printing format (text, icalendar,...)"
   method_option :category, :desc => "Pick items only in CATEGORY"
-  method_option :search,   :desc => "Search by complex expression"
+  method_option :format,   :desc => "Set printing format (text, icalendar,...)"
+  method_option :search,   :desc => "Search items by complex expression"
   def scan(range)
     begin
       Mhc::Command::Scan.new(self.class.mhcdb, range, **symbolize_keys(options))
     rescue Mhc::PropertyValue::ParseError, Mhc::FormatterNameError => e
-      STDERR.print "Error: " + e.message.capitalize, "\n"
+      STDERR.print "Error: " + e.message + "\n"
     end
     return self
   end
 
-  desc "server", "invoked as server (backend of emacs)"
+  desc "server", "Invoked as server (backend of emacs)"
   def server
     while line = STDIN.noecho(&:gets)
       argv = line.chomp.shellsplit
@@ -87,7 +87,7 @@ class MhcCLI < Thor
     end
   end
 
-  desc "sync <channel_name>", "Sync DB"
+  desc "sync SYNC_CHANNEL", "Synchronize DBs via SYNC_CHANNEL"
   def sync(channel_name)
     Mhc::Command::Sync.new(channel_name)
     return self

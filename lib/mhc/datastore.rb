@@ -4,8 +4,6 @@ module Mhc
   # DataStore provides simple key-value store using background file system.
   # keys and values are simply mapped to filename and their contents.
   #
-  # DataStore slot
-
   class DataStore
     HOME            = ENV['HOME'] || ''
     DEFAULT_BASEDIR = HOME + '/Mail/schedule'

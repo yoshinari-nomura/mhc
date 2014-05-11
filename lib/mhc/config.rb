@@ -3,6 +3,7 @@ require 'pp'
 
 module Mhc
   module Config
+    # Syntax table manipulation
     class Syntax
       def initialize(syntax_config)
         @syntax_config = syntax_config
@@ -39,9 +40,9 @@ module Mhc
       def as_symbol(word)
         word.to_s.downcase.sub(/^@+/, "").to_sym
       end
-    end
+    end # class Syntax
 
-    # Hash
+    # Parse Key-Value object in YAML
     class Base
       attr_accessor :name
 
@@ -68,7 +69,7 @@ module Mhc
 
       def initialize(hash = {})
         hash.each do |key, val|
-          raise "Config syntax error (#{key})" unless syntax.keyword?(key)
+          raise "config syntax error (#{key})" unless syntax.keyword?(key)
           var = syntax.instance_variable_name(key)
           obj = create_subnode(key, val)
           instance_variable_set(var, obj)
@@ -108,7 +109,7 @@ module Mhc
 
     end # class Base
 
-    # Array
+    # Parse Array object in YAML
     class List < Base
       include Enumerable
 
@@ -139,11 +140,8 @@ module Mhc
       end
     end # List
 
-
-    ################################################################
     ## concrete config classes
 
-    # SyncChannel
     class SyncChannel < Base
       define_syntax :name => String,
                     :calendar1 => String,
@@ -152,7 +150,6 @@ module Mhc
                     :filter => Mhc::Query
     end
 
-    # Calendar
     class Calendar < Base
       define_syntax :name => String,
                     :type => String,
@@ -161,8 +158,8 @@ module Mhc
                     :url => String
     end
 
-    # TOP-LEVEL CONFIG
     class Sync < Base
+    # Top-Level Config
       define_syntax :sync_channels => [SyncChannel],
                     :calendars => [Calendar]
 
@@ -175,5 +172,6 @@ module Mhc
         end
       end
     end
+
   end # module Config
 end # module Mhc
