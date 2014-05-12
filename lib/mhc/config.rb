@@ -69,7 +69,7 @@ module Mhc
 
       def initialize(hash = {})
         hash.each do |key, val|
-          raise "config syntax error (#{key})" unless syntax.keyword?(key)
+          raise Mhc::ConfigurationError, "config syntax error (#{key})" unless syntax.keyword?(key)
           var = syntax.instance_variable_name(key)
           obj = create_subnode(key, val)
           instance_variable_set(var, obj)
@@ -176,13 +176,21 @@ module Mhc
 
     def self.create_from_file(file_name)
       unless File.exists?(File.expand_path(file_name))
-        raise "config file '#{file_name}' not found"
+        raise Mhc::ConfigurationError, "config file '#{file_name}' not found"
       end
-      return Top.create_from_yaml_file(file_name)
+      begin
+        return Top.create_from_yaml_file(file_name)
+      rescue Psych::SyntaxError => e
+        raise Mhc::ConfigurationError, e.message
+      end
     end
 
     def self.create_from_string(string)
-      return Top.create_from_yaml_string(string)
+      begin
+        return Top.create_from_yaml_string(string)
+      rescue Psych::SyntaxError => e
+        raise Mhc::ConfigurationError, e.message
+      end
     end
 
   end # class Config

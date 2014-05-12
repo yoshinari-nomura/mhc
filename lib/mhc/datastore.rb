@@ -7,7 +7,7 @@ module Mhc
   class DataStore
     def initialize(basedir)
       unless basedir and File.directory?(File.expand_path(basedir.to_s))
-        raise "datastore directory '#{basedir}' not found"
+        raise Mhc::ConfigurationError, "datastore directory '#{basedir}' not found"
       end
       @basedir   = Pathname.new(File.expand_path(basedir))
       @slot_top  = @basedir
