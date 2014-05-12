@@ -33,14 +33,21 @@
 ---
 SYNC_CHANNELS:
 - NAME: mirror-mhc-to-google
-  CALENDAR1: mhc
+  CALENDAR1: mhc-master
   CALENDAR2: google-mhc
   STRATEGY: mirror
 CALENDARS:
-- NAME: mhc
+# First entry in CALENDARS is default calendar for mhc command
+- NAME: mhc-master
   TYPE: mhc
+  REPOSITORY: ~/Mail/schedule
+# Private calendar derived from "mhc-master" by applying FILTER.
+- NAME: mhc-private
+  TYPE: mhc
+  REPOSITORY: ~/Mail/schedule
+  FILTER: '(category:private & !category:birthday) | category:party | category:trip'
 - NAME: google-mhc
   TYPE: caldav
-  USER: *****@gmail.com
-  PASSWORD: *********
-  URL: https://calendar.google.com/calendar/dav/***************@group.calendar.google.com/events/
+  USER: "*****@gmail.com"
+  PASSWORD: "*********"
+  URL: "https://calendar.google.com/calendar/dav/***************@group.calendar.google.com/events/"
