@@ -4,10 +4,11 @@ module Mhc
 
     attr_reader :datastore
 
-    def initialize(datastore = nil)
-      @datastore = datastore || Mhc::DataStore.new
+    def initialize(datastore, &default_scope)
+      @datastore = datastore
       @logger    = @datastore.logger
       @db = {}
+      @default_scope = default_scope
     end
 
     def delete_event(event, add_log = true)
@@ -27,12 +28,12 @@ module Mhc
       return self
     end
 
-    def scan(date_range, &predicate_block)
+    def scan(date_range, &scope_block)
       update(date_range)
-      date_range.map {|date| [date, search1(date, &predicate_block)]}
+      date_range.map {|date| [date, search1(date, &scope_block)]}
     end
 
-    def occurrences(date_range, &predicate_block)
+    def occurrences(date_range, &scope_block)
       ocs = []
       date_range_to_slots(date_range).each do |slot|
         @datastore.entries(slot).each do |path, header|
@@ -44,7 +45,7 @@ module Mhc
           event.occurrences(range:date_range).map{|oc| ocs << oc if date_range.include?(oc.first) or date_range.include?(oc.last)}
         end
       end
-      ocs.select!{|oc| yield oc } if block_given?
+      ocs.select!{|oc| in_scope?(oc, &scope_block)}
       return ocs.sort
     end
 
@@ -67,13 +68,18 @@ module Mhc
     private
     ################################################################
 
-    def search1(date, &predicate_block)
+    def search1(date, &scope_block)
       occurrences = []
       date_to_slots(date).each do |slot|
         occurrences += @db[slot][date] || []
       end
-      occurrences.select!{|oc| yield oc } if block_given?
+      occurrences.select!{|oc| in_scope?(oc, &scope_block)}
       occurrences.sort{|a,b| a.time_range <=> b.time_range}.uniq
+    end
+
+    def in_scope?(oc, &scope_block)
+      (!@default_scope || @default_scope.call(oc)) &&
+        (!scope_block || scope_block.call(oc))
     end
 
     # for debug
