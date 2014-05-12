@@ -23,6 +23,8 @@ require "thor"
 Encoding.default_external="UTF-8"
 
 class MhcCLI < Thor
+  DEFAULT_CONFIG_PATH = "~/.mhc/config.yml"
+
   class << self
     attr_accessor :mhcdb
   end
@@ -31,6 +33,7 @@ class MhcCLI < Thor
   package_name 'MHC'
 
   class_option :repository, :desc => "Set MHC top directory"
+  class_option :config, :desc => "Set config path (default: #{DEFAULT_CONFIG_PATH})"
   map ["--version", "-v"] => :version
 
   default_command :help
@@ -67,6 +70,7 @@ class MhcCLI < Thor
     \x5 mhc scan today --category 'Business'
     \x5 mhc scan thismonth --search 'category:Business & !subject:"Trip"'
   LONGDESC
+  method_option :calendar, :desc => "Set source CALENDAR"
   method_option :category, :desc => "Pick items only in CATEGORY"
   method_option :format,   :desc => "Set printing format (text, icalendar,...)"
   method_option :search,   :desc => "Search items by complex expression"
@@ -89,7 +93,10 @@ class MhcCLI < Thor
 
   desc "sync SYNC_CHANNEL", "Synchronize DBs via SYNC_CHANNEL"
   def sync(channel_name)
-    Mhc::Command::Sync.new(channel_name)
+    driver = exit_on_error do
+      builder.sync_driver(channel_name)
+    end
+    driver.sync_all
     return self
   end
 
@@ -101,10 +108,36 @@ class MhcCLI < Thor
   end
 
   private
+
+  def exit_on_error(&block)
+    begin
+      yield if block_given?
+    rescue Mhc::ConfigurationError => e
+      STDERR.print "ERROR: #{e.message}.\n"
+      exit 1
+    end
+  end
+
+  def builder
+    @builder
+  end
+
+  def config
+    @config
+  end
+
   def setup_global_options
-    # self.class.mhcdb ||= MhcScheduleDB.new(options[:repository])
-    self.class.mhcdb ||= Mhc::Calendar.new(Mhc::DataStore.new(options[:repository]))
-    @mhcdb = self.class.mhcdb
+    exit_on_error do
+      @config = Mhc::Config.create_from_file(options[:config] || DEFAULT_CONFIG_PATH)
+      @builder ||= Mhc::Builder.new(@config)
+
+      calname  = options[:calendar] || @config.calendars.first.name
+      calendar = @config.calendars[calname]
+      calendar.repository = options[:repository] if options[:repository]
+
+      self.class.mhcdb ||= builder.calendar(calname)
+      @mhcdb = self.class.mhcdb
+    end
   end
 
   def symbolize_keys(hash)

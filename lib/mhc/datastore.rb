@@ -5,18 +5,11 @@ module Mhc
   # keys and values are simply mapped to filename and their contents.
   #
   class DataStore
-    HOME            = ENV['HOME'] || ''
-    DEFAULT_BASEDIR = HOME + '/Mail/schedule'
-    DEFAULT_RCFILE  = HOME + '/.schedule'
-
-    UID_DIRECTORY   = "/.mhc_db"
-    LOG_FILENAME    = UID_DIRECTORY + "/mhc-db-log"
-    UID_FILENAME    = UID_DIRECTORY + "/mhc-db-log"
-
-    def initialize(basedir = DEFAULT_BASEDIR, rcfile = DEFAULT_RCFILE)
-      @basedir   = Pathname.new(basedir || DEFAULT_BASEDIR)
-      @rcfile    = Pathname.new(rcfile || DEFAULT_RCFILE)
-
+    def initialize(basedir)
+      unless basedir and File.directory?(File.expand_path(basedir.to_s))
+        raise "datastore directory '#{basedir}' not found"
+      end
+      @basedir   = Pathname.new(File.expand_path(basedir))
       @slot_top  = @basedir
       @uid_top   = @basedir + "db/uid"
       @cache_top = @basedir + "/cache"

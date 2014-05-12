@@ -2,7 +2,7 @@ require 'yaml'
 require 'pp'
 
 module Mhc
-  module Config
+  class Config
     # Syntax table manipulation
     class Syntax
       def initialize(syntax_config)
@@ -48,11 +48,11 @@ module Mhc
 
       def self.create_from_yaml_file(yaml_file)
         yaml_string = File.open(File.expand_path(yaml_file)).read
-        return create_from_yaml_string(yaml_string)
+        return create_from_yaml_string(yaml_string, yaml_file)
       end
 
-      def self.create_from_yaml_string(yaml_string)
-        hash = YAML.load(yaml_string)
+      def self.create_from_yaml_string(yaml_string, filename = nil)
+        hash = YAML.load(yaml_string, filename) || {}
         return new(hash)
       end
 
@@ -146,20 +146,21 @@ module Mhc
       define_syntax :name => String,
                     :calendar1 => String,
                     :calendar2 => String,
-                    :strategy => String,
-                    :filter => Mhc::Query
-    end
+                    :strategy => String
+    end # class SyncChannel
 
     class Calendar < Base
       define_syntax :name => String,
                     :type => String,
+                    :repository => String,
                     :user => String,
                     :password => String,
-                    :url => String
-    end
+                    :url => String,
+                    :filter => Mhc::Query
+    end # class Calendar
 
-    class Sync < Base
     # Top-Level Config
+    class Top < Base
       define_syntax :sync_channels => [SyncChannel],
                     :calendars => [Calendar]
 
@@ -171,7 +172,18 @@ module Mhc
           ch.calendar2 = calendars[ch.calendar2] if calendars[ch.calendar2]
         end
       end
+    end # class Top
+
+    def self.create_from_file(file_name)
+      unless File.exists?(File.expand_path(file_name))
+        raise "config file '#{file_name}' not found"
+      end
+      return Top.create_from_yaml_file(file_name)
     end
 
-  end # module Config
+    def self.create_from_string(string)
+      return Top.create_from_yaml_string(string)
+    end
+
+  end # class Config
 end # module Mhc

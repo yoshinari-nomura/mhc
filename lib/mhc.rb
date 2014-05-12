@@ -25,4 +25,5 @@ if ENV["MHC_TZINFO"]
 end
 
 module Mhc # :nodoc:
+  class ConfigurationError < StandardError ; end
 end

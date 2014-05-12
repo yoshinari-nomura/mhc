@@ -3,8 +3,7 @@ module Mhc
     class Sync
       Encoding.default_external = "UTF-8"
 
-      def initialize(channel_name)
-        config  = Mhc::Config::Sync.create_from_yaml_file("~/.mhc/config.yml")
+      def initialize(channel_name, config)
         channel = config.sync_channels[channel_name]
 
         unless channel

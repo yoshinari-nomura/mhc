@@ -6,15 +6,14 @@ require "uri"
 
 module Mhc
   class Builder
-    def initialize(mhc_config)
-      @mhc_config    = mhc_config
-      @sync_channels = @mhc_config.sync_channels
-      @calendars     = @mhc_config.calendars
+    def initialize(config)
+      @config = config
+      @config = Mhc::Config.create_from_file(config) if config.is_a?(String)
     end
 
-    def calendar(calname)
-      calendar = @calendars[calname]
-      raise "calendar '#{calname}' not found" unless calendar
+    def calendar(calendar_name)
+      calendar = @config.calendars[calendar_name]
+      raise Mhc::ConfigurationError, "calendar '#{calendar_name}' not found" unless calendar
 
       case calendar.type
       when "caldav"
@@ -24,17 +23,17 @@ module Mhc
       when "lastnote"
         db = Mhc::LastNote::Client.new(calendar.name)
       when "mhc"
-        db = Mhc::Calendar.new(Mhc::DataStore.new)
+        db = Mhc::Calendar.new(Mhc::DataStore.new(calendar.repository), &calendar.filter)
       end
       return db
     end
 
-    def sync_driver(channel_name, strategy = :sync)
-      channel = @sync_channels[channel_name]
+    def sync_driver(channel_name)
+      channel = @config.sync_channels[channel_name]
       raise "sync channel '#{channel_name}' not found" unless channel
 
       directory1, directory2 = cache_directory_pair(channel)
-      strategy ||= channel.strategy.to_s.downcase.to_sym
+      strategy = channel.strategy.to_s.downcase.to_sym
 
       db1 = calendar_with_etag_track(calendar(channel.calendar1), directory1)
       db2 = calendar_with_etag_track(calendar(channel.calendar2), directory2)
