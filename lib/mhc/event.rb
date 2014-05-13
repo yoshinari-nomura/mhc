@@ -344,6 +344,8 @@ module Mhc
         iev.exdates       = [exdates] if exdates
         iev.rdates        = [rdates]  if rdates
         iev.created       = created
+        iev.categories    = categories.to_a unless categories.empty?
+        iev.location      = location.to_s unless location.to_s.empty?
         iev.last_modified = last_modified
         iev.uid           = uid.to_s
         iev.dtstart       = dtstart
