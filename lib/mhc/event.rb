@@ -343,17 +343,17 @@ module Mhc
         iev.rrule         = recurrence_condition.to_ics(duration.last) if recurring?
         iev.exdates       = [exdates] if exdates
         iev.rdates        = [rdates]  if rdates
-        iev.created       = created
+        iev.created       = created.utc.strftime("%Y%m%dT%H%M%SZ")
         iev.categories    = categories.to_a unless categories.empty?
         iev.location      = location.to_s unless location.to_s.empty?
-        iev.last_modified = last_modified
+        iev.last_modified = last_modified.utc.strftime("%Y%m%dT%H%M%SZ")
         iev.uid           = uid.to_s
         iev.dtstart       = dtstart
         iev.dtend         = dtend
         iev.summary       = subject.to_s
         iev.description   = self.description.to_mhc_string
         iev.sequence      = (sequence.to_i || 0)
-        iev.dtstamp       = ::Time.now
+        iev.dtstamp       = ::Time.now.utc.strftime("%Y%m%dT%H%M%SZ")
       end
       return icalendar
     end
@@ -405,7 +405,7 @@ module Mhc
       if @path
         File.ctime(@path)
       else
-        Time.utc(2014, 1, 1)
+        ::Time.utc(2014, 1, 1)
       end
     end
 
@@ -413,7 +413,7 @@ module Mhc
       if @path
         File.mtime(@path)
       else
-        Time.utc(2014, 1, 1)
+        ::Time.utc(2014, 1, 1)
       end
     end
 
