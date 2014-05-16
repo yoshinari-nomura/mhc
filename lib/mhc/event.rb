@@ -227,7 +227,7 @@ module Mhc
     end
 
     def sequence=(string)
-      return @sequence = sequence.parse(string)
+      return @sequence = sequence.parse(string.to_s)
     end
 
     def occurrences(range:nil)
