@@ -21,10 +21,6 @@ module Mhc
         return self
       end
 
-      def in_minutes
-        return @minutes
-      end
-
       def to_mhc_string
         return "" unless @minutes
 
