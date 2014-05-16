@@ -14,7 +14,8 @@ end
 
 describe Mhc::Event do
   before :all do
-    RiCal::PropertyValue::DateTime.default_tzid = 'UTC'
+    ENV["MHC_TZINFO"] = 'UTC'
+    RiCal::PropertyValue::DateTime.default_tzid = ENV["MHC_TZINFO"]
   end
 
   before :each do
