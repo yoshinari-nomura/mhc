@@ -42,7 +42,9 @@ module Mhc
           else
             event = Mhc::Event.parse(header)
           end
-          event.occurrences(range:date_range).map{|oc| ocs << oc if date_range.include?(oc.first) or date_range.include?(oc.last)}
+          event.occurrences(range:date_range).each do |oc|
+            ocs << oc unless oc.last < date_range.first or date_range.last < oc.first
+          end
         end
       end
       ocs.select!{|oc| in_scope?(oc, &scope_block)}

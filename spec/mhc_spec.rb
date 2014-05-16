@@ -98,6 +98,17 @@ describe Mhc::Event do
       ["20140203", "20140509", "20140831", "20140901-20140902"]
   end
 
+  it "should show three day's event even if scan range is started from the middle of event" do
+    ev = Mhc::Event.parse <<-EOF.strip_heredoc
+      X-SC-Subject: Three day's event
+      X-SC-Day: 20140514-20140516
+    EOF
+    from = Mhc::PropertyValue::Date.new(2014, 5, 15)
+    to   = Mhc::PropertyValue::Date.new(2014, 5, 16)
+    expect(ev.occurrences(range:from..to).take(30).map{|o| o.to_s}).to eq \
+      ["20140514-20140516"]
+  end
+
   it "should produce a list of occurrences, and each occurrence has different date" do
     ev = Mhc::Event.parse <<-EOF.strip_heredoc
       X-SC-Subject: TEST
