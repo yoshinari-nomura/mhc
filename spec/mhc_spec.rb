@@ -201,7 +201,7 @@ describe Mhc::Event do
       X-SC-Duration: 20140401-20140424
       X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
     EOF
-    expect(ev.recurrence_condition.to_ics(ev.duration.last)).to eq "FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE,SU;UNTIL=20140424"
+    expect(ev.recurrence_condition.to_ics(nil, ev.duration.last)).to eq "FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE,SU;UNTIL=20140424"
   end
 
   it "should return icalendar VEVENT string with RRULE field" do
@@ -306,7 +306,7 @@ describe Mhc::Event do
       UID:69CFD0DF-4058-425B-8C2B-40D81E6A2392
       DESCRIPTION:
       SUMMARY:CS1
-      RRULE:FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE;UNTIL=20140723
+      RRULE:FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE;UNTIL=20140723T084000Z
       SEQUENCE:0
       END:VEVENT
     EOF

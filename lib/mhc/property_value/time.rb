@@ -38,7 +38,7 @@ module Mhc
 
       def to_datetime(date = Mhc::PropertyValue::Date.new(1970, 1, 2))
         date = date + days
-        ::DateTime.new(date.year, date.month, date.day, hour, minute, 0, '+0900')
+        time = ::DateTime.new(date.year, date.month, date.day, hour, minute, 0, DateTime.now.zone) # make local DateTime
       end
     end
   end # module PropertyValue

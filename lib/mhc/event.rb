@@ -340,7 +340,7 @@ module Mhc
 
     def to_icalendar
       icalendar = RiCal.Event do |iev|
-        iev.rrule         = recurrence_condition.to_ics(duration.last) if recurring?
+        iev.rrule         = recurrence_condition.to_ics(dtstart, duration.last) if recurring?
         iev.exdates       = [exdates] if exdates
         iev.rdates        = [rdates]  if rdates
         iev.created       = created.utc.strftime("%Y%m%dT%H%M%SZ")

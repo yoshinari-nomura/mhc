@@ -101,18 +101,29 @@ module Mhc
                 ).join(" ")
       end
 
-      def to_ics(until_date = nil)
+      def to_ics(dtstart = nil, until_date = nil)
         return nil unless valid?
 
         ord_wek = (cond_ord.empty? ? [""] : cond_ord).product(cond_wek)
         day = ord_wek.map {|o,w| o.to_s + WEK_V2I[w] }.join(',')
+
+        if until_date
+          if dtstart.respond_to?(:hour)
+            tz = TZInfo::Timezone.get(ENV["MHC_TZINFO"] || 'UTC')
+            localtime = Mhc::PropertyValue::Time.new.parse(dtstart.strftime("%H:%M")).to_datetime(until_date).to_time
+            until_str = tz.local_to_utc(localtime).strftime("%Y%m%dT%H%M%SZ")
+            # puts "until_str local (tz=#{tz.name}) : #{localtime.strftime("%Y%m%dT%H%M%S")} utc: #{until_str}"
+          else
+            until_str = until_date.strftime("%Y%m%d")
+          end
+        end
 
         ics = "FREQ=#{frequency.to_s.upcase};INTERVAL=1;WKST=MO"
 
         ics += ";BYMONTH=#{cond_mon.join(',')}"    unless cond_mon.empty?
         ics += ";BYDAY=#{day}"                     unless day.empty?
         ics += ";BYMONTHDAY=#{cond_num.join(',')}" unless cond_num.empty?
-        ics += ";UNTIL=#{until_date.to_ics}"       unless until_date.nil?
+        ics += ";UNTIL=#{until_str}" unless until_date.nil?
 
         return ics
       end
