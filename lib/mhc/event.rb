@@ -235,17 +235,17 @@ module Mhc
     end
 
     # DTSTART (RFC5445:iCalendar) has these two meanings:
-    # 1) first ocurrence date of recurrence event
+    # 1) first ocurrence date of recurrence events
     # 2) start date of a single-shot event
     #
     # In MHC, DTSTART should be calculated as:
     #
     # if a MHC article has a Cond: field,
     #   + DTSTART is calculated from Duration: and Cond: field.
-    #   + Additional Day: field is recognized as RDATE (RFC5445).
+    #   + Additional Day: field is recognized as RDATE.
     # else
     #   + DTSTART is calculated from a first entry of Days: field.
-    #   + Remains in Day: field is recognized as RDATE (RFC5445).
+    #   + Remains in Day: field is recognized as RDATE.
     # end
     #
     def dtstart
