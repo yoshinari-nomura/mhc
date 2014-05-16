@@ -43,6 +43,26 @@ describe Mhc::Event do
     expect(ev.dump).to eq str
   end
 
+  it "should parse a string and dump to the same string even if all values are empty" do
+    str = <<-EOF.strip_heredoc
+      X-SC-Subject: 
+      X-SC-Location: 
+      X-SC-Day: 
+      X-SC-Time: 
+      X-SC-Category: 
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: 
+      X-SC-Duration: 
+      X-SC-Alarm: 
+      X-SC-Record-Id: 
+      X-SC-Sequence: 0
+
+    EOF
+    ev = Mhc::Event.parse(str)
+    expect(ev.dump).to eq str
+  end
+
   it "should occur weekly on Monday and Thursday from 2014-04-01 to 2014-04-30 with exceptoin of 2014-04-10 (Thu)" do
     ev = Mhc::Event.parse <<-EOF.strip_heredoc
       X-SC-Subject: Weekly Event on Monday and Thursday

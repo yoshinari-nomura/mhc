@@ -6,10 +6,6 @@ module Mhc
       UNITS    = UNIT2MIN.keys
       REGEXP   = /(\d+)\s*(#{UNITS.join("|")})s?/
 
-      def initialize
-        @minutes = 0
-      end
-
       def self.parse(string)
         return new.parse(string)
       end
