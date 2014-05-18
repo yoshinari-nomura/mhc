@@ -64,12 +64,12 @@
 
    2) Install Latest Ruby and bundler
       #+BEGIN_SRC shell-script
-        # Install ruby 2.1.1
-        $ rbenv install 2.1.1
+        # Install ruby 2.1.2
+        $ rbenv install 2.1.2
 
         # Installation check
-        $ rbenv global 2.1.1
-        $ ruby -v # -> You will see: ruby 2.1.1...
+        $ rbenv global 2.1.2
+        $ ruby -v # -> You will see: ruby 2.1.2...
 
         # Install bundler for your new Ruby
         $ gem install bundler
@@ -87,8 +87,8 @@
    3) Set default ruby version in MHC project
       #+BEGIN_SRC shell-script
         $ cd ~/src/mhc
-        $ echo '2.1.1' > .ruby-version
-        $ ruby -v # -> You will see: ruby 2.1.1...
+        $ echo '2.1.2' > .ruby-version
+        $ ruby -v # -> You will see: ruby 2.1.2...
       #+END_SRC
 
    4) Install requied gem packages in sandbox ~/src/mhc/vendor/bundle
