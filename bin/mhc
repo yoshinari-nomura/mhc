@@ -85,7 +85,7 @@ class MhcCLI < Thor
 
   desc "server", "Invoked as server (backend of emacs)"
   def server
-    while line = STDIN.noecho(&:gets)
+    while line = STDIN.gets # STDIN.noecho(&:gets)
       argv = line.chomp.shellsplit
       self.class.start(argv)
     end

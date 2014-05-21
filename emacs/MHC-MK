@@ -56,6 +56,7 @@
     ("mhc-date"     . t)
     ("mhc-day"      . t)
     ("mhc-db"       . t)
+    ("mhc-process"  . t)
     ("mhc-face"     . t)
     ("mhc-file"     . t)
     ("mhc-guess"    . t)

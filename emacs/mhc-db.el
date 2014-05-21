@@ -106,7 +106,7 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
                (lambda (a b) (< (car a) (car b))))))))
 
 
-(defun mhc-db-scan (from to &optional nosort)
+(defun mhc-db-scan- (from to &optional nosort)
   (let ((list (mhc-db/eval-for-duration from to)))
     (let ((days list))
       (if nosort

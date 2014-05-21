@@ -40,6 +40,7 @@
 (require 'mhc-record)
 (require 'mhc-file)
 (require 'mhc-db)
+(require 'mhc-process)
 (require 'mhc-misc)
 (require 'mhc-date)
 (require 'mhc-guess)
