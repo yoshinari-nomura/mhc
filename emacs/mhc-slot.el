@@ -203,8 +203,7 @@
         (if (file-readable-p mhc-schedule-file)
             (let ((slotinfo (mhc-slot/new (cons nil 'constant-schedule)))
                   records)
-              (save-excursion
-                (set-buffer (mhc-get-buffer-create " *mhc-parse-file*"))
+              (with-current-buffer (mhc-get-buffer-create " *mhc-parse-file*")
                 (delete-region (point-min) (point-max))
                 (mhc-insert-file-contents-as-coding-system
                  mhc-default-coding-system

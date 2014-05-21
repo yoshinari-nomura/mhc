@@ -91,7 +91,7 @@
                   (concat
                    (mhc-date-format (car day) "%04d%02d%02d" yy mm dd)
                    "-"
-                   (mhc-date-format (cdr day) "%04d%02d%02d-%04d%02d%02d" yy mm dd)))
+                   (mhc-date-format (cdr day) "%04d%02d%02d" yy mm dd)))
               (mhc-date-format day "%04d%02d%02d" yy mm dd)))
           (mhc-logic/day logicinfo)))
 
@@ -283,12 +283,12 @@
        (t ;; 解釈できない要素の場合
         (error "Parse ERROR !!!(at X-SC-Cond:)")))
       (goto-char (match-end 0)))
-    (mapcar (lambda (s)
-              (set s (if (symbol-value s)
-                         (if (= 1 (length (symbol-value s)))
-                             (car (symbol-value s))
-                           (cons 'or (nreverse (symbol-value s)))))))
-            '(day-of-month week-of-month day-of-week month))
+    (mapc (lambda (s)
+            (set s (if (symbol-value s)
+                       (if (= 1 (length (symbol-value s)))
+                           (car (symbol-value s))
+                         (cons 'or (nreverse (symbol-value s)))))))
+          '(day-of-month week-of-month day-of-week month))
     (setq sexp (cond
                 ((and week-of-month day-of-week) `(and ,week-of-month ,day-of-week))
                 (week-of-month week-of-month)

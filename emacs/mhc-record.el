@@ -109,8 +109,7 @@
 (defun mhc-record-write-buffer (record buffer &optional old-record)
   "Write BUFFER to RECORD."
   (let ((modify (file-exists-p (mhc-record-name record))))
-    (save-excursion
-      (set-buffer buffer)
+    (with-current-buffer buffer
       (mhc-draft-translate)
       (mhc-write-region-as-coding-system mhc-default-coding-system
                                          (point-min)
@@ -138,8 +137,7 @@
 (defun mhc-record/append-log (record status)
   (if mhc-record-log-file
       (let ((tmp-buffer (mhc-get-buffer-create " *mhc-record-append-log*")))
-        (save-excursion
-          (set-buffer tmp-buffer)
+        (with-current-buffer tmp-buffer
           (delete-region (point-min) (point-max))
           (insert (format "%c %s %s %s %s\n"
                           (cond

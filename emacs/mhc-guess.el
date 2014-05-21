@@ -493,7 +493,7 @@ You can specify following symbols as a list.
                 "来週")
                (t
                 nil)))
-       (cdr (assoc-ignore-case dow dow-alist))))))
+       (cdr (assoc-string dow dow-alist t))))))
 
 ;;
 ;; make time from string.

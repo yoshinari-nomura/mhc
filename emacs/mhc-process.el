@@ -40,3 +40,5 @@
                        "mhc"
                        "server"
                        (format "--repository=%s" base-dir)))))
+
+(provide 'mhc-process)

@@ -106,10 +106,10 @@
 (defun mhc-file-setup (&optional method)
   "Initialize backend to manipulate files."
   (require (or method mhc-file-method))
-  (mapcar (lambda (s)
-            (fset (intern (concat "mhc-file/" (symbol-name s)))
-                  (or (get mhc-file-method s) 'mhc-file/true)))
-          mhc-file/backend-method-list)
+  (mapc (lambda (s)
+          (fset (intern (concat "mhc-file/" (symbol-name s)))
+                (or (get mhc-file-method s) 'mhc-file/true)))
+        mhc-file/backend-method-list)
   (and (mhc-file/init)
        (mhc-file/open mhc-file/offline)))
 

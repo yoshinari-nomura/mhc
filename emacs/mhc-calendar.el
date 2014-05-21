@@ -221,10 +221,10 @@ ww-japanese-long => \"土曜日\"
 
 ;; Avoid warning of byte-compiler.
 (eval-when-compile
-  (defvar yy)
-  (defvar mm)
-  (defvar dd)
-  (defvar ww)
+  (defvar mhc-yy)
+  (defvar mhc-mm)
+  (defvar mhc-dd)
+  (defvar mhc-ww)
   (defvar hnf-diary-dir)
   (defvar hnf-diary-year-directory-flag)
   (defvar view-exit-action)
@@ -527,8 +527,7 @@ ww-japanese-long => \"土曜日\"
 (defun mhc-calendar-mouse-goto-date (event &optional view)
   (interactive "e")
   (let (cdate dayinfo pos cpos func)
-    (save-excursion
-      (set-buffer (mhc-calendar/event-buffer event))
+    (with-current-buffer (mhc-calendar/event-buffer event)
       (goto-char (mhc-calendar/event-point event))
       (setq cdate (get-text-property (point) 'mhc-calendar/date-prop)))
     (cond
@@ -1054,53 +1053,53 @@ The keys that are defined for mhc-calendar-mode are:
       (and func (funcall func))))))
 
 (defun mhc-calendar/inserter-yy ()
-  (format "%4d" yy))
+  (format "%4d" mhc-yy))
 
 (defun mhc-calendar/inserter-nengo ()
-  (if (> yy 1987)
-      (format "平成%2d年" (- yy 1988))
-    (if (> yy 1924)
-        (format "昭和%2d年" (- yy 1925))
+  (if (> mhc-yy 1987)
+      (format "平成%2d年" (- mhc-yy 1988))
+    (if (> mhc-yy 1924)
+        (format "昭和%2d年" (- mhc-yy 1925))
       "昔々")))
 
 (defun mhc-calendar/inserter-mm ()
-  (format "%d" mm))
+  (format "%d" mhc-mm))
 
 (defun mhc-calendar/inserter-mm02 ()
-  (format "%02d" mm))
+  (format "%02d" mhc-mm))
 
 (defun mhc-calendar/inserter-mm2 ()
-  (format "%2d" mm))
+  (format "%2d" mhc-mm))
 
 (defun mhc-calendar/inserter-mm-string ()
-  (mhc-date-digit-to-mm-string mm))
+  (mhc-date-digit-to-mm-string mhc-mm))
 
 (defun mhc-calendar/inserter-mm-string-long ()
-  (mhc-date-digit-to-mm-string mm t))
+  (mhc-date-digit-to-mm-string mhc-mm t))
 
 (defun mhc-calendar/inserter-dd ()
-  (format "%d" dd))
+  (format "%d" mhc-dd))
 
 (defun mhc-calendar/inserter-dd02 ()
-  (format "%02d" dd))
+  (format "%02d" mhc-dd))
 
 (defun mhc-calendar/inserter-dd2 ()
-  (format "%2d" dd))
+  (format "%2d" mhc-dd))
 
 (defun mhc-calendar/inserter-ww ()
-  (format "%d" ww))
+  (format "%d" mhc-ww))
 
 (defun mhc-calendar/inserter-ww-string ()
-  (mhc-date-digit-to-ww-string ww))
+  (mhc-date-digit-to-ww-string mhc-ww))
 
 (defun mhc-calendar/inserter-ww-string-long ()
-  (mhc-date-digit-to-ww-string ww t))
+  (mhc-date-digit-to-ww-string mhc-ww t))
 
 (defun mhc-calendar/inserter-ww-japanese ()
-  (mhc-date-digit-to-ww-japanese-string ww))
+  (mhc-date-digit-to-ww-japanese-string mhc-ww))
 
 (defun mhc-calendar/inserter-ww-japanese-long ()
-  (mhc-date-digit-to-ww-japanese-string ww t))
+  (mhc-date-digit-to-ww-japanese-string mhc-ww t))
 
 (defun mhc-calendar/get-day-list (date &optional datelst dateend)
   (let (lst-org formlst retlst retlst2 ret con)
@@ -1163,8 +1162,7 @@ The keys that are defined for mhc-calendar-mode are:
   (interactive)
   (let ((win (get-buffer-window mhc-calendar/buffer))
         (buf (get-buffer mhc-calendar/buffer)))
-    (save-excursion
-      (set-buffer buf)
+    (with-current-buffer buf
       (mhc-calendar/delete-overlay))
     (if (null win)
         ()
@@ -1665,7 +1663,7 @@ The keys that are defined for mhc-calendar-mode are:
 
 (defun mhc-calendar-hnf-face-setup ()
   (interactive)
-  (let ((ow (interactive-p)))
+  (let ((ow (called-interactively-p 'interactive)))
     (mhc-face-setup-internal mhc-calendar-hnf-face-alist ow)
     (mhc-face-setup-internal mhc-calendar-hnf-face-alist-internal nil)))
 

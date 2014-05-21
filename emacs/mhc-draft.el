@@ -187,7 +187,7 @@ If optional argument NO-CONFIRM is non-nil, kill without confirmation."
     (mhc-calendar-input-exit)
     (mhc-draft-increment-sequence)
     (if (mhc-db-add-record-from-buffer record (current-buffer)
-                                       (not (interactive-p)))
+                                       (not (called-interactively-p 'interactive)))
         (progn
           (kill-buffer (current-buffer))
           (mhc-window-pop)

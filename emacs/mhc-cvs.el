@@ -148,13 +148,13 @@ from 'month before last' to 'this month next year'."
   "CVSレポジトリのパス名を入力する関数"
   (or mhc-cvs-repository-path
       (let* ((default (catch 'found
-                        (mapcar (lambda (dir)
-                                  (and (stringp dir)
-                                       (throw 'found dir)))
-                                (list
-                                 (getenv "CVSROOT")
-                                 (expand-file-name "~/cvsroot")
-                                 (expand-file-name "~/CVS")))
+                        (mapc (lambda (dir)
+                                (and (stringp dir)
+                                     (throw 'found dir)))
+                              (list
+                               (getenv "CVSROOT")
+                               (expand-file-name "~/cvsroot")
+                               (expand-file-name "~/CVS")))
                         nil)) ; 候補が見つからなかった場合
              (dir (read-from-minibuffer
                    (if default
@@ -428,8 +428,7 @@ from 'month before last' to 'this month next year'."
     (while (setq dir (car dirs))
       (setq dirs (cdr dirs))
       (mhc-cvs/backend (list "add" dir))
-      (save-excursion
-        (set-buffer mhc-cvs/tmp-buffer-name)
+      (with-current-buffer mhc-cvs/tmp-buffer-name
         (goto-char (point-min))
         (when (looking-at "\\? ")
           (setq file (buffer-substring (match-end 0) (progn (end-of-line) (point))))

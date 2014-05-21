@@ -485,7 +485,8 @@ If HIDE-PRIVATE, private schedules are suppressed."
                     (mhc-summary-mailer-type)
                     mhc-default-category-predicate-sexp
                     hide-private)
-    (goto-line line)
+    (goto-char (point-min))
+    (forward-line (1- line))
     (beginning-of-line)))
 
 
@@ -626,14 +627,15 @@ Returns t if the importation was succeeded."
         (current-date (or (mhc-current-date) (mhc-calendar-get-date) (mhc-date-now)))
         (succeed t)
         msgp date time subject location category recurrence-tag priority alarm)
-    (and (interactive-p)
+    (and (called-interactively-p 'interactive)
          (mhc-window-push))
     (set-buffer draft-buffer)
     (if import-buffer
         (progn
-          (insert-buffer (if (consp import-buffer)
-                             (cdr import-buffer)
-                           import-buffer))
+          (insert-buffer-substring
+           (if (consp import-buffer)
+               (cdr import-buffer)
+             import-buffer))
           (mhc-header-narrowing
             (setq msgp (or (mhc-header-get-value "from")
                            (mhc-header-get-value "x-sc-subject")))
@@ -649,11 +651,10 @@ Returns t if the importation was succeeded."
             (progn
               (delete-other-windows)
               (if (y-or-n-p "Do you want to import this article? ")
-                  (let* ((original (save-excursion
-                                     (set-buffer
-                                      (if (consp import-buffer)
-                                          (cdr import-buffer)
-                                        import-buffer))
+                  (let* ((original (with-current-buffer
+                                       (if (consp import-buffer)
+                                           (cdr import-buffer)
+                                         import-buffer)
                                      (mhc-parse-buffer)))
                          (schedule (car (mhc-record-schedules original)))
                          (inputs (copy-sequence mhc-input-sequences))
@@ -715,7 +716,7 @@ Returns t if the importation was succeeded."
                     (setq priority (mhc-schedule-priority schedule)))
                 ;; Answer was no.
                 (message "") ; flush minibuffer.
-                (and (interactive-p)
+                (and (called-interactively-p 'interactive)
                      (mhc-window-pop))
                 (setq succeed nil)
                 (kill-buffer draft-buffer)))
@@ -742,7 +743,7 @@ Returns t if the importation was succeeded."
                     (setq alarm (mhc-input-alarm "Alarm: " mhc-default-alarm))))))))
       ;; Quit.
       (quit
-       (and (interactive-p)
+       (and (called-interactively-p 'interactive)
             (mhc-window-pop))
        (setq succeed nil)
        (kill-buffer draft-buffer)))

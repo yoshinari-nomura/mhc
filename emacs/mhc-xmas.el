@@ -92,7 +92,7 @@ icon line."
 (defun mhc-icon-setup ()
   "Initialize MHC icons."
   (interactive)
-  (if (interactive-p)
+  (if (called-interactively-p 'interactive)
       (setq mhc-xmas/icon-glyph-alist nil))
   (or mhc-xmas/icon-glyph-alist
       (progn
