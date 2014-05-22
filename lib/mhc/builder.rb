@@ -23,7 +23,7 @@ module Mhc
       when "lastnote"
         db = Mhc::LastNote::Client.new(calendar.name)
       when "mhc"
-        db = Mhc::Calendar.new(Mhc::DataStore.new(calendar.repository), &calendar.filter)
+        db = Mhc::Calendar.new(Mhc::DataStore.new(calendar.repository), calendar.modifiers, &calendar.filter)
       end
       return db
     end

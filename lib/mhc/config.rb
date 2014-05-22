@@ -156,7 +156,8 @@ module Mhc
                     :user => String,
                     :password => String,
                     :url => String,
-                    :filter => Mhc::Query
+                    :filter => Mhc::Query,
+                    :modifiers => [Mhc::Modifier]
     end # class Calendar
 
     # Top-Level Config

@@ -41,11 +41,14 @@ CALENDARS:
 - NAME: mhc-master
   TYPE: mhc
   REPOSITORY: ~/Mail/schedule
-# Private calendar derived from "mhc-master" by applying FILTER.
+# Private calendar derived from "mhc-master" by applying FILTER and MODIFIERS.
+# MODIFIERS are one of: hide_details, hide_description
 - NAME: mhc-private
   TYPE: mhc
   REPOSITORY: ~/Mail/schedule
   FILTER: '(category:private & !category:birthday) | category:party | category:trip'
+  MODIFIERS:
+  - hide_description
 - NAME: google-mhc
   TYPE: caldav
   USER: "*****@gmail.com"

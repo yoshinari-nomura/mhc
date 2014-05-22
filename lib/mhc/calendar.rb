@@ -4,8 +4,9 @@ module Mhc
 
     attr_reader :datastore
 
-    def initialize(datastore, &default_scope)
+    def initialize(datastore, modifiers = [], &default_scope)
       @datastore = datastore
+      @modifiers = modifiers || []
       @logger    = @datastore.logger
       @db = {}
       @default_scope = default_scope
@@ -38,9 +39,9 @@ module Mhc
       date_range_to_slots(date_range).each do |slot|
         @datastore.entries(slot).each do |path, header|
           if path
-            event = Mhc::Event.parse_file(path)
+            event = decorate_event(Mhc::Event.parse_file(path), @modifiers)
           else
-            event = Mhc::Event.parse(header)
+            event = decorate_event(Mhc::Event.parse(header), @modifiers)
           end
           event.occurrences(range:date_range).each do |oc|
             ocs << oc unless oc.last < date_range.first or date_range.last < oc.first
@@ -53,7 +54,7 @@ module Mhc
 
     def report_etags(uid = nil)
       @events = {}
-      scan((Date.today - 14)..(Date.today + 30)).each do |date, occs|
+      scan((Date.today - 90)..(Date.today + 90)).each do |date, occs|
         occs.each do |occ|
           next if @events[occ.uid]
           @events[occ.uid] = occ.event
@@ -69,6 +70,13 @@ module Mhc
     ################################################################
     private
     ################################################################
+
+    def decorate_event(event, decorators)
+      decorators.each do |deco|
+        event = deco.decorate(event)
+      end
+      return event
+    end
 
     def search1(date, &scope_block)
       occurrences = []
@@ -109,9 +117,9 @@ module Mhc
         @db[slot] = {}
         @datastore.entries(slot).each do |path, header|
           if path
-            register_event(slot, Mhc::Event.new.parse_file(path), date_range)
+            register_event(slot, decorate_event(Mhc::Event.new.parse_file(path), @modifiers), date_range)
           else
-            register_event(slot, Mhc::Event.new.parse(header), date_range)
+            register_event(slot, decorate_event(Mhc::Event.new.parse(header), @modifiers), date_range)
           end
         end
       end
