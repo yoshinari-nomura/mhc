@@ -234,54 +234,6 @@ module Mhc
       Mhc::OccurrenceEnumerator.new(self, dates, exceptions, recurrence_condition, duration, range)
     end
 
-    # DTSTART (RFC5445:iCalendar) has these two meanings:
-    # 1) first ocurrence date of recurrence events
-    # 2) start date of a single-shot event
-    #
-    # In MHC, DTSTART should be calculated as:
-    #
-    # if a MHC article has a Cond: field,
-    #   + DTSTART is calculated from Duration: and Cond: field.
-    #   + Additional Day: field is recognized as RDATE.
-    # else
-    #   + DTSTART is calculated from a first entry of Days: field.
-    #   + Remains in Day: field is recognized as RDATE.
-    # end
-    #
-    def dtstart
-      if self.recurring?
-        Mhc::OccurrenceEnumerator.new(self, empty_dates, empty_dates, recurrence_condition, duration).first.dtstart
-      else
-        Mhc::OccurrenceEnumerator.new(self, dates, empty_dates, empty_condition, empty_duration).first.dtstart
-      end
-    end
-
-    def dtend
-      if self.recurring?
-        Mhc::OccurrenceEnumerator.new(self, empty_dates, empty_dates, recurrence_condition, duration).first.dtend
-      else
-        Mhc::OccurrenceEnumerator.new(self, dates, empty_dates, empty_condition, empty_duration).first.dtend
-      end
-    end
-
-    def rdates
-      return nil if dates.empty?
-      ocs = Mhc::OccurrenceEnumerator.new(self, dates, empty_dates, empty_condition, empty_duration).map {|oc| oc.dtstart}
-      if recurring?
-        ocs
-      else
-        ocs = ocs[1..-1]
-        return nil if ocs.empty?
-        return ocs
-      end
-    end
-
-    def exdates
-      return nil if exceptions.empty?
-      ocs = Mhc::OccurrenceEnumerator.new(self, exceptions, empty_dates, empty_condition, empty_duration).map {|oc| oc.dtstart }
-      return ocs
-    end
-
     def etag
       return "#{uid.to_s}-#{sequence.to_s}"
     end
@@ -328,94 +280,19 @@ module Mhc
     ### converter
 
     def to_ics
-      return self.to_icalendar.to_s
-    end
-
-    def to_ics_string
-      ical = RiCal.Calendar
-      ical.prodid = Mhc::PRODID
-      ical.events << self.to_icalendar
-      return ical.to_s
+      Mhc::Converter::Icalendar.new.to_ics(self)
     end
 
     def to_icalendar
-      icalendar = RiCal.Event do |iev|
-        iev.rrule         = recurrence_condition.to_ics(dtstart, duration.last) if recurring?
-        iev.exdates       = [exdates] if exdates
-        iev.rdates        = [rdates]  if rdates
-        iev.created       = created.utc.strftime("%Y%m%dT%H%M%SZ")
-        iev.categories    = categories.to_a unless categories.empty?
-        iev.location      = location.to_s unless location.to_s.empty?
-        iev.last_modified = last_modified.utc.strftime("%Y%m%dT%H%M%SZ")
-        iev.uid           = uid.to_s
-        iev.dtstart       = dtstart
-        iev.dtend         = dtend
-        iev.summary       = subject.to_s
-        iev.description   = self.description.to_mhc_string
-        iev.sequence      = (sequence.to_i || 0)
-        iev.dtstamp       = ::Time.now.utc.strftime("%Y%m%dT%H%M%SZ")
-      end
-      return icalendar
+      Mhc::Converter::Icalendar.new.to_icalendar(self)
     end
 
-    def self.new_from_ics(ics)
-      ical = RiCal.parse_string(ics).first
-      return nil unless ical
-
-      iev = ical.events.first
-      ev = self.new
-
-      allday = !iev.dtstart.respond_to?(:hour)
-
-      ev.uid           = iev.uid
-      ev.created       = iev.created
-      ev.last_modified = iev.last_modified
-      ev.sequence    = iev.sequence.to_i
-
-      ev.subject     = iev.summary
-      ev.location    = iev.location
-      ev.description = iev.description
-
-      ev.start_time  = iev.dtstart.to_time
-      if allday
-        ev.end_time    = (iev.dtend - 1).to_time
-      else
-        ev.end_time    = iev.dtend.to_time
-      end
-
-      return ev
+    def to_ics_string
+      Mhc::Converter::Icalendar.new.to_ics_string(self)
     end
 
     ################################################################
     private
-
-    def empty_duration
-      Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Date)
-    end
-
-    def empty_dates
-      Mhc::PropertyValue::List.new(Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Date.new))
-    end
-
-    def empty_condition
-      Mhc::PropertyValue::RecurrenceCondition.new
-    end
-
-    def created
-      if @path
-        File.ctime(@path)
-      else
-        ::Time.utc(2014, 1, 1)
-      end
-    end
-
-    def last_modified
-      if @path
-        File.mtime(@path)
-      else
-        ::Time.utc(2014, 1, 1)
-      end
-    end
 
     def lazy?
       return !@path.nil?
