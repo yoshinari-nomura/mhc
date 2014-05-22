@@ -76,7 +76,7 @@ module Mhc
         return "#{dtstart.to_mhc_string}" if oneday?
         return "#{@start_date.to_mhc_string}-#{@end_date.to_mhc_string}"
       else
-        return dtstart.strftime("%Y%m%d %H:%m-") + @start_date == @end_date ? dtend.strftime("%H:%m") : dtend.strftime("%Y%m%dT%H:%m")
+        return dtstart.strftime("%Y%m%d %H:%m-") + ((@start_date == @end_date) ? dtend.strftime("%H:%m") : dtend.strftime("%Y%m%dT%H:%m"))
       end
     end
 
@@ -90,5 +90,5 @@ module Mhc
       end
     end
 
-  end # class Event
+  end # class Occurrence
 end # module Mhc
