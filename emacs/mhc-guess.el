@@ -228,6 +228,7 @@ You can specify following symbols as a list.
 (defmacro mhc-guess-get-begin         (obj)   `(aref ,obj 2))
 (defmacro mhc-guess-get-end           (obj)   `(aref ,obj 3))
 (defmacro mhc-guess-get-score         (obj)   `(aref ,obj 4))
+(defmacro mhc-guess-get-debug         (obj)   `(aref ,obj 5))
 
 (defmacro mhc-guess-set-date      (obj val) `(aset ,obj 0 ,val))
 (defmacro mhc-guess-set-time      (obj val) `(aset ,obj 0 ,val))
@@ -238,9 +239,10 @@ You can specify following symbols as a list.
 (defmacro mhc-guess-set-begin     (obj val) `(aset ,obj 2 ,val))
 (defmacro mhc-guess-set-end       (obj val) `(aset ,obj 3 ,val))
 (defmacro mhc-guess-set-score     (obj val) `(aset ,obj 4 ,val))
+(defmacro mhc-guess-set-debug     (obj val) `(aset ,obj 5 ,val))
 
-(defun mhc-guess/new (&optional date-or-time date-or-time-end begin end score)
-  (vector date-or-time date-or-time-end begin end score))
+(defun mhc-guess/new (&optional date-or-time date-or-time-end begin end score debug)
+  (vector date-or-time date-or-time-end begin end score debug))
 
 ;;
 ;; pulic entry
@@ -332,7 +334,8 @@ You can specify following symbols as a list.
                                   (cdr duration)
                                   (match-beginning 0)
                                   (match-end 0)
-                                  nil)
+                                  nil
+                                  (format "%s with %s" convfunc regexp))
                    lst)))))
     (nreverse lst)))
 
