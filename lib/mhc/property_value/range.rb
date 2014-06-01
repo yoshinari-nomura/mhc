@@ -53,12 +53,6 @@ module Mhc
         self.class.new(@item_class, @prefix, from, to)
       end
 
-      def include?(item)
-        return false if @first && item < @first
-        return false if @last  && item > @last
-        return true
-      end
-
       def <=>(o)
         o = o.first if o.respond_to?(:first)
         safe_comp(self.first, o)
@@ -86,6 +80,12 @@ module Mhc
       alias_method :to_s, :to_mhc_string
 
       private
+
+      def cover?(item)
+        return false if @first && item < @first
+        return false if @last  && item > @last
+        return true
+      end
 
       def safe_comp(a, o)
         # nil is minimum

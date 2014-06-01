@@ -23,6 +23,8 @@ module Mhc
         end
       end
 
+      private
+
       def sync(uid, dry_run = false)
         info1 = @db1.syncinfo(uid)
         info2 = @db2.syncinfo(uid)
@@ -49,7 +51,6 @@ module Mhc
         end
       end
 
-      private
       def uid_list
         (@db1.uid_list + @db2.uid_list).sort.uniq
       end
