@@ -73,10 +73,12 @@ module Mhc
     end
 
     def find_by_uid(uid)
-      File.open(find_path(uid), "r") do |file|
-        data = file.read
+      path = find_path(uid)
+      return nil unless path
+
+      File.open(path, "r") do |file|
+        return file.read
       end
-      return data
     end
 
     def delete(uid)
@@ -98,10 +100,8 @@ module Mhc
     end
 
     def find_path(uid)
-      File.open(@uid_top + uid, "r") do |file|
-        slot_path = file.read
-      end
-      return slot_path
+      glob = @slot_top + ('**/' + uid + '.mhc')
+      return Dir.glob(glob).first
     end
 
     def uid_to_path(uid)

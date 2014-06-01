@@ -29,6 +29,12 @@ module Mhc
       return self
     end
 
+    def find(uid: uid)
+      if data = @datastore.find_by_uid(uid)
+        build_event(data:data)
+      end
+    end
+
     def scan(date_range, &scope_block)
       update(date_range)
       date_range.map {|date| [date, search1(date, &scope_block)]}
