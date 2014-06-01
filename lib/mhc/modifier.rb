@@ -75,7 +75,11 @@ module Mhc
 
       class HideDetails < Decorator
         def subject
-          return "BUSY"
+          return Mhc::PropertyValue::Text.new.parse("BUSY")
+        end
+
+        def location
+          return nil
         end
 
         def description

@@ -2,8 +2,6 @@
 module Mhc
   class Calendar
 
-    attr_reader :datastore
-
     def initialize(datastore, modifiers = [], &default_scope)
       @datastore = datastore
       @modifiers = modifiers || []

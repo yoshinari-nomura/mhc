@@ -26,7 +26,7 @@ class MhcCLI < Thor
   DEFAULT_CONFIG_PATH = "~/.mhc/config.yml"
 
   class << self
-    attr_accessor :mhcdb
+    attr_accessor :calendar
   end
 
   check_unknown_options!
@@ -76,7 +76,7 @@ class MhcCLI < Thor
   method_option :search,   :desc => "Search items by complex expression"
   def scan(range)
     begin
-      Mhc::Command::Scan.new(self.class.mhcdb, range, **symbolize_keys(options))
+      Mhc::Command::Scan.new(calendar, range, **symbolize_keys(options))
     rescue Mhc::PropertyValue::ParseError, Mhc::FormatterNameError => e
       STDERR.print "Error: " + e.message + "\n"
     end
@@ -118,13 +118,7 @@ class MhcCLI < Thor
     end
   end
 
-  def builder
-    @builder
-  end
-
-  def config
-    @config
-  end
+  attr_reader :builder, :config, :calendar
 
   def setup_global_options
     exit_on_error do
@@ -135,8 +129,8 @@ class MhcCLI < Thor
       calendar = @config.calendars[calname]
       calendar.repository = options[:repository] if options[:repository]
 
-      self.class.mhcdb ||= builder.calendar(calname)
-      @mhcdb = self.class.mhcdb
+      self.class.calendar ||= builder.calendar(calname)
+      @calendar = self.class.calendar
     end
   end
 
