@@ -39,9 +39,9 @@ module Mhc
       date_range_to_slots(date_range).each do |slot|
         @datastore.entries(slot).each do |path, header|
           if path
-            event = decorate_event(Mhc::Event.parse_file(path), @modifiers)
+            event = build_event(path:path)
           else
-            event = decorate_event(Mhc::Event.parse(header), @modifiers)
+            event = build_event(data:header)
           end
           event.occurrences(range:date_range).each do |oc|
             ocs << oc unless oc.last < date_range.first or date_range.last < oc.first
@@ -71,8 +71,14 @@ module Mhc
     private
     ################################################################
 
-    def decorate_event(event, decorators)
-      decorators.each do |deco|
+    def build_event(path:nil, data:data)
+      if path
+        event = Mhc::Event.parse_file(path)
+      else
+        event = Mhc::Event.parse(data)
+      end
+
+      @modifiers.each do |deco|
         event = deco.decorate(event)
       end
       return event
@@ -117,9 +123,9 @@ module Mhc
         @db[slot] = {}
         @datastore.entries(slot).each do |path, header|
           if path
-            register_event(slot, decorate_event(Mhc::Event.new.parse_file(path), @modifiers), date_range)
+            register_event(slot, build_event(path:path), date_range)
           else
-            register_event(slot, decorate_event(Mhc::Event.new.parse(header), @modifiers), date_range)
+            register_event(slot, build_event(data:header), date_range)
           end
         end
       end
