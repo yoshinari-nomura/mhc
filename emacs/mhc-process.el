@@ -41,6 +41,8 @@
                        (get-buffer-create " *mhc-scan-process*")
                        "mhc"
                        "server"
-                       (format "--repository=%s" base-dir)))))
+                       (format "--repository=%s" base-dir)))
+    (process-kill-without-query mhc-process)
+    mhc-process))
 
 (provide 'mhc-process)
