@@ -25,7 +25,8 @@ module Mhc
       end
 
       def to_proc
-        return lambda {|ev| !!@terms.find {|term| term.to_proc.call(ev)}}
+        @procs = @terms.map(&:to_proc)
+        return lambda {|ev| !!@procs.find {|p| p.call(ev)}}
       end
     end
 
