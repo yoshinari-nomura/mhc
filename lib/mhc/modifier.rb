@@ -108,6 +108,24 @@ module Mhc
 
       end # class HideDescription
 
+
+      class HideLocation < Decorator
+        def location
+          return nil
+        end
+      end # class HideLocation
+
+
+      class HideTimeRange <  Decorator
+        def allday?
+          return true
+        end
+
+        def time_range
+          # create empty time_range
+          Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Time)
+        end
+      end # class HideTimeRange
     end # class Decorator
   end # class Modifier
 end # module Mhc
