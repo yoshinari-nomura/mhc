@@ -20,10 +20,11 @@
 # Fill in the blanks indicated as *****,
 # and invoke the command:
 #
-#   $ mhc sync mirror-mhc-to-google
+#   % mhc sync personal
 #
-# Articles in past 14 days and future 30 days in MHC
+# Articles in past 90 days and future 90 days in MHC
 # will be mirrored to target Google Calendar.
+# (Hardcoded in lib/mhc/calendar.rb for now)
 # Also other articles in Google calendar will be DELETED.
 #
 # Before the first try, I recommend you to
@@ -31,26 +32,76 @@
 # and backup MHC folder ~/Mai/schedule.
 #
 ---
+################################################################
 SYNC_CHANNELS:
-- NAME: mirror-mhc-to-google
-  CALENDAR1: mhc-master
-  CALENDAR2: google-mhc
+################################################################
+
+- NAME: personal
+  CALENDAR1: personal
+  CALENDAR2: google_personal
   STRATEGY: mirror
+
+- NAME: family
+  CALENDAR1: family
+  CALENDAR2: google_family
+  STRATEGY: mirror
+
+- NAME: business
+  CALENDAR1: business
+  CALENDAR2: google_business
+  STRATEGY: mirror
+
+################################################################
 CALENDARS:
-# First entry in CALENDARS is default calendar for mhc command
-- NAME: mhc-master
+################################################################
+
+################################################################
+## MHC local
+
+# MHC: Master calendar (default)
+- &mhc_default
+  NAME: master
   TYPE: mhc
   REPOSITORY: ~/Mail/schedule
-# Private calendar derived from "mhc-master" by applying FILTER and MODIFIERS.
-# MODIFIERS are one of: hide_details, hide_description
-- NAME: mhc-private
-  TYPE: mhc
-  REPOSITORY: ~/Mail/schedule
-  FILTER: '(category:private & !category:birthday) | category:party | category:trip'
+
+# MHC: Personal calendar mirroed to my Android
+- <<: *mhc_default
+  NAME: personal
+  FILTER: '!category:[birthday japanese]'
+
+# MHC: Published calendar to my colleagues
+- <<: *mhc_default
+  NAME: business
+  FILTER: '!category:[private japanese] & category:[lecture seminar conference meeting work event party trip holiday reserved task]'
   MODIFIERS:
   - hide_description
-- NAME: google-mhc
+  - hide_location
+  - replace_subject_by_category
+
+# MHC: Published calendar to my family
+- <<: *mhc_default
+  NAME: family
+  FILTER: '!category:[birthday japanese] & category:[work event party trip holiday private]'
+  MODIFIERS:
+  - hide_description
+
+################################################################
+## Google Calendar
+
+# Displayname: MHC
+- &google_default
+  NAME: google_personal
   TYPE: caldav
-  USER: "*****@gmail.com"
-  PASSWORD: "*********"
-  URL: "https://calendar.google.com/calendar/dav/***************@group.calendar.google.com/events/"
+  USER: *********@gmail.com
+  PASSWORD: ***************
+  URL: https://calendar.google.com/calendar/dav/**************************@group.calendar.google.com/events/
+
+# Displayname: For Family
+- <<: *google_default
+  NAME: google_family
+  URL: https://calendar.google.com/calendar/dav/**************************@group.calendar.google.com/events/
+
+# Displayname: For Colleagues
+- <<: *google_default
+  NAME: google_business
+  URL: https://calendar.google.com/calendar/dav/**************************@group.calendar.google.com/events/
