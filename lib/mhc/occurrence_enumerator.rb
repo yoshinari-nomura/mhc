@@ -62,9 +62,14 @@ module Mhc
     end
 
     def each
-      @enumerator.each do |date|
-        next if @exceptions.include?(date)
-        yield Mhc::Occurrence.new(@event, date)
+      @enumerator.each do |date_or_range|
+        if date_or_range.respond_to?(:first)
+          first_date = date_or_range.first
+        else
+          first_date = date_or_range
+        end
+        next if @exceptions.include?(first_date)
+        yield Mhc::Occurrence.new(@event, date_or_range)
       end
     end
 
