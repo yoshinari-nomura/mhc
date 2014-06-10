@@ -95,6 +95,15 @@ class MhcCLI < Thor
     end
   end
 
+  method_option :calendar, :desc => "Set source CALENDAR"
+  desc "show MEAAGE_ID", "SHow article found by MESSAGE_ID"
+  def show(message_id)
+    event = exit_on_error do
+      calendar.find(uid: message_id)
+    end
+    print event.dump if event
+  end
+
   desc "sync SYNC_CHANNEL", "Synchronize DBs via SYNC_CHANNEL"
   def sync(channel_name)
     driver = exit_on_error do
