@@ -181,7 +181,7 @@ module Mhc
       end
       begin
         return Top.create_from_yaml_file(file_name)
-      rescue Psych::SyntaxError => e
+      rescue Psych::SyntaxError, Mhc::Query::ParseError, Mhc::Modifier::ParseError => e
         raise Mhc::ConfigurationError, e.message
       end
     end
@@ -189,7 +189,7 @@ module Mhc
     def self.create_from_string(string)
       begin
         return Top.create_from_yaml_string(string)
-      rescue Psych::SyntaxError => e
+      rescue Psych::SyntaxError, Mhc::Query::ParseError, Mhc::Modifier::ParseError => e
         raise Mhc::ConfigurationError, e.message
       end
     end

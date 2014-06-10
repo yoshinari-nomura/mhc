@@ -1,5 +1,7 @@
 module Mhc
   class Modifier
+    class ParseError < StandardError; end
+
     attr_accessor :name
 
     def initialize(name)
@@ -16,7 +18,7 @@ module Mhc
         Decorator::HideDescription.new(event)
 
       else
-        raise "Unknown Decorator #{@name}"
+        raise Mhc::Modifier::ParseError, "Unknown Decorator #{@name}"
       end
     end
 
