@@ -42,7 +42,7 @@
                        "mhc"
                        "server"
                        (format "--repository=%s" base-dir)))
-    (process-kill-without-query mhc-process)
+    (set-process-query-on-exit-flag mhc-process nil)
     mhc-process))
 
 (provide 'mhc-process)
