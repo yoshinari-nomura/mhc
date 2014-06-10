@@ -20,6 +20,10 @@ require "mhc/command/scan"
 require "mhc/command/sync"
 require "thor"
 
+Dir.glob(File.expand_path("~/.mhc/plugins/*.rb")) do |rb|
+  require rb
+end
+
 Encoding.default_external="UTF-8"
 
 class MhcCLI < Thor
