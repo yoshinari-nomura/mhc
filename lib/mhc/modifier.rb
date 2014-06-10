@@ -9,14 +9,8 @@ module Mhc
     end
 
     def decorate(event)
-      case @name.to_sym
-
-      when :hide_details
-        Decorator::HideDetails.new(event)
-
-      when :hide_description
-        Decorator::HideDescription.new(event)
-
+      if deco = Decorator.find_subclass(@name.to_sym)
+        deco.new(event)
       else
         raise Mhc::Modifier::ParseError, "Unknown Decorator #{@name}"
       end
@@ -54,6 +48,18 @@ module Mhc
       :etag,
       :recurring?,
       :allday?
+
+      def self.find_subclass(snake_name)
+        return @subclasses[snake_name] if @subclasses
+
+        @subclasses = {}
+        ObjectSpace.each_object(singleton_class) do |k|
+          next unless k.superclass == self
+          snake = k.name.to_s.split('::').last.gsub(/[A-Z]/, '_\&')[1..-1].downcase.to_sym
+          @subclasses[snake] = k
+        end
+        @subclasses[snake_name]
+      end
 
       def initialize(event)
         @event = event
