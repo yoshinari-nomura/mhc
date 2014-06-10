@@ -69,6 +69,7 @@ module Mhc
 
     #
     # KeyValuePair :: Symbol ':' (Symbol || String)
+    # KeyValuePair :: Symbol ':' '[' (Symbol || String)* ']'
     #
     # String should be surrounded by double quote ``"''
     #
@@ -76,21 +77,50 @@ module Mhc
       KEYWORDS = [:subject, :category, :body, :location]
       def initialize(context)
         @name = context.expect(:symbol).value.downcase.to_sym
-        context.expect(:sepop)
-        if token = context.eat_if(:symbol)
-          @value = token.value
-        else
-          @value = context.expect(:string).value[1..-2]
-        end
         raise ParseError, "unknown keyword '#{@name}'" unless KEYWORDS.member?(@name)
+
+        context.expect(:sepop)
+
+        @value = []
+        if context.eat_if(:lbracket)
+          @value << expect_string(context)
+          while str = eat_if_string(context)
+            @value << str
+          end
+          context.expect(:rbracket)
+        else
+          @value << expect_string(context)
+        end
       end
 
       def to_proc
         case @name
         when :category
-          return lambda {|ev| ev.categories.map{|c| c.to_s.downcase}.include?(@value.downcase)}
+          @value = @value.map{|v| v.downcase}
+          return lambda {|ev| !(ev.categories.map{|c| c.to_s.downcase} & @value).empty?}
         else
-          return lambda {|ev| !!ev.send(@name).to_s.toutf8.match(Regexp.quote(@value))}
+          @value = @value.map{|v| Regexp.quote(v)}
+          return lambda {|ev| !!@value.find{|v| ev.send(@name).to_s.toutf8.match(v)}}
+        end
+      end
+
+      private
+
+      def eat_if_string(context)
+        if token = context.eat_if(:symbol)
+          return token.value
+        elsif token = context.eat_if(:string)
+          return token.value[1..-2]
+        else
+          return nil
+        end
+      end
+
+      def expect_string(context)
+        if token = context.eat_if(:symbol)
+          return token.value
+        else
+          return context.expect(:string).value[1..-2]
         end
       end
     end
@@ -104,7 +134,9 @@ module Mhc
         orop:   /\|/,
         sepop:  /:/,
         lparen: /\(/,
-        rparen: /\)/
+        rparen: /\)/,
+        lbracket: /\[/,
+        rbracket: /\]/
       }.map{|type,regexp| "(?<#{type}>#{regexp})"}.join("|")
 
       TOKEN_REGEXP = Regexp.new('^\s*(' + TOKENS + ')')
