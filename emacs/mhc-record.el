@@ -110,6 +110,7 @@
   "Write BUFFER to RECORD."
   (let ((modify (file-exists-p (mhc-record-name record))))
     (with-current-buffer buffer
+      (mhc-draft-increment-sequence)
       (mhc-draft-translate)
       (mhc-write-region-as-coding-system mhc-default-coding-system
                                          (point-min)
