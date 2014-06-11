@@ -142,6 +142,10 @@ module Mhc
 
     ## concrete config classes
 
+    class General < Base
+      define_syntax :tzid => String
+    end # class General
+
     class SyncChannel < Base
       define_syntax :name => String,
                     :calendar1 => String,
@@ -162,7 +166,8 @@ module Mhc
 
     # Top-Level Config
     class Top < Base
-      define_syntax :sync_channels => [SyncChannel],
+      define_syntax :general => General,
+                    :sync_channels => [SyncChannel],
                     :calendars => [Calendar]
 
       def embed_values
