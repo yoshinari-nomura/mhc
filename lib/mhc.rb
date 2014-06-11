@@ -22,10 +22,20 @@ require "mhc/builder"
 require "mhc/etag"
 require "mhc/caldav"
 
-if ENV["MHC_TZINFO"]
-  RiCal::PropertyValue::DateTime.default_tzid = ENV["MHC_TZINFO"]
-end
-
 module Mhc # :nodoc:
+  def self.default_tzid=(tzid)
+    @tzid = tzid
+    ENV["MHC_TZINFO"] = tzid
+    RiCal::PropertyValue::DateTime.default_tzid = tzid
+  end
+
+  def self.default_tzid
+    @tzid
+  end
+
+  if ENV["MHC_TZINFO"]
+    self.default_tzid = ENV["MHC_TZINFO"]
+  end
+
   class ConfigurationError < StandardError ; end
 end

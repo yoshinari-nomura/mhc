@@ -137,6 +137,9 @@ class MhcCLI < Thor
     exit_on_error do
       @config = Mhc::Config.create_from_file(options[:config] || DEFAULT_CONFIG_PATH)
       @builder ||= Mhc::Builder.new(@config)
+      if @config.general.tzid
+        Mhc.default_tzid = @config.general.tzid
+      end
 
       calname  = options[:calendar] || @config.calendars.first.name
       calendar = @config.calendars[calname]
