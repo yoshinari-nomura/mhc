@@ -50,15 +50,20 @@ module Mhc
       :allday?
 
       def self.find_subclass(snake_name)
-        return @subclasses[snake_name] if @subclasses
+        @subclasses ||= {}
 
-        @subclasses = {}
-        ObjectSpace.each_object(singleton_class) do |k|
-          next unless k.superclass == self
-          snake = k.name.to_s.split('::').last.gsub(/[A-Z]/, '_\&')[1..-1].downcase.to_sym
-          @subclasses[snake] = k
+        if c = @subclasses[snake_name]
+          return c
         end
-        @subclasses[snake_name]
+
+        class_name = snake_name.to_s.capitalize.gsub(/_([a-z\d]+)/){ $1.capitalize }.to_sym
+        return nil unless const_defined?(class_name)
+
+        const = const_get(class_name)
+        if const.class == Class and const.superclass == self
+          return @subclasses[snake_name] = const
+        end
+        return nil
       end
 
       def initialize(event)
