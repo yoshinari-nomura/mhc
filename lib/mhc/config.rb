@@ -68,7 +68,7 @@ module Mhc
       end
 
       def initialize(hash = {})
-        hash.each do |key, val|
+        (hash || {}).each do |key, val|
           raise Mhc::ConfigurationError, "config syntax error (#{key})" unless syntax.keyword?(key)
           var = syntax.instance_variable_name(key)
           obj = create_subnode(key, val)
@@ -115,7 +115,7 @@ module Mhc
 
       def initialize(item_class, array = [])
         @configs = []
-        array.each do |value|
+        (array || []).each do |value|
           item = item_class.new(value)
           @configs << item
         end
