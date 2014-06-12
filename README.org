@@ -99,7 +99,7 @@
 
    5) Check if TODAY is good.
       #+BEGIN_SRC shell-script
-        $ export MHC_TZINFO="Asia/Tokyo"
+        $ export MHC_TZID="Asia/Tokyo"
         $ ~/src/mhc/bin/mhc scan today
       #+END_SRC
 

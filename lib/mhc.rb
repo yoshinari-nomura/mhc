@@ -25,7 +25,7 @@ require "mhc/caldav"
 module Mhc # :nodoc:
   def self.default_tzid=(tzid)
     @tzid = tzid
-    ENV["MHC_TZINFO"] = tzid
+    ENV["MHC_TZID"] = tzid
     RiCal::PropertyValue::DateTime.default_tzid = tzid
   end
 
@@ -33,8 +33,8 @@ module Mhc # :nodoc:
     @tzid
   end
 
-  if ENV["MHC_TZINFO"]
-    self.default_tzid = ENV["MHC_TZINFO"]
+  if ENV["MHC_TZID"]
+    self.default_tzid = ENV["MHC_TZID"]
   end
 
   class ConfigurationError < StandardError ; end

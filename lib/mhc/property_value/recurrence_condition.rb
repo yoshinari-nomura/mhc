@@ -109,7 +109,7 @@ module Mhc
 
         if until_date
           if dtstart.respond_to?(:hour)
-            tz = TZInfo::Timezone.get(ENV["MHC_TZINFO"] || 'UTC')
+            tz = TZInfo::Timezone.get(ENV["MHC_TZID"] || 'UTC')
             localtime = Mhc::PropertyValue::Time.new.parse(dtstart.strftime("%H:%M")).to_datetime(until_date).to_time
             until_str = tz.local_to_utc(localtime).strftime("%Y%m%dT%H%M%SZ")
             # puts "until_str local (tz=#{tz.name}) : #{localtime.strftime("%Y%m%dT%H%M%S")} utc: #{until_str}"
