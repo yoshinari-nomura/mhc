@@ -112,6 +112,8 @@
     (with-current-buffer buffer
       (mhc-draft-increment-sequence)
       (mhc-draft-translate)
+      (mhc-file-make-directory
+       (file-name-directory (mhc-record-name record)))
       (mhc-write-region-as-coding-system mhc-default-coding-system
                                          (point-min)
                                          (point-max)
