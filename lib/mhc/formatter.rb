@@ -86,6 +86,7 @@ module Mhc
       def format_day(context, date, items)
         string = format_day_header(context, date)
 
+        items = sort_items_in_day(items)
         items.each_with_index do |occurrence, count|
           context[:number] += 1
           context[:number_in_day] = count + 1
@@ -127,6 +128,21 @@ module Mhc
       def enclose(item, bracket = "[]")
         return "" if item.to_s.empty?
         return bracket[0] + item.to_s + bracket[1]
+      end
+
+      # sort occurrences in a day
+      # make sure all-day occurrences are prior to others
+      def sort_items_in_day(items)
+        items.sort do |a,b|
+          sign_a = a.allday? ? 0 : 1
+          sign_b = b.allday? ? 0 : 1
+
+          if sign_a != sign_b
+            sign_a - sign_b
+          else
+            a <=> b
+          end
+        end
       end
     end
 
