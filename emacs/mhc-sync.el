@@ -52,7 +52,7 @@
                    (mhc-summary-folder-to-path mhc-base-folder))))
     (or (file-directory-p new-path)
         (make-directory new-path))
-    (rename-file file (mhc-misc-get-new-path new-path))))
+    (rename-file file (mhc-misc-get-new-path new-path file))))
 
 (defun mhc-sync/start-process (&optional full)
   (cond

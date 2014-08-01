@@ -55,10 +55,21 @@
 
 (defun mhc-misc-get-new-path (dir &optional record)
   "Return name for new schedule file on DIR."
-  (if (and record (mhc-record-id record))
-      ;; old-path uses UUID format, so simply change the directory
-      (expand-file-name (concat (file-name-nondirectory (mhc-record-id record)) ".mhc") dir)
-    (mhc-misc-get-new-path-by-number dir)))
+  (let ((filename
+         (cond
+          ((and (stringp record) (file-exists-p record) (string-match "\\.mhc$" record))
+           (file-name-nondirectory record))
+          ((and record (mhc-record-id record))
+           (concat (mhc-record-id record) ".mhc")))))
+    (yes-or-no-p (format "%s"
+                         (if filename
+                             (expand-file-name filename dir)
+                           (mhc-misc-get-new-path-by-number dir))))
+    (if filename
+        ;; uses UUID format, so simply change the directory
+        (expand-file-name filename dir)
+      ;; make old-style number filename
+      (mhc-misc-get-new-path-by-number dir))))
 
 (defun mhc-misc-get-new-path-by-number (dir)
   "Return name for new schedule file on DIR."
