@@ -40,25 +40,22 @@ module Mhc
 
     def entries(slot)
       path = slot_to_path(slot)
+      return [] unless File.directory?(path)
 
-      if File.file?(path)
-        Enumerator.new do |yielder|
-          string = File.open(path, "r"){|f| f.read }
-          string.scrub!
-          string.gsub!(/^\s*#.*$/, "") # strip comments
-          string.strip!
-          string.split(/\n\n\n*/).each do |header|
-            yielder << [nil, header]
-          end
-        end
-      elsif File.directory?(path)
-        Enumerator.new do |yielder|
-          Dir.glob(path + "/*").each do |ent|
+      Enumerator.new do |yielder|
+        Dir.glob(path + "/*").each do |ent|
+          if ent =~ /\.mhcc$/
+            string = File.open(ent, "r"){|f| f.read }
+            string.scrub!
+            string.gsub!(/^\s*#.*$/, "") # strip comments
+            string.strip!
+            string.split(/\n\n\n*/).each do |header|
+              yielder << [nil, header]
+            end
+          else
             yielder << [ent, File.open(ent, "r"){|f| f.gets("\n\n") }]
           end
         end
-      else
-        return []
       end
     end
 
