@@ -76,7 +76,7 @@ class MhcCLI < Thor
   LONGDESC
   method_option :calendar, :desc => "Set source CALENDAR"
   method_option :category, :desc => "Pick items only in CATEGORY"
-  method_option :format,   :desc => "Set printing format (text, icalendar,...)"
+  method_option :format,   :desc => "Set printing format (text, icalendar,...)", :enum => %w(text mail orgtable emacs icalendar calfw howm)
   method_option :search,   :desc => "Search items by complex expression"
   def scan(range)
     begin
