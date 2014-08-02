@@ -26,7 +26,7 @@ module Mhc
 
       def to_proc
         @procs = @terms.map(&:to_proc)
-        return lambda {|ev| !!@procs.find {|p| p.call(ev)}}
+        return lambda {|ev| @procs.any? {|p| p.call(ev)}}
       end
     end
 
@@ -46,7 +46,7 @@ module Mhc
     end
 
     #
-    # Factor :: '!'* ( '(' Expression ')' || KeyValuePair )
+    # Factor :: '!'* ( '(' Expression ')' || RelationalExpression )
     #
     class Factor
       def initialize(context)
@@ -57,7 +57,7 @@ module Mhc
           @value = Expression.new(context)
           context.expect(:rparen)
         else
-          @value = KeyValuePair.new(context)
+          @value = RelationalExpression.new(context)
         end
       end
 
@@ -68,73 +68,70 @@ module Mhc
     end
 
     #
-    # KeyValuePair :: Symbol ':' (Symbol || String)
-    # KeyValuePair :: Symbol ':' '[' (Symbol || String)* ']'
+    # RelationalExpression :: Symbol Operator (Argument || '[' Argument Argument* ']')
     #
-    # String should be surrounded by double quote ``"''
-    #
-    class KeyValuePair
+    class RelationalExpression
       KEYWORDS = [:subject, :category, :body, :location]
+
       def initialize(context)
         @name = context.expect(:symbol).value.downcase.to_sym
         raise ParseError, "unknown keyword '#{@name}'" unless KEYWORDS.member?(@name)
 
-        context.expect(:sepop)
+        context.expect(:sepop) # Currently, operator is only ":"
 
-        @value = []
+        @arguments = []
         if context.eat_if(:lbracket)
-          @value << expect_string(context)
-          while str = eat_if_string(context)
-            @value << str
+          loop do
+            @arguments << Argument.new(context)
+            break if context.eat_if(:rbracket)
           end
-          context.expect(:rbracket)
         else
-          @value << expect_string(context)
+          @arguments << Argument.new(context)
         end
       end
 
       def to_proc
         case @name
         when :category
-          @value = @value.map{|v| v.downcase}
-          return lambda {|ev| !(ev.categories.map{|c| c.to_s.downcase} & @value).empty?}
+          @arguments = @arguments.map{|arg| arg.value.downcase}
+          return lambda {|ev| !(ev.categories.map{|c| c.to_s.downcase} & @arguments).empty?}
         else
-          @value = @value.map{|v| Regexp.quote(v)}
-          return lambda {|ev| !!@value.find{|v| ev.send(@name).to_s.toutf8.match(v)}}
+          @arguments = @arguments.map{|arg| Regexp.quote(arg.value)}
+          return lambda {|ev| !!@arguments.find{|v| ev.send(@name).to_s.toutf8.match(v)}}
         end
       end
+    end # class RelationalExpression
 
-      private
-
-      def eat_if_string(context)
-        if token = context.eat_if(:symbol)
-          return token.value
-        elsif token = context.eat_if(:string)
-          return token.value[1..-2]
-        else
-          return nil
-        end
+    #
+    # Argument :: Symbol || String
+    #
+    class Argument
+      def initialize(context)
+        token = context.expect(:symbol, :string)
+        @type  = token.type
+        @value = token.value
       end
 
-      def expect_string(context)
-        if token = context.eat_if(:symbol)
-          return token.value
+      def value
+        case @type
+        when :string
+          @value[1..-2]
         else
-          return context.expect(:string).value[1..-2]
+          @value
         end
       end
-    end
+    end # class Argument
 
     class Context
       TOKENS = {
-        symbol: /[a-zA-Z_][a-zA-Z_\d]*/,
-        string: /"(?:[^"\\]|\\.)*"/,
-        negop:  /!/,
-        andop:  /&/,
-        orop:   /\|/,
-        sepop:  /:/,
-        lparen: /\(/,
-        rparen: /\)/,
+        symbol:   /[a-zA-Z_][a-zA-Z_\d]*/,
+        string:   /"(?:[^"\\]|\\.)*"/,
+        negop:    /!/,
+        andop:    /&/,
+        orop:     /\|/,
+        sepop:    /:/,
+        lparen:   /\(/,
+        rparen:   /\)/,
         lbracket: /\[/,
         rbracket: /\]/
       }.map{|type,regexp| "(?<#{type}>#{regexp})"}.join("|")
@@ -145,17 +142,18 @@ module Mhc
         @tokens = tokenize(string)
       end
 
-      def eat_if(expected_type)
-        if @tokens.first and @tokens.first.type == expected_type
-          return @tokens.shift
-        else
-          return false
+      def eat_if(*expected_types)
+        expected_types.each do |expected_type|
+          if @tokens.first and @tokens.first.type == expected_type
+            return @tokens.shift
+          end
         end
+        return nil
       end
 
-      def expect(expected_type)
-        token = eat_if(expected_type) and return token
-        raise ParseError, "#{expected_type.upcase} expected before #{@tokens.first.value rescue 'END'}"
+      def expect(*expected_types)
+        token = eat_if(*expected_types) and return token
+        raise ParseError, "#{expected_types.map(&:upcase).join(' or ')} expected before #{@tokens.first.value rescue 'END'}"
       end
 
       def debug_dump
