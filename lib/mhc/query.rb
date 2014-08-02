@@ -28,7 +28,7 @@ module Mhc
         @procs = @terms.map(&:to_proc)
         return lambda {|ev| @procs.any? {|p| p.call(ev)}}
       end
-    end
+    end # class Expression
 
     #
     # Term :: Factor ('&' Factor)*
@@ -43,7 +43,7 @@ module Mhc
         @procs = @factors.map(&:to_proc)
         return lambda {|ev| @procs.all? {|p| p.call(ev)}}
       end
-    end
+    end # class Term
 
     #
     # Factor :: '!'* ( '(' Expression ')' || RelationalExpression )
@@ -65,7 +65,7 @@ module Mhc
         @proc = @value.to_proc
         return lambda {|ev| @proc.call(ev) == @expected_value}
       end
-    end
+    end # class Factor
 
     #
     # RelationalExpression :: Symbol Operator (Argument || '[' Argument Argument* ']')
@@ -184,7 +184,7 @@ module Mhc
         end
         return [nil, string]
       end
-    end
+    end # class Context
 
     class Token
       attr_reader :type, :value
@@ -192,7 +192,7 @@ module Mhc
       def initialize(type, string)
         @type, @value = type.to_sym, string
       end
-    end
+    end # class Token
 
     class Test
       attr_reader :categories, :subject
