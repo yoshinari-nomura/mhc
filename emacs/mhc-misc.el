@@ -61,10 +61,6 @@
            (file-name-nondirectory record))
           ((and record (mhc-record-id record))
            (concat (mhc-record-id record) ".mhc")))))
-    (yes-or-no-p (format "%s"
-                         (if filename
-                             (expand-file-name filename dir)
-                           (mhc-misc-get-new-path-by-number dir))))
     (if filename
         ;; uses UUID format, so simply change the directory
         (expand-file-name filename dir)
