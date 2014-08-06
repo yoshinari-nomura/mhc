@@ -12,6 +12,22 @@ describe Mhc::PropertyValue::Date do
   end
 end
 
+describe Mhc::Converter::Emacs do
+  it "should convert a Ruby Hash to Emacs plist" do
+    hash = {
+      :title       => "\\a\"",
+      :start_date  => "b\"b",
+      :start_time  => "c",
+      :end_date    => "d",
+      :end_time    => "e",
+      :description => "f",
+      :location    => "g",
+      :source      => "h"
+    }
+    expect(Mhc::Converter::Emacs.new.to_emacs(hash)).to eq '(:title "\\\\a\\"" :start-date "b\\"b" :start-time "c" :end-date "d" :end-time "e" :description "f" :location "g" :source "h")'
+  end
+end
+
 describe Mhc::Event do
   before :all do
     ENV["MHC_TZID"] = 'UTC'
