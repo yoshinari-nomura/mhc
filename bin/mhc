@@ -16,6 +16,7 @@ require 'rubygems'
 require 'bundler/setup'
 # Bundler.require
 require "mhc"
+require "mhc/command/completions"
 require "mhc/command/scan"
 require "mhc/command/sync"
 require "thor"
@@ -33,11 +34,11 @@ class MhcCLI < Thor
     attr_accessor :calendar
   end
 
-  check_unknown_options!
+  check_unknown_options! :except => :completions
   package_name 'MHC'
 
-  class_option :repository, :desc => "Set MHC top directory"
-  class_option :config, :desc => "Set config path (default: #{DEFAULT_CONFIG_PATH})"
+  class_option :repository, :desc => "Set MHC top directory", :banner => "DIRECTORY"
+  class_option :config, :desc => "Set config path (default: #{DEFAULT_CONFIG_PATH})", :banner => "FILE"
   map ["--version", "-v"] => :version
 
   default_command :help
@@ -46,6 +47,19 @@ class MhcCLI < Thor
   desc "version", "Show version"
   def version
     puts Mhc::VERSION
+  end
+
+  desc "completions [COMMAND]", "List available commands or options for COMMAND", :hide => true
+
+  long_desc <<-LONGDESC
+    List available commands or options for COMMAND
+    This is supposed to be a zsh compsys helper"
+  LONGDESC
+
+  def completions(*command)
+    help = self.class.commands
+    global_options = self.class.class_options
+    Mhc::Command::Completions.new(help, global_options, command, config)
   end
 
   desc "scan RANGE", "Scan events in date RANGE"
