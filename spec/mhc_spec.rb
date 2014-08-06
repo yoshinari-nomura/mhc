@@ -370,4 +370,88 @@ describe Mhc::Event do
       END:VEVENT
     EOF
   end
+
+  it "should be created from iCalendar string" do
+    pending "Not implemented yet"
+    ev = Mhc::Event.new_from_ics <<-EOF.strip_heredoc
+      BEGIN:VCALENDAR
+      PRODID;X-RICAL-TZSOURCE=TZINFO:-//Quickhack.net//MHC 0.25.0//EN
+      CALSCALE:GREGORIAN
+      VERSION:2.0
+      BEGIN:VEVENT
+      CREATED;VALUE=DATE-TIME:20140101T000000Z
+      DTEND;VALUE=DATE:20140510
+      DTSTART;VALUE=DATE:20140508
+      DTSTAMP;VALUE=DATE-TIME:20140101T000000Z
+      LAST-MODIFIED;VALUE=DATE-TIME:20140101T000000Z
+      UID:69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      DESCRIPTION:
+      SUMMARY:CS1
+      SEQUENCE:0
+      END:VEVENT
+      END:VCALENDAR
+    EOF
+    expect(ev.dump).to eq <<-'EOF'.strip_heredoc
+      X-SC-Subject: CS1
+      X-SC-Location: 
+      X-SC-Day: 20140508-20140509
+      X-SC-Time: 
+      X-SC-Category: 
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: 
+      X-SC-Duration: 
+      X-SC-Alarm: 
+      X-SC-Record-Id: 69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      X-SC-Sequence: 0
+
+    EOF
+  end
+
+  it "should create recurrence condition from iCalendar string" do
+    pending "Not implemented yet"
+    ics = <<-EOF.strip_heredoc
+      BEGIN:VCALENDAR
+      PRODID;X-RICAL-TZSOURCE=TZINFO:-//Quickhack.net//MHC 0.25.0//EN
+      CALSCALE:GREGORIAN
+      VERSION:2.0
+      BEGIN:VEVENT
+      CREATED;VALUE=DATE-TIME:20140101T000000Z
+      DTEND;VALUE=DATE:20140403
+      DTSTART;VALUE=DATE:20140402
+      DTSTAMP;VALUE=DATE-TIME:20140101T000000Z
+      CATEGORIES:Work
+      LAST-MODIFIED;VALUE=DATE-TIME:20140101T000000Z
+      UID:FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      DESCRIPTION:this is description\n
+      SUMMARY:Wednesday and Sunday Weekly event
+      RRULE:FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE,SU;UNTIL=20140424
+      LOCATION:Office
+      SEQUENCE:0
+      END:VEVENT
+      END:VCALENDAR
+    EOF
+    ev = Mhc::Event.new_from_ics(ics)
+    ical = RiCal.parse_string(ics).first
+    iev = ical.events.first
+    #puts "************ #{iev.rrule_property.first.until}"
+    #puts iev.rrule_property.first.by_list[:byday].map{|w| %w(Sun Mon Tue Wed Thu Fri Sat)[w.wday] }.join(' ')
+    # RiCal::PropertyValue::RecurrenceRule.new(nil, :freq => "monthly", :byday => ["MO", "-3SU"]).by_list[:byday].map{|w| pp w.index}
+    expect(ev.dump).to eq <<-'EOF'.strip_heredoc
+      X-SC-Subject: Wednesday and Sunday Weekly event
+      X-SC-Location: Office
+      X-SC-Day: 20140402
+      X-SC-Time: 
+      X-SC-Category: Work
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: Wed Sun
+      X-SC-Duration: 20140402-20140424
+      X-SC-Alarm: 
+      X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      X-SC-Sequence: 0
+
+      this is description
+    EOF
+  end
 end
