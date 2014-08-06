@@ -1,5 +1,67 @@
 module Mhc
   class Converter
+    class Emacs
+      # return cfw:event structure
+      #
+      #  (defstruct cfw:event
+      #    title       ; event title [string]
+      #    start-date  ; start date of the event [cfw:date]
+      #    start-time  ; start time of the event (optional)
+      #    end-date    ; end date of the event [cfw:date] (optional)
+      #    end-time    ; end of the event (optional)
+      #    description ; event description [string] (optional)
+      #    location    ; location [strting] (optional)
+      #    source      ; [internal] source of the event
+      #  )
+      def to_calfw(ev)
+        hash = {
+          :title       => ev.subject.to_s,
+          :start_date  => "",
+          :start_time  => "",
+          :end_date    => "",
+          :end_time    => "",
+          :description => "",
+          :location    => "",
+          :source      => ""
+        }
+        to_emacs_plist(hash)
+      end
+
+      def to_emacs(obj)
+        case obj
+        when Array
+          to_emacs_list(obj)
+        when Hash
+          to_emacs_plist(obj)
+        else
+          to_emacs_string(obj)
+        end
+      end
+
+      def to_emacs_symbol(obj)
+        ":" + obj.to_s.downcase.gsub('_', '-')
+      end
+
+      def to_emacs_string(str)
+        # 1. quote " and \
+        # 2. surround by "
+        '"' + str.to_s.toutf8.gsub(/[\"\\]/, '\\\\\&') + '"'
+      end
+
+      def to_emacs_plist(hash)
+        wrap(hash.map{|key,val| "#{to_emacs_symbol(key)} #{to_emacs(val)}"}.join(" "))
+      end
+
+      def to_emacs_list(array)
+        wrap(array.map{|val| to_emacs(val)}.join(" "))
+      end
+
+      private
+      def wrap(obj)
+        "(" + obj.to_s + ")"
+      end
+    end # class Emacs
+
     class Icalendar
 
       def to_ics(event)
@@ -111,8 +173,30 @@ module Mhc
           ::Time.utc(2014, 1, 1)
         end
       end
+    end # class Icalendar
 
+    class IcalendarImporter
       def self.new_from_ics(ics)
+        # * 3.8.1.  Descriptive Component Properties
+        # ** CATEGORIES  3.8.1.2.  Categories
+        # ** DESCRIPTION  3.8.1.5.  Description
+        # ** LOCATION  3.8.1.7.  Location
+        # ** SUMMARY  3.8.1.12. Summary
+        # * 3.8.2.  Date and Time Component Properties
+        # ** DTEND  3.8.2.2.  Date-Time End
+        # ** DTSTART  3.8.2.4.  Date-Time Start
+        # ** DURATION  3.8.2.5.  Duration
+        # * 3.8.4.  Relationship Component Properties
+        # ** RECURRENCE-ID  3.8.4.4.  Recurrence ID
+        # * 3.8.5.  Recurrence Component Properties
+        # ** EXDATE  3.8.5.1.  Exception Date-Times
+        # ** RDATE  3.8.5.2.  Recurrence Date-Times
+        # ** RRULE  3.8.5.3.  Recurrence Rule
+        # * 3.8.7.  Change Management Component Properties
+        # ** SEQUENCE  3.8.7.4.  Sequence Number
+        # * 3.8.8.  Miscellaneous Component Properties
+        # ** X-FIELD  3.8.8.2.  Non-Standard Properties
+
         # DTSTART:
         #   Date part => X-SC-Duration: .first
         #   Time part => X-SC-Time: .first
@@ -165,6 +249,6 @@ module Mhc
         return ev
       end
 
-    end # Icalendar
+    end # IcalendarImporter
   end # Converter
 end # Mhc

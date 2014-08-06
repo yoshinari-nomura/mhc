@@ -93,6 +93,93 @@ module Mhc
         [@cond_mon, @cond_ord, @cond_wek, @cond_num].all?{|cond| cond.empty?}
       end
 
+      # convert RRULE to X-SC-Cond:
+      #
+      # * Not allowed
+      #   + BYSECOND
+      #   + BYMINUTE
+      #   + BYHOUR
+      #   + COUNT
+      #   + BYYEARDAY (-366 to 366)
+      #   + BYWEEKNO  (-53  to  53)
+      #   + BYSETPOS  (-366 to 366)
+      #
+      # * Restricted
+      #   + FREQ should be one of WEEKLY, MONTHLY, YEARLY
+      #   + INTERVAL should be 1
+      #   + BYDAY should be (1|2|3|4|-1)(MO|TU|WE|TH|FR|SA|SU) and FREQ should be:
+      #     MONTHLY if (1|2|3|4|-1) exists
+      #     WEEKLY otherwise
+      #   + BYMONTHDAY should be (1..31)
+      #   + WKST should be MO
+      #
+      # * Fully Converted
+      #   + UNTIL (YYYYMMDD) => X-SC-Duration: -YYYYMMDD
+      #   + BYMONTH (1..12)* => (Jan|Feb|Mar|Jul|Aug|Sep|Oct|Nov|Dec)*
+      #
+      # * Other restrictions
+      #   + Recurrence-ID is not allowed
+      #
+      #
+      def set_from_ics(rrule)
+        return 1 if rrule =~ /(BYSECOND|BYMINUTE|BYHOUR|COUNT|BYYEARDAY|BYWEEKNO|BYSETPOS)/i
+        return 2 if rrule =~ /INTERVAL=(\d+)/i and $1.to_i != 1
+        return 3 if rrule =~ /FREQ=([^;]+)/i   and $1 !~ /WEEKLY|MONTHLY|YEARLY/i
+        return 4 if rrule =~ /BYDAY=([^;]+)/i  and $1 !~ /((1|2|3|4|-1)?(MO|TU|WE|TH|FR|SA|SU))+/i
+        return 5 if rrule =~ /BYDAY=([^;]+)/i  and $1 =~ /\d/ and rrule !~ /FREQ=MONTHLY/i
+        return 6 if rrule =~ /BYDAY=([^;]+)/i  and $1 !~ /\d/ and rrule !~ /FREQ=WEEKLY/i
+        return 7 if rrule =~ /BYMONTHDAY=([^;]+)/i and $1.split(",").map(&:to_i).any?{|i| i < 1 or i > 31}
+        return 8 if rrule =~ /WKST=([^;]+)/i and $1 !~ /MO/
+
+        cond_mon = []
+        if rrule =~ /BYMONTH=([^;]+)/
+          $1.split(",").each do |mon|
+            cond_mon << mon.to_i
+          end
+        end
+
+        cond_ord = []
+        cond_wek = []
+        week = {}
+        if rrule =~ /BYDAY=([^;]+)/
+          $1.scan(/(1|2|3|4|-1)?(MO|TU|WE|TH|FR|SA|SU)/).each do |o,w|
+            week[w] ||= []
+            week[w] << o.to_i # non numberd prefix is replaced as 0
+          end
+
+          # every week has the same number prefixes:
+          # 3WE,3SU is OK
+          # 3WE,2SU is NG
+          # 2WE,3WE,2SU,3SU OK
+          #
+          return 9 unless week.values.all?{|orders| orders.sort == week.values.first.sort}
+          order = week.values.first.sort
+
+          # if number prefixed week cannot coexist with non-number prefixed week
+          #
+          # WE,3WE is NG
+          # WE,3WE is NG
+          #
+          return 10 if order.length > 1 and order.member?(0) # 0 means non-numberd prefix
+
+          order.delete(0)
+          cond_ord = order
+
+          week.each do |w, o|
+            cond_wek << WEK_V2I.invert[w]
+          end
+        end
+
+        cond_num = []
+        if rrule =~ /BYMONTHDAY=([^;]+)/i
+          $1.split(",").each do |n|
+            cond_num << n.to_i
+          end
+        end
+        @cond_mon, @cond_ord, @cond_wek, @cond_num = cond_mon, cond_ord, cond_wek, cond_num
+        return self
+      end
+
       def to_mhc_string
         return (cond_mon.map{|mon| MON_V2L[mon]} +
                 cond_ord.map{|ord| ORD_V2L[ord]} +
