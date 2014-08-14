@@ -324,9 +324,18 @@ module Mhc
       return self
     end
 
-    def parse_header(string)
+    def parse_header_full(string)
       xsc, @non_xsc_header = separate_header(string)
       parse_xsc_header(xsc)
+      return self
+    end
+
+    def parse_header(string)
+      hash = {}
+      string.scan(/^x-sc-([^:]++):[ \t]*([^\n]*(?:\n[ \t]+[^\n]*)*)/i) do |key, val|
+        hash[key.downcase] = val.gsub("\n", " ").strip
+      end
+      parse_xsc_header(hash)
       return self
     end
 
