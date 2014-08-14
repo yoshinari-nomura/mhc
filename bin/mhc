@@ -1,8 +1,13 @@
 #!/usr/bin/env ruby
 
-require "pp"
-require "shellwords"
-
+################################################################
+# rbenv support:
+# If this file is a symlink, and bound to a specific ruby
+# version via rbenv (indicated by RBENV_VERSION),
+# I want to resolve the symlink and re-exec
+# the original executable respecting the .ruby_version
+# which should indicate the right version.
+#
 if File.symlink?(__FILE__) and ENV["RBENV_VERSION"]
   ENV["RBENV_VERSION"] = nil
   shims_path = File.expand_path("shims", ENV["RBENV_ROOT"])
@@ -12,18 +17,12 @@ end
 
 ENV["BUNDLE_GEMFILE"] = File.expand_path("../../Gemfile", __FILE__)
 
-require 'rubygems'
-require 'bundler/setup'
-# Bundler.require
-require "mhc"
-require "mhc/command/completions"
-require "mhc/command/scan"
-require "mhc/command/sync"
-require "thor"
+require "rubygems"
+require "bundler/setup"
 
-Dir.glob(File.expand_path("~/.mhc/plugins/*.rb")) do |rb|
-  require rb
-end
+require "thor"
+require "mhc"
+require "mhc/command"
 
 Encoding.default_external="UTF-8"
 
@@ -37,18 +36,31 @@ class MhcCLI < Thor
   check_unknown_options! :except => :completions
   package_name 'MHC'
 
+  ################################################################
+  # global options
+
+  class_option :debug, :type => :boolean, :desc => "Set debug flag"
+  class_option :profile, :type => :boolean, :desc => "Set profiler flag"
   class_option :repository, :desc => "Set MHC top directory", :banner => "DIRECTORY"
   class_option :config, :desc => "Set config path (default: #{DEFAULT_CONFIG_PATH})", :banner => "FILE"
+
   map ["--version", "-v"] => :version
 
-  default_command :help
   map ["--help", "-h"] => :help
+  default_command :help
 
+  ################################################################
+  # Command: version
+  ################################################################
   desc "version", "Show version"
+
   def version
     puts Mhc::VERSION
   end
 
+  ################################################################
+  # Command: completions
+  ################################################################
   desc "completions [COMMAND]", "List available commands or options for COMMAND", :hide => true
 
   long_desc <<-LONGDESC
@@ -62,7 +74,11 @@ class MhcCLI < Thor
     Mhc::Command::Completions.new(help, global_options, command, config)
   end
 
+  ################################################################
+  # Command: scan
+  ################################################################
   desc "scan RANGE", "Scan events in date RANGE"
+
   long_desc <<-LONGDESC
     scan events in date RANGE.
 
@@ -88,10 +104,12 @@ class MhcCLI < Thor
     \x5 mhc scan today --category 'Business'
     \x5 mhc scan thismonth --search 'category:Business & !subject:"Trip"'
   LONGDESC
+
   method_option :calendar, :desc => "Set source CALENDAR"
   method_option :category, :desc => "Pick items only in CATEGORY"
-  method_option :format,   :desc => "Set printing format (text, icalendar,...)", :enum => %w(text mail orgtable emacs icalendar calfw howm)
+  method_option :format,   :desc => "Set printing format", :enum => %w(text mail orgtable emacs icalendar calfw howm)
   method_option :search,   :desc => "Search items by complex expression"
+
   def scan(range)
     begin
       Mhc::Command::Scan.new(calendar, range, **symbolize_keys(options))
@@ -101,16 +119,26 @@ class MhcCLI < Thor
     return self
   end
 
+  ################################################################
+  # Command: server
+  ################################################################
   desc "server", "Invoked as server (backend of emacs)"
+
   def server
+    require "shellwords"
     while line = STDIN.gets # STDIN.noecho(&:gets)
       argv = line.chomp.shellsplit
       self.class.start(argv)
     end
   end
 
+  ################################################################
+  # Command: show
+  ################################################################
+  desc "show MEAAGE_ID", "Show article found by MESSAGE_ID"
+
   method_option :calendar, :desc => "Set source CALENDAR"
-  desc "show MEAAGE_ID", "SHow article found by MESSAGE_ID"
+
   def show(message_id)
     event = exit_on_error do
       calendar.find(uid: message_id)
@@ -118,7 +146,11 @@ class MhcCLI < Thor
     print event.dump if event
   end
 
+  ################################################################
+  # Command: sync
+  ################################################################
   desc "sync SYNC_CHANNEL", "Synchronize DBs via SYNC_CHANNEL"
+
   def sync(channel_name)
     driver = exit_on_error do
       builder.sync_driver(channel_name)
@@ -127,12 +159,20 @@ class MhcCLI < Thor
     return self
   end
 
+  ################################################################
+  # add some hooks to Thor
+
   no_commands do
     def invoke_command(command, *args)
       setup_global_options
-      super
+      result = super
+      teardown
+      result
     end
   end
+
+  ################################################################
+  # private
 
   private
 
@@ -161,6 +201,31 @@ class MhcCLI < Thor
 
       self.class.calendar ||= builder.calendar(calname)
       @calendar = self.class.calendar
+    end
+
+    load_plugins
+
+    if options[:profile]
+      require 'profiler'
+      Profiler__.start_profile
+    end
+    if options[:debug]
+      require "pp"
+    end
+  end
+
+  def load_plugins
+    config_path = options[:config] || DEFAULT_CONFIG_PATH
+    plugin_dir  = File.dirname(config_path)
+
+    Dir.glob(File.expand_path("plugins/*.rb", plugin_dir)) do |rb|
+      require rb
+    end
+  end
+
+  def teardown
+    if options[:profile]
+      Profiler__.print_profile($stdout)
     end
   end
 
