@@ -9,8 +9,9 @@ module Mhc
       DAYS_OF_MONTH = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
       def self.parse(string)
-        if /^\d{8}$/ =~ string
-          super(string)
+        if /^(\d{4})(\d{2})(\d{2})$/ =~ string
+          # don't use super(string) because it's slow.
+          new($1.to_i, $2.to_i, $3.to_i)
         else
           return nil # raise ParseError
         end
