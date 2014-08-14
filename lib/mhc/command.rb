@@ -4,6 +4,7 @@ module Mhc
     dir = File.dirname(__FILE__) + "/command"
 
     autoload :Completions, "#{dir}/completions.rb"
+    autoload :Cache,       "#{dir}/cache.rb"
     autoload :Scan,        "#{dir}/scan.rb"
     autoload :Sync,        "#{dir}/sync.rb"
 

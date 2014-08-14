@@ -59,6 +59,15 @@ class MhcCLI < Thor
   end
 
   ################################################################
+  # Command: cache
+  ################################################################
+  desc "cache", "List cache slot"
+
+  def cache
+    Mhc::Command::Cache.new(calendar)
+  end
+
+  ################################################################
   # Command: completions
   ################################################################
   desc "completions [COMMAND]", "List available commands or options for COMMAND", :hide => true

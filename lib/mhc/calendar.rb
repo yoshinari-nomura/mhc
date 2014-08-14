@@ -33,6 +33,18 @@ module Mhc
       end
     end
 
+    def entries
+      Enumerator.new do |yielder|
+        @datastore.entries.each do |path, header|
+          if path
+            yielder << Mhc::Event.parse_file(path)
+          else
+            yielder << Mhc::Event.parse(header)
+          end
+        end
+      end
+    end
+
     def scan(date_range, &scope_block)
       update(date_range)
       date_range.map {|date| [date, search1(date, &scope_block)]}

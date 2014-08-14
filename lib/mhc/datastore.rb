@@ -38,22 +38,24 @@ module Mhc
       end
     end
 
-    def entries(slot)
-      path = slot_to_path(slot)
-      return [] unless File.directory?(path)
+    def entries(slot = nil)
+      paths = slot_to_path_list(slot)
 
       Enumerator.new do |yielder|
-        Dir.glob(path + "/*").each do |ent|
-          if ent =~ /\.mhcc$/
-            string = File.open(ent, "r"){|f| f.read }
-            string.scrub!
-            string.gsub!(/^\s*#.*$/, "") # strip comments
-            string.strip!
-            string.split(/\n\n\n*/).each do |header|
-              yielder << [nil, header]
+        paths.each do |path|
+          next unless File.directory?(path)
+          Dir.glob(path + "/**/*.mhc*").each do |ent|
+            if ent =~ /\.mhcc$/
+              string = File.open(ent, "r"){|f| f.read }
+              string.scrub!
+              string.gsub!(/^\s*#.*$/, "") # strip comments
+              string.strip!
+              string.split(/\n\n\n*/).each do |header|
+                yielder << [nil, header]
+              end
+            else
+              yielder << [ent, File.open(ent, "r"){|f| f.gets("\n\n") }]
             end
-          else
-            yielder << [ent, File.open(ent, "r"){|f| f.gets("\n\n") }]
           end
         end
       end
@@ -105,8 +107,12 @@ module Mhc
       return @uid_pool + uid
     end
 
-    def slot_to_path(slot)
-      return File.expand_path(slot, @slot_top)
+    def slot_to_path_list(slot = nil)
+      if slot
+        [File.expand_path(slot.to_s, @slot_top)]
+      else
+        Dir.glob(File.expand_path("{[0-9][0-9][0-9][0-9],inbox,intersect,presets}", @slot_top)).to_a
+      end
     end
 
     def new_path_in_slot(slot)

@@ -246,6 +246,24 @@ module Mhc
       time_range.blank?
     end
 
+    def range
+      min0, max0 = Mhc::PropertyValue::Date.parse("19000101"),
+                   Mhc::PropertyValue::Date.parse("99991231")
+
+      if recurring?
+        min, max = min0, max0
+      else
+        min, max = dates.min, dates.max
+        min = min.first if min.respond_to?(:first)
+        max = max.last  if max.respond_to?(:last)
+      end
+      min = duration.first if duration.first && duration.first > min
+      max = duration.last  if duration.last  && duration.last  < max
+
+      return min..max if min <= max
+      return min0..max0
+    end
+
     ################################################################
     ### dump
 
