@@ -80,6 +80,50 @@ describe Mhc::Event do
     expect(ev.dump).to eq str
   end
 
+  it "should parse a string and dump to the same string even if some fields has hanging strings" do
+    str = <<-EOF.strip_heredoc
+      X-SC-Subject: Autumnal Equinox Day
+      X-SC-Location: 
+      X-SC-Day: 19960923 19970923 19980923 19990923 20000923 20010923 20020923
+        20030923 20040923 20050923 20060923 20070923 20080923 20090923
+        20100923 20110923 20120922 20130923 20140923 20150923 20160922
+        20170923 20180923 20190923 20200922 20210923 20220923 20230923
+        20240922 20250923 20260923 20270923 20280922 20290923 20300923
+        20310923
+      X-SC-Time: 
+      X-SC-Category: Holiday
+                     Japanese
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: 
+      X-SC-Duration: 
+      X-SC-Alarm: 
+      X-SC-Record-Id: 54A339AD-F7FD-4E56-9B70-2D09F840E94D
+      X-SC-Sequence: 0
+
+    EOF
+
+    dump_str = <<-EOF.strip_heredoc
+      X-SC-Subject: Autumnal Equinox Day
+      X-SC-Location: 
+      X-SC-Day: 19960923 19970923 19980923 19990923 20000923 20010923 20020923 20030923 20040923 20050923 20060923 20070923 20080923 20090923 20100923 20110923 20120922 20130923 20140923 20150923 20160922 20170923 20180923 20190923 20200922 20210923 20220923 20230923 20240922 20250923 20260923 20270923 20280922 20290923 20300923 20310923
+      X-SC-Time: 
+      X-SC-Category: Holiday Japanese
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: 
+      X-SC-Duration: 
+      X-SC-Alarm: 
+      X-SC-Record-Id: 54A339AD-F7FD-4E56-9B70-2D09F840E94D
+      X-SC-Sequence: 0
+
+    EOF
+    ev = Mhc::Event.parse(str)
+    expect(ev.dump).to eq dump_str
+  end
+
+
+
   it "should occur weekly on Monday and Thursday from 2014-04-01 to 2014-04-30 with exceptoin of 2014-04-10 (Thu)" do
     ev = Mhc::Event.parse <<-EOF.strip_heredoc
       X-SC-Subject: Weekly Event on Monday and Thursday
@@ -454,4 +498,16 @@ describe Mhc::Event do
       this is description
     EOF
   end
+end
+
+describe Mhc::DateFrame::Yearly do
+end
+
+describe Mhc::DateFrame::Monthly do
+end
+
+describe Mhc::DateFrame::Weekly do
+end
+
+describe Mhc::DateFrame::Daily do
 end
