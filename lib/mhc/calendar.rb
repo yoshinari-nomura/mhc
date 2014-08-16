@@ -93,7 +93,10 @@ module Mhc
       else
         event = Mhc::Event.parse(data)
       end
+      decorate_event(event)
+    end
 
+    def decorate_event(event)
       @modifiers.each do |deco|
         event = deco.decorate(event)
       end
