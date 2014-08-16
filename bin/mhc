@@ -144,7 +144,7 @@ class MhcCLI < Thor
   ################################################################
   # Command: show
   ################################################################
-  desc "show MEAAGE_ID", "Show article found by MESSAGE_ID"
+  desc "show MESSAGE_ID", "Show article found by MESSAGE_ID"
 
   method_option :calendar, :desc => "Set source CALENDAR"
 
