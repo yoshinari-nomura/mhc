@@ -86,6 +86,8 @@ module Mhc
         case banner
         when /^CALENDAR/
           "(" + @config.calendars.select{|cal| cal.type == "mhc"}.map(&:name).join(' ') + ")"
+        when /^SYNC_CHANNEL/
+          "(" + @config.sync_channels.map(&:name).join(' ') + ")"
         when /^(FILE|CONF)/
           "_files"
         when /^DIR/
