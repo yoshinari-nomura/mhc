@@ -160,11 +160,13 @@ class MhcCLI < Thor
   ################################################################
   desc "sync SYNC_CHANNEL", "Synchronize DBs via SYNC_CHANNEL"
 
+  method_option :dry_run, :type => :boolean, :desc => "Perform a trial run with no changes made"
+
   def sync(channel_name)
     driver = exit_on_error do
       builder.sync_driver(channel_name)
     end
-    driver.sync_all
+    driver.sync_all(options[:dry_run])
     return self
   end
 

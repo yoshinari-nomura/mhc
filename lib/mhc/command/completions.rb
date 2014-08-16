@@ -56,6 +56,8 @@ module Mhc
         options = command_help.options.merge(global_options)
 
         options.each do |name, opt|
+          name = name.to_s.gsub("_", "-")
+
           if opt.type == :boolean
             str << "(--#{name})--#{name}[#{opt.description}]\n"
           else

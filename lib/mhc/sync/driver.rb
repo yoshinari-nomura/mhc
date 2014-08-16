@@ -29,8 +29,10 @@ module Mhc
         info1 = @db1.syncinfo(uid)
         info2 = @db2.syncinfo(uid)
 
-        STDERR.print "ABOUT #{uid} => #{@strategy.whatnow(info1, info2)} "
+        STDERR.print "ABOUT(#{dry_run ? 'DRY_RUN' : ''}) #{uid} => #{@strategy.whatnow(info1, info2)} "
         STDERR.print "(#{info1.sync_status} vs #{info2.sync_status})\n"
+        return if dry_run
+
         case @strategy.whatnow(info1, info2)
         when :ignore
           #ignore(side1, side2)
