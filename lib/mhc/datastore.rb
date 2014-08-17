@@ -15,6 +15,13 @@ module Mhc
       @logfile   = @basedir + 'db/mhc-db-transaction.log'
     end
 
+    def yield_mhcc(yielder, filename)
+      string = File.open(filename, "r"){|f| f.read }
+      string.scrub!
+      string.gsub!(/^\s*#.*$/, "") # strip comments
+      string.strip!
+      string.split(/\n\n\n*/).each do |header|
+        yielder << [nil, header]
       end
     end
 
@@ -26,13 +33,7 @@ module Mhc
           next unless File.directory?(path)
           Dir.glob(path + "/**/*.mhc*").each do |ent|
             if ent =~ /\.mhcc$/
-              string = File.open(ent, "r"){|f| f.read }
-              string.scrub!
-              string.gsub!(/^\s*#.*$/, "") # strip comments
-              string.strip!
-              string.split(/\n\n\n*/).each do |header|
-                yielder << [nil, header]
-              end
+              yield_mhcc(yielder, ent)
             else
               yielder << [ent, File.open(ent, "r"){|f| f.gets("\n\n") }]
             end
