@@ -2,22 +2,6 @@
 
 (add-to-list 'process-coding-system-alist '("^mhc$" . utf-8))
 
-(defun mhc-db-scan (b e &optional nosort category)
-  (let ((command nil))
-    (unless (and (processp mhc-process)
-                 (eq (process-status mhc-process) 'run))
-      (mhc-start-process))
-    (setq command (format "scan --format=emacs %04d%02d%02d-%04d%02d%02d%s"
-                          (mhc-date-yy b)
-                          (mhc-date-mm b)
-                          (mhc-date-dd b)
-                          (mhc-date-yy e)
-                          (mhc-date-mm e)
-                          (mhc-date-dd e)
-                          (if category  (format " --category=%s" category) "")))
-    (message "COMMAND: %s" command)
-    (mhc-process-send-command command)))
-
 (defun mhc-process-send-command (command)
   (with-current-buffer (process-buffer mhc-process)
     (delete-region (point-min) (point-max))

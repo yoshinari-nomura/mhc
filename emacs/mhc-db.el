@@ -15,6 +15,7 @@
 ;;; Code:
 
 (require 'mhc-day)
+(require 'mhc-process)
 (require 'mhc-slot)
 (require 'mhc-schedule)
 
@@ -106,36 +107,6 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
                (lambda (a b) (< (car a) (car b))))))))
 
 
-(defun mhc-db-scan- (from to &optional nosort)
-  (let ((list (mhc-db/eval-for-duration from to)))
-    (let ((days list))
-      (if nosort
-          ;; 所用の開始時間に基づく並べ替えは行わずに、祝日のチェックのみを行う
-          (while days
-            (mhc-day-set-holiday (car days) (mhc-db/holiday-p (car days)))
-            (setq days (cdr days)))
-        ;; 所用の開始時間に基づく並べ替えも同時に行う
-        (while days
-          (mhc-day-set-schedules (car days) (mhc-db/sort-schedules-by-time (car days)))
-          (setq days (cdr days)))))
-    list))
-
-
-(defun mhc-db-scan-month (year month &optional nosort)
-  (let ((list (mhc-db/eval-for-month year month)))
-    (let ((days list))
-      (if nosort
-          ;; 所用の開始時間に基づく並べ替えは行わずに、祝日のチェックのみを行う
-          (while days
-            (mhc-day-set-holiday (car days) (mhc-db/holiday-p (car days)))
-            (setq days (cdr days)))
-        ;; 所用の開始時間に基づく並べ替えも同時に行う
-        (while days
-          (mhc-day-set-schedules (car days) (mhc-db/sort-schedules-by-time (car days)))
-          (setq days (cdr days)))))
-    list))
-
-
 (defun mhc-db-scan-todo (day)
   (mapcar 'cdr
           (sort (mapcar
@@ -191,6 +162,28 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
                             nil
                           (> (car a) (car b))))))))))
 
+(defun mhc-db-scan (b e &optional nosort category)
+  (let ((command nil))
+    (unless (and (processp mhc-process)
+                 (eq (process-status mhc-process) 'run))
+      (mhc-start-process))
+    (setq command (format "scan --format=emacs %04d%02d%02d-%04d%02d%02d%s"
+                          (mhc-date-yy b)
+                          (mhc-date-mm b)
+                          (mhc-date-dd b)
+                          (mhc-date-yy e)
+                          (mhc-date-mm e)
+                          (mhc-date-dd e)
+                          (if category  (format " --category=%s" category) "")))
+    (message "COMMAND: %s" command)
+    (mhc-process-send-command command)))
+
+(defun mhc-db-scan-month (year month &optional nosort category)
+  (let ((first-date (mhc-date-new year month 1)))
+    (mhc-db-scan first-date
+                 (mhc-date-mm-last first-date)
+                 nosort
+                 category)))
 
 (defun mhc-db-add-record-from-buffer (record buffer &optional force-refile)
   (let* ((slot (mhc-logic-record-to-slot record))
