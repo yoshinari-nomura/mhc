@@ -218,6 +218,7 @@ module Mhc
       def format_footer(context);  ")\n"; end
 
       def format_day_header(context, date)
+        # (DAYS_FROM_EPOC . [year month day wday holiday-p (
         format("(%d . [%d %d %d %d nil (", date.absolute_from_epoch, date.year, date.month, date.day, date.wday)
       end
 
