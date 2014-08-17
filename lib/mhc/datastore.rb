@@ -12,29 +12,9 @@ module Mhc
       @basedir   = Pathname.new(File.expand_path(basedir))
       @slot_top  = @basedir
       @uid_top   = @basedir + "db/uid"
-      @cache_top = @basedir + "/cache"
       @logfile   = @basedir + 'db/mhc-db-transaction.log'
     end
 
-    # find newer items than CACHE_FILE from CANDIDATES
-    def newer_items(cache_file, candidates)
-      cache_mtime = File.mtime(cache_file)
-      candidates.select do |item|
-        File.exist?(item) and cache_mtime < File.mtime(item)
-      end
-    end
-
-    def set_cache(name, value)
-      cache_file = File.expand_path(name, @cache_top)
-      File.open(cache_file, "w") do |f|
-        f.write value
-      end
-    end
-
-    def cache(name)
-      cache_file = File.expand_path(name, @cache_top)
-      File.open(cache_file, "r") do |f|
-        f.read
       end
     end
 
