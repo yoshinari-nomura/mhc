@@ -793,10 +793,8 @@ The keys that are defined for mhc-calendar-mode are:
   (let ((filename (mhc-calendar/in-summary-p)) key)
     (if (null filename)
         (message "Nothing to do in this point.")
-      (setq key (mhc-slot-directory-to-key
-                 (directory-file-name (file-name-directory filename))))
       (mhc-delete-file
-       (assoc filename (mhc-slot-records (mhc-slot-get-month-schedule key)))))))
+       (mhc-parse-file filename)))))
 
 (defun mhc-calendar-modify ()
   (interactive)

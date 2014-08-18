@@ -571,9 +571,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
   "Return record on current line."
   (let ((filename (mhc-summary-filename mailer)))
     (if filename
-        (let ((key (mhc-slot-directory-to-key
-                    (directory-file-name (file-name-directory filename)))))
-          (assoc filename (mhc-slot-records (mhc-slot-get-month-schedule key)))))))
+        (mhc-parse-file filename))))
 
 (defun mhc-summary-folder-to-path (folder &optional msg)
   (let ((fld
