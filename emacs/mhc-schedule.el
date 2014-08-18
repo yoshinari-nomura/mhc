@@ -84,23 +84,6 @@
 (defmacro mhc-schedule-region-end (schedule)
   `(cdr (mhc-schedule-region ,schedule)))
 
-;; Need to be deleted.
-(defsubst mhc-schedule-todo-lank (schedule)
-  (if schedule
-      (mhc-logic-todo (mhc-schedule-condition schedule))))
-
-(defsubst mhc-schedule-todo-deadline (schedule)
-  (and schedule
-       (or (car (mhc-logic/day (mhc-schedule-condition schedule)))
-           (nth 2 (assq
-                   'mhc-logic/condition-duration
-                   (mhc-logic/and
-                    (mhc-schedule-condition schedule))))
-           (cadr (assq
-                  'mhc-logic/condition-duration-end
-                  (mhc-logic/and
-                   (mhc-schedule-condition schedule)))))))
-
 (defmacro mhc-schedule/set-subject (schedule subject)
   `(aset ,schedule 2 ,subject))
 (defmacro mhc-schedule/set-location (schedule location)

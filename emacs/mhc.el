@@ -543,11 +543,6 @@ If HIDE-PRIVATE, private schedules are suppressed."
         (setq afrom (mhc-date-mm-first ato)))))
     (message "%s" (mhc-date-format date "Scanning %04d/%02d..." yy mm))
     (unless (eq 'direct mailer)
-      (when (and (eq mhc-todo-position 'top)
-                 (or mhc-insert-todo-list mhc-insert-memo-list))
-        (mhc-summary-make-todo-memo today mailer category-predicate secret)
-        (insert (make-string mhc-todo-mergin ?\n))
-        (mhc-summary/insert-separator))
       (setq mhc-summary-buffer-current-date-month
             (mhc-date-mm-first date)))
     (when (and bfrom bto)
@@ -582,11 +577,6 @@ If HIDE-PRIVATE, private schedules are suppressed."
                    (format " CW %d " (mhc-date-cw afrom))))))
       (mhc-summary-make-contents afrom ato mailer category-predicate secret))
     (unless (eq 'direct mailer)
-      (when (and (eq mhc-todo-position 'bottom)
-                 (or mhc-insert-todo-list mhc-insert-memo-list))
-        (mhc-summary/insert-separator)
-        (insert (make-string mhc-todo-mergin ?\n))
-        (mhc-summary-make-todo-memo today mailer category-predicate secret))
       (when mhc-insert-calendar
         (mhc-calendar-insert-rectangle-at
          date

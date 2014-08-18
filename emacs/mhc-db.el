@@ -106,62 +106,6 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
                 (mhc-day-schedules dayinfo))
                (lambda (a b) (< (car a) (car b))))))))
 
-
-(defun mhc-db-scan-todo (day)
-  (mapcar 'cdr
-          (sort (mapcar
-                 (lambda (schedule)
-                   (cons (mhc-schedule-priority schedule)
-                         schedule))
-                 (sort (mhc-day-schedules
-                        (mhc-logic-eval-for-date
-                         (mhc-day-let day
-                           (mhc-db/get-sexp-list-for-month year month))
-                         day 'todo))
-                       (lambda (x y)
-                         (< (or (mhc-schedule-todo-deadline x) 65535)
-                            (or (mhc-schedule-todo-deadline y) 65535)))))
-                (lambda (a b)
-                  (if (and (null (car a)) (car b))
-                      nil
-                    (if (and (null (car b)) (car a))
-                        t
-                      (if (and (null (car b)) (null (car a)))
-                          nil
-                        (> (car a) (car b)))))))))
-
-(defun mhc-db-scan-memo (day)
-  "行方不明の schedule の取得"
-  (let ((schedules (mapcar
-                    (lambda (f) (car (mhc-record-schedules f)))
-                    (apply (function nconc)
-                           (delq nil
-                                 (mapcar (lambda (x)
-                                           (and x
-                                                (setq x (mhc-slot-records x))
-                                                (copy-sequence x)))
-                                         (list (mhc-slot-get-intersect-schedule)))))))
-        schedule memos)
-    (while (setq schedule (car schedules))
-      (unless (or (mhc-logic/day (mhc-schedule-condition schedule))
-                  (mhc-logic/and (mhc-schedule-condition schedule))
-                  (and mhc-insert-todo-list
-                       (mhc-schedule-in-category-p schedule "todo")))
-        (setq memos (cons schedule memos)))
-      (setq schedules (cdr schedules)))
-    (mapcar 'cdr
-            (sort (mapcar (lambda (x)
-                            (cons (mhc-schedule-priority x) x))
-                          memos)
-                  (lambda (a b)
-                    (if (and (null (car a)) (car b))
-                        nil
-                      (if (and (null (car b)) (car a))
-                          t
-                        (if (and (null (car b)) (null (car a)))
-                            nil
-                          (> (car a) (car b))))))))))
-
 (defun mhc-db-scan (b e &optional nosort category)
   (let ((command nil))
     (unless (and (processp mhc-process)

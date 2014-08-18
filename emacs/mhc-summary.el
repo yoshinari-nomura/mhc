@@ -686,29 +686,6 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
        (car dayinfo-list) mailer
        (or category-predicate mhc-default-category-predicate-sexp)
        secret)
-      (when (and mhc-insert-overdue-todo
-                 (mhc-date= (mhc-day-date (car dayinfo-list)) mhc-summary/today))
-        (setq todo-list (mhc-db-scan-todo mhc-summary/today))
-        (while todo-list
-          (setq deadline (mhc-schedule-todo-deadline (car todo-list)))
-          (when (and deadline
-                     (if mhc-summary-display-todo
-                         (> (mhc-date- mhc-summary/today deadline) 0)
-                       (>= (mhc-date- mhc-summary/today deadline) 0))
-                     (not (mhc-schedule-in-category-p (car todo-list) "done")))
-            (setq overdue (cons (car todo-list) overdue)))
-          (setq todo-list (cdr todo-list)))
-        (setq mhc-tmp-day mhc-summary/today)
-        (setq overdue (nreverse overdue))
-        (while overdue
-          (mhc-summary-insert-contents
-           (car overdue)
-           (and secret
-                (mhc-schedule-in-category-p (car overdue)
-                                            mhc-category-as-private))
-           'mhc-overdue-todo-line-insert
-           mailer)
-          (setq overdue (cdr overdue))))
       (and mhc-use-week-separator
            (eq (mhc-day-day-of-week (car dayinfo-list))
                (mhc-end-day-of-week))
@@ -719,55 +696,6 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
               (format " CW %d " (mhc-date-cw
                                  (mhc-date++ (mhc-day-date (car dayinfo-list))))))))
       (setq dayinfo-list (cdr dayinfo-list)))))
-
-
-(defun mhc-summary-make-todo-memo (today mailer category-predicate secret)
-  (when mhc-insert-todo-list
-    (mhc-summary-make-todo-list today mailer category-predicate secret))
-  (when mhc-insert-memo-list
-    (mhc-summary-make-memo-list today mailer category-predicate secret)))
-
-
-(defun mhc-summary-make-todo-list
-  (day mailer &optional category-predicate secret)
-  (let ((schedules (mhc-db-scan-todo day))
-        (mhc-tmp-day day))
-    (if schedules
-        (progn
-          (insert (mhc-day-let day
-                    (format mhc-todo-string-heading
-                            year month day-of-month))
-                  "\n")
-          (while schedules
-            (if (and (if (mhc-schedule-in-category-p (car schedules) "done")
-                         mhc-todo-display-done t)
-                     (funcall category-predicate (car schedules)))
-                (mhc-summary-insert-contents
-                 (car schedules)
-                 (and secret
-                      (mhc-schedule-in-category-p (car schedules)
-                                                  mhc-category-as-private))
-                 'mhc-todo-line-insert
-                 mailer))
-            (setq schedules (cdr schedules)))))))
-
-
-(defun mhc-summary-make-memo-list
-  (day mailer &optional category-predicate secret)
-  (let ((schedules (mhc-db-scan-memo day))
-        (mhc-tmp-day day))
-    (when schedules
-      (insert (format "%s\n" mhc-memo-string-heading))
-      (while schedules
-        (when (funcall category-predicate (car schedules))
-          (mhc-summary-insert-contents
-           (car schedules)
-           (and secret
-                (mhc-schedule-in-category-p (car schedules)
-                                            mhc-category-as-private))
-           'mhc-memo-line-insert
-           mailer))
-        (setq schedules (cdr schedules))))))
 
 
 (defun mhc-summary/line-year-string ()
