@@ -22,7 +22,6 @@ require "bundler/setup"
 
 require "thor"
 require "mhc"
-require "mhc/command"
 
 Encoding.default_external="UTF-8"
 

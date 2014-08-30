@@ -1,26 +1,6 @@
 require 'tzinfo'
 require 'ri_cal'
 require "kconv"
-require "mhc/version"
-require "mhc/calendar"
-require "mhc/converter"
-require "mhc/datastore"
-require "mhc/event"
-require "mhc/formatter"
-require "mhc/logger"
-require "mhc/occurrence"
-require "mhc/occurrence_enumerator"
-require "mhc/date_helper"
-require "mhc/date_frame"
-require "mhc/date_enumerator"
-require "mhc/property_value"
-require "mhc/query"
-require "mhc/sync"
-require "mhc/modifier"
-require "mhc/config"
-require "mhc/builder"
-require "mhc/etag"
-require "mhc/caldav"
 
 module Mhc # :nodoc:
   def self.default_tzid=(tzid)
@@ -38,4 +18,28 @@ module Mhc # :nodoc:
   end
 
   class ConfigurationError < StandardError ; end
+
+  dir = File.dirname(__FILE__) + "/mhc"
+
+  autoload :Builder,              "#{dir}/builder.rb"
+  autoload :CalDav,               "#{dir}/caldav.rb"
+  autoload :Calendar,             "#{dir}/calendar.rb"
+  autoload :Command,              "#{dir}/command.rb"
+  autoload :Config,               "#{dir}/config.rb"
+  autoload :Converter,            "#{dir}/converter.rb"
+  autoload :DataStore,            "#{dir}/datastore.rb"
+  autoload :DateEnumerator,       "#{dir}/date_enumerator.rb"
+  autoload :DateFrame,            "#{dir}/date_frame.rb"
+  autoload :DateHelper,           "#{dir}/date_helper.rb"
+  autoload :EtagStore,            "#{dir}/etag.rb"
+  autoload :Event,                "#{dir}/event.rb"
+  autoload :Formatter,            "#{dir}/formatter.rb"
+  autoload :Logger,               "#{dir}/logger.rb"
+  autoload :Modifier,             "#{dir}/modifier.rb"
+  autoload :Occurrence,           "#{dir}/occurrence.rb"
+  autoload :OccurrenceEnumerator, "#{dir}/occurrence_enumerator.rb"
+  autoload :PropertyValue,        "#{dir}/property_value.rb"
+  autoload :Query,                "#{dir}/query.rb"
+  autoload :Sync,                 "#{dir}/sync.rb"
+  autoload :Version,              "#{dir}/version.rb"
 end

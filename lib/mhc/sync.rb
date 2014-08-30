@@ -35,11 +35,12 @@
 #
 module Mhc
   module Sync
-    subdir = File.dirname(__FILE__) + "/sync/"
-    require subdir + "driver.rb"
-    require subdir + "status.rb"
-    require subdir + "status_manager.rb"
-    require subdir + "strategy.rb"
-    require subdir + "syncinfo.rb"
+    dir = File.dirname(__FILE__) + "/sync"
+
+    autoload :Driver,        "#{dir}/driver.rb"
+    autoload :Status,        "#{dir}/status.rb"
+    autoload :StatusManager, "#{dir}/status_manager.rb"
+    autoload :Strategy,      "#{dir}/strategy.rb"
+    autoload :Log,           "#{dir}/syncinfo.rb"
   end # module  Sync
 end # module Mhc

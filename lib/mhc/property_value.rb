@@ -17,15 +17,17 @@ module Mhc
 
       alias_method :to_s, :to_mhc_string
     end
-  end
 
-  subdir = File.dirname(__FILE__) + "/property_value/"
-  require subdir + "date.rb"
-  require subdir + "integer.rb"
-  require subdir + "list.rb"
-  require subdir + "period.rb"
-  require subdir + "range.rb"
-  require subdir + "recurrence_condition.rb"
-  require subdir + "text.rb"
-  require subdir + "time.rb"
-end
+    dir = File.dirname(__FILE__) + "/property_value"
+
+    autoload :Date,                "#{dir}/date.rb"
+    autoload :Integer,             "#{dir}/integer.rb"
+    autoload :List,                "#{dir}/list.rb"
+    autoload :Period,              "#{dir}/period.rb"
+    autoload :Range,               "#{dir}/range.rb"
+    autoload :RecurrenceCondition, "#{dir}/recurrence_condition.rb"
+    autoload :Text,                "#{dir}/text.rb"
+    autoload :Time,                "#{dir}/time.rb"
+
+  end # modlue PropertyValue
+end # module Mhc
