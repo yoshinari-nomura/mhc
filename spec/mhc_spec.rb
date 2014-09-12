@@ -124,7 +124,7 @@ describe Mhc::Event do
 
 
 
-  it "should occur weekly on Monday and Thursday from 2014-04-01 to 2014-04-30 with exceptoin of 2014-04-10 (Thu)" do
+  it "should occur weekly on Monday and Thursday from 2014-04-01 to 2014-04-30 with exception of 2014-04-10 (Thu)" do
     ev = Mhc::Event.parse <<-EOF.strip_heredoc
       X-SC-Subject: Weekly Event on Monday and Thursday
       X-SC-Location: Office
