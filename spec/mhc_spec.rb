@@ -139,7 +139,7 @@ describe Mhc::Event do
     to   = Mhc::PropertyValue::Date.new(2014,04,24)
     # range.first is effective in narrowing the scan region so we will not have "2014-04-03"
     expect(ev.occurrences(range:from..to).take(30).map{|occurrence| occurrence.date.to_s}).to eq \
-      ["2014-04-07", "2014-04-14", "2014-04-17", "2014-04-21", "2014-04-24"]
+      ["20140407", "20140414", "20140417", "20140421", "20140424"]
   end
 
   it "should occur yearly on March 21" do
@@ -154,7 +154,7 @@ describe Mhc::Event do
       X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
     EOF
     expect(ev.occurrences.take(30).map{|o| o.date.to_s}).to eq \
-      ["2015-03-21", "2016-03-21", "2017-03-21", "2018-03-21", "2019-03-21", "2020-03-21"]
+      ["20150321", "20160321", "20170321", "20180321", "20190321", "20200321"]
   end
 
   it "should show single day in X-SC-Day:" do
@@ -165,7 +165,7 @@ describe Mhc::Event do
       X-SC-Record-Id: 1653B99D-DED2-4758-934F-B868BFCA9E9F
     EOF
     expect(ev.occurrences.take(30).map{|o| o.date.to_s}).to eq \
-      ["2014-05-09"]
+      ["20140509"]
   end
 
   it "should show three enumerated days listed in X-SC-Day:" do
@@ -199,7 +199,7 @@ describe Mhc::Event do
       X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
     EOF
     expect(ev.occurrences.take(30).map{|o| "#{o.date} #{o.time_range} #{o.subject}"}).to eq \
-      ["2014-02-03 10:00-12:00 TEST", "2014-05-09 10:00-12:00 TEST", "2014-08-31 10:00-12:00 TEST"]
+      ["20140203 10:00-12:00 TEST", "20140509 10:00-12:00 TEST", "20140831 10:00-12:00 TEST"]
   end
 
   it "should return true when #allday? is called if X-SC-Time: is blank" do

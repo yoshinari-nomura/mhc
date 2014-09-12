@@ -95,6 +95,7 @@ module Mhc
       def to_mhc_string
         return strftime("%Y%m%d")
       end
+      alias_method :to_s, :to_mhc_string
 
       def last_week_of_month?
         return mday > days_of_month - 7
