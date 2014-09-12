@@ -107,9 +107,9 @@ module Mhc
 
       def format_item_header(context, date, item)
         if context[:number_in_day] == 1
-          date.strftime("%m/%d %a ")
+          date.strftime("%Y/%m/%d %a ")
         else
-          " " * 10
+          " " * 15
         end
       end
 
