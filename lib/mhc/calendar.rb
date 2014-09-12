@@ -3,28 +3,11 @@ module Mhc
   class Calendar
 
     def initialize(datastore, modifiers = [], &default_scope)
-      @datastore = datastore
-      @modifiers = modifiers || []
-      @logger    = @datastore.logger
       @db = {}
+      @datastore     = datastore
+      @modifiers     = modifiers || []
+      @logger        = @datastore.logger
       @default_scope = default_scope
-    end
-
-    def delete_event(event, add_log = true)
-      @datastore.delete(event.uid)
-      if add_log
-        @logger << Mhc::LogEntry.new('D', Time.now, event.uid, @datastore.path(event.uid), event.subject)
-      end
-      event.delete
-      return self
-    end
-
-    def add_event(event, add_log = true)
-      @datastore.add(event.uid, event.dump, event_to_slot(event))
-      if add_log
-        @logger <<  Mhc::LogEntry.new('M', Time.now, event.uid, @datastore.path(event.uid), event.subject)
-      end
-      return self
     end
 
     def find(uid: uid)
@@ -115,19 +98,6 @@ module Mhc
     def in_scope?(oc, &scope_block)
       (!@default_scope || @default_scope.call(oc)) &&
         (!scope_block || scope_block.call(oc))
-    end
-
-    # for debug
-    def dump_db
-      @db.keys.each do |slot|
-        puts "* #{slot}"
-        @db[slot].keys.sort.each do |date|
-          puts "** #{date}"
-          @db[slot][date].each do |oc|
-            puts "*** #{oc.subject}"
-          end
-        end
-      end
     end
 
     def register_event(slot, event, date_range)
