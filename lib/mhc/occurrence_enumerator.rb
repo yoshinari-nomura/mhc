@@ -24,7 +24,7 @@ module Mhc
     # BYSETPOS   = [+-]\d+,...       # 1 to 366
     # WKST       = (SU|MO|TU|WE|TH|FR|SA)
     #
-    def initialize(event, dates, exceptions, recurrence_condition, duration, range = nil)
+    def initialize(event, dates, exceptions, recurrence_condition, duration, date_range = nil)
       @event = event
 
       # Since some articles with RECURRENCE_CONDITION and without DURATION
@@ -34,11 +34,11 @@ module Mhc
       #   X-SC-Subject: New Year's Day
       #   X-SC-Cond: Jan 1
       #
-      range = (Date.new(1970, 1, 1) .. Date.new(Date.today.year + 50)) unless range
+      date_range = (Date.new(1970, 1, 1) .. Date.new(Date.today.year + 50)) unless date_range
 
       # If we have both DURATION and RANGE, we can take narrower term
       # by the combination of the both.
-      range = duration.narrow(range.first, range.last)
+      date_range = duration.narrow(date_range.first, date_range.last)
 
       # range.last is effective in narrowing the end_date,
       # however, we can't adopt range.first to the start_date.
@@ -52,21 +52,27 @@ module Mhc
       # we need some good way to pass the both duration.first and range.first
       # to the down-stream enumerators.
       #
-      end_date   = range.last
-      start_date = duration.first || range.first
+      end_date   = date_range.last
+      start_date = duration.first || date_range.first
 
-      @enumerator = Mhc::DateEnumerator.new(start_date: start_date, end_date: range.last)
-      condition_to_enumerator(@enumerator, recurrence_condition, start_date, range.last)
+      @enumerator = Mhc::DateEnumerator.new(start_date: start_date, end_date: date_range.last)
+      condition_to_enumerator(@enumerator, recurrence_condition, start_date, date_range.last)
       @enumerator.add_by_range_list(range_list: dates)
       @exceptions = exceptions.map{|range| range.to_a }.flatten
+      @date_range = date_range
     end
 
     def each
       @enumerator.each do |date_or_range|
         if date_or_range.respond_to?(:first)
           first_date = date_or_range.first
+          last_date  = date_or_range.last
         else
           first_date = date_or_range
+          last_date  = date_or_range
+        end
+        if last_date < @date_range.first or @date_range.last < first_date
+          next
         end
         next if @exceptions.include?(first_date)
         yield Mhc::Occurrence.new(@event, date_or_range)

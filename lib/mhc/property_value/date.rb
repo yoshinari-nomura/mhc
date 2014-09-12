@@ -127,7 +127,7 @@ module Mhc
       end
 
       def absolute_from_epoch
-        return self - Date.new(1970, 1, 1)
+        return (self - Date.new(1970, 1, 1)).to_i
       end
 
       #

@@ -137,9 +137,9 @@ describe Mhc::Event do
     EOF
     from = Mhc::PropertyValue::Date.new(2014,04,7)
     to   = Mhc::PropertyValue::Date.new(2014,04,24)
-    # range.first is not effective in narrowing the scan region so we will have "2014-04-03"
+    # range.first is effective in narrowing the scan region so we will not have "2014-04-03"
     expect(ev.occurrences(range:from..to).take(30).map{|occurrence| occurrence.date.to_s}).to eq \
-      ["2014-04-03", "2014-04-07", "2014-04-14", "2014-04-17", "2014-04-21", "2014-04-24"]
+      ["2014-04-07", "2014-04-14", "2014-04-17", "2014-04-21", "2014-04-24"]
   end
 
   it "should occur yearly on March 21" do
