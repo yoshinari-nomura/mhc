@@ -16,95 +16,7 @@
 
 (require 'mhc-day)
 (require 'mhc-process)
-(require 'mhc-slot)
 (require 'mhc-schedule)
-
-(defun mhc-db/get-sexp-list-for-month (year month)
-  "指定された月のスケジュールを探索するときに、評価するべきS式のリストを得る"
-  (mapcar
-   (lambda (f) (mhc-record-sexp f))
-   (apply (function nconc)
-          (delq nil
-                (mapcar (lambda (x)
-                          (and x
-                               (setq x (mhc-slot-records x))
-                               (copy-sequence x)))
-                        (list
-                         (mhc-slot-get-month-schedule (cons year month))
-                         (mhc-slot-get-intersect-schedule)
-                         (mhc-slot-get-constant-schedule)))))))
-
-
-(defun mhc-db/eval-for-duration (from to &optional todo) "\
-ある期間 FROM〜TO に対してスケジュールを探索する
-FROM, TO は 1970/01/01 からの経過日数を用いて指定"
-  (let (list new)
-    (mhc-day-let from
-      (let* ((day from)
-             (week-of-month (/ (1- day-of-month) 7))
-             ;; FIXME: mhc-date.el の内部関数を呼び出している。
-             (last-day-of-month (mhc-date/last-day-of-month year month))
-             (last-week (> 7 (- last-day-of-month day-of-month)))
-             (sexp-list (mhc-db/get-sexp-list-for-month year month)))
-        (while (<= day to)
-          (setq new (mhc-day-new day year month day-of-month day-of-week))
-          (mhc-day-set-schedules new (delq nil
-                                           (mapcar (lambda (sexp)
-                                                     (and sexp
-                                                          (funcall sexp)))
-                                                   sexp-list)))
-          (setq list (cons new list)
-                day (1+ day)
-                day-of-month (1+ day-of-month)
-                day-of-week (% (1+ day-of-week) 7))
-          (if (> day-of-month last-day-of-month)
-              ;; 1ヶ月を超えて連続した探索を行う場合
-              (setq month (1+ (% month 12))
-                    year (if (= 1 month) (1+ year) year)
-                    day-of-month 1
-                    week-of-month 0
-                    last-week nil
-                    ;; FIXME: mhc-date.el の内部関数を呼び出している。
-                    last-day-of-month (mhc-date/last-day-of-month year month)
-                    sexp-list (mhc-db/get-sexp-list-for-month year month))
-            ;; 週末毎の処理
-            (setq week-of-month (/ (1- day-of-month) 7))
-            (and (not last-week)
-                 (> 7 (- last-day-of-month day-of-month))
-                 (setq last-week t)))))
-      (nreverse list))))
-
-
-(defun mhc-db/eval-for-month (year month &optional todo)
-  "指定された月のスケジュールを探索"
-  (let ((from (mhc-date-new year month 1)))
-    (mhc-db/eval-for-duration from (mhc-date-mm-last from) todo)))
-
-(defun mhc-db/holiday-p (dayinfo)
-  (catch 'holiday
-    (let ((schedules (mhc-day-schedules dayinfo)))
-      (while schedules
-        (if (mhc-schedule-in-category-p (car schedules) "holiday")
-            (throw 'holiday t))
-        (setq schedules (cdr schedules))))))
-
-
-(defun mhc-db/sort-schedules-by-time (dayinfo)
-  (if (mhc-day-schedules dayinfo)
-      (let (time)
-        (mapcar
-         (function cdr)
-         (sort (mapcar
-                (lambda (schedule)
-                  (cons (cond
-                         ((setq time (mhc-schedule-time-begin schedule)) time)
-                         ((mhc-schedule-in-category-p schedule "holiday")
-                          (mhc-day-set-holiday dayinfo t)
-                          -1)
-                         (t 0))
-                        schedule))
-                (mhc-day-schedules dayinfo))
-               (lambda (a b) (< (car a) (car b))))))))
 
 (defun mhc-db-scan (b e &optional nosort category)
   (let ((command nil))
@@ -131,7 +43,11 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
 
 (defun mhc-db-add-record-from-buffer (record buffer &optional force-refile)
   (let* ((slot (mhc-logic-record-to-slot record))
-         (directory (and slot (mhc-slot-key-to-directory slot)))
+         (directory (and slot
+                         (file-name-as-directory
+                          (expand-file-name
+                           "spool"
+                           (mhc-summary-folder-to-path mhc-base-folder)))))
          (old-record))
     (unless slot (error "Cannot get schedule slot"))
     (if (mhc-record-name record)
@@ -160,22 +76,16 @@ FROM, TO は 1970/01/01 からの経過日数を用いて指定"
                    (not (eq record old-record)))
               (let* ((dir (file-name-directory
                            (directory-file-name
-                            (mhc-record-name old-record))))
-                     (slot (mhc-slot-directory-to-key dir)))
-                (mhc-misc-touch-directory dir)
-                (mhc-slot-update-cache slot 'remove old-record)))
+                            (mhc-record-name old-record)))))
+                (mhc-misc-touch-directory dir)))
           (mhc-misc-touch-directory directory)
-          (mhc-slot-update-cache slot 'add record)
           t))))
 
 
 (defun mhc-db-delete-file (record)
-  (let* ((dir (file-name-directory (directory-file-name (mhc-record-name record))))
-         (slot (mhc-slot-directory-to-key dir)))
+  (let* ((dir (file-name-directory (directory-file-name (mhc-record-name record)))))
     (mhc-record-delete record)
-    (mhc-misc-touch-directory dir)
-    (mhc-slot-update-cache slot 'remove record)))
-
+    (mhc-misc-touch-directory dir)))
 
 ;; FIXME: X-SC-Schedule ヘッダによって指定された子スケジュールに対する
 ;; 例外規則の追加が動作しない。

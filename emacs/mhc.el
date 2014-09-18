@@ -1092,7 +1092,6 @@ the default action of this command is changed to the latter."
   "Reset MHC."
   (interactive)
   (message "MHC resetting...")
-  (mhc-slot-clear-cache)
   (mhc-face-setup)
   (mhc-calendar-setup)
   (and (mhc-use-icon-p) (mhc-icon-setup))
@@ -1112,7 +1111,6 @@ the default action of this command is changed to the latter."
 (defun mhc-exit ()
   (setq mhc-setup-p nil)
   (mhc-file-exit)
-  (mhc-slot-clear-cache)
   (mhc-kill-all-buffers)
   (run-hooks 'mhc-exit-hook))
 

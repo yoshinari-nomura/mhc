@@ -67,7 +67,6 @@
     ("mhc-ps"       . t)
     ("mhc-record"   . t)
     ("mhc-schedule" . t)
-    ("mhc-slot"     . t)
     ("mhc-summary"  . t)
     ("mhc-sync"     . t)
     ("mhc-vars"     . t)
