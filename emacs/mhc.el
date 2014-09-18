@@ -487,9 +487,10 @@ If HIDE-PRIVATE, private schedules are suppressed."
                     mhc-default-category-predicate-sexp
                     hide-private)
     (goto-char (point-min))
-    (forward-line (1- line))
-    (beginning-of-line)))
-
+    (if (eq selective-display t)
+        (re-search-forward "[\n\C-m]" nil 'end (1- line))
+      (forward-line (1- line))))
+  (beginning-of-line))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; make scan form.
