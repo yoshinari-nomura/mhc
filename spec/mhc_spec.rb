@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Mhc do
   it 'should have a version number' do
-    Mhc::VERSION.should_not be_nil
+    expect(Mhc::VERSION).not_to be_nil
   end
 end
 
@@ -36,7 +36,7 @@ describe Mhc::Event do
 
   before :each do
     time_now = ::Time.utc(2014, 1, 1)
-    ::Time.stub(:now).and_return(time_now)
+    allow(::Time).to receive(:now).and_return(time_now)
   end
 
   it "should parse a string and dump to the same string" do
