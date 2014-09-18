@@ -677,24 +677,26 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 
 
 (defun mhc-summary-make-contents
-  (from to mailer &optional category-predicate secret)
-  (let ((dayinfo-list (mhc-db-scan from to))
-        todo-list overdue deadline mhc-tmp-day)
+  (dayinfo-list from to mailer &optional category-predicate secret)
+  (let (todo-list overdue deadline mhc-tmp-day)
     (setq mhc-summary/today (mhc-date-now))
     (while dayinfo-list
-      (mhc-summary/insert-dayinfo
-       (car dayinfo-list) mailer
-       (or category-predicate mhc-default-category-predicate-sexp)
-       secret)
-      (and mhc-use-week-separator
-           (eq (mhc-day-day-of-week (car dayinfo-list))
-               (mhc-end-day-of-week))
-           (> (length dayinfo-list) 1)
-           (mhc-summary/insert-separator
-            nil
-            (when mhc-summary/cw-separator
-              (format " CW %d " (mhc-date-cw
-                                 (mhc-date++ (mhc-day-date (car dayinfo-list))))))))
+      (if (or (mhc-date< (mhc-day-date (car dayinfo-list)) from)
+              (mhc-date> (mhc-day-date (car dayinfo-list)) to))
+          ()
+        (mhc-summary/insert-dayinfo
+         (car dayinfo-list) mailer
+         (or category-predicate mhc-default-category-predicate-sexp)
+         secret)
+        (and mhc-use-week-separator
+             (eq (mhc-day-day-of-week (car dayinfo-list))
+                 (mhc-end-day-of-week))
+             (> (length dayinfo-list) 1)
+             (mhc-summary/insert-separator
+              nil
+              (when mhc-summary/cw-separator
+                (format " CW %d " (mhc-date-cw
+                                   (mhc-date++ (mhc-day-date (car dayinfo-list)))))))))
       (setq dayinfo-list (cdr dayinfo-list)))))
 
 

@@ -387,7 +387,7 @@ ww-japanese-long => \"土曜日\"
       (setq days (cdr days))
       (setq i (1+ i)))))
 
-(defun mhc-calendar-insert-rectangle-at (date col &optional months)
+(defun mhc-calendar-insert-rectangle-at (date col &optional months dayinfo-list)
   (let ((m nil) (rect nil) (center nil))
     (save-excursion
       (setq date (mhc-date-mm-first date))
@@ -407,7 +407,8 @@ ww-japanese-long => \"土曜日\"
               (nconc
                rect
                (mhc-calendar/make-rectangle
-                (mhc-date-mm- date (- m center)) mhc-calendar/separator-str)
+                (mhc-date-mm- date (- m center)) mhc-calendar/separator-str
+                dayinfo-list)
                (if (> m 1) (list (concat mhc-calendar/separator-str " ")))))
         (setq m (1- m)))
       (mhc-misc-insert-rectangle rect))))
@@ -443,7 +444,7 @@ ww-japanese-long => \"土曜日\"
     (concat "    " (if (mhc-calendar/cw-week) "   " "")
             ret cw)))
 
-(defun mhc-calendar/make-rectangle (&optional date separator)
+(defun mhc-calendar/make-rectangle (&optional date separator dayinfo-list)
   (let* ((today (mhc-date-now))
          (month (list (concat separator " "
                               mhc-calendar/week-header)
@@ -451,14 +452,16 @@ ww-japanese-long => \"土曜日\"
                               (funcall mhc-calendar-header-function
                                        (or date today)))))
          (mm (mhc-date-mm (or date today)))
-         (days (mhc-db-scan-month (mhc-date-yy (or date today)) mm t))
+         (days (or dayinfo-list (mhc-db-scan-month (mhc-date-yy (or date today)) mm t)))
          (dayinfo-cache days)
          (separator (if separator separator mhc-calendar/separator-str))
-         (start (mhc-day-day-of-week (car days)))
          (i 0)
+         (from  (mhc-date-mm-first date))
+         (to    (mhc-date-mm-last  date))
+         (start (mhc-date-ww date))
          week color cw day cdate map)
     (when (mhc-calendar/cw-week)
-      (setq cw (mhc-date-cw (mhc-day-date (car days))))
+      (setq cw (mhc-date-cw from))
       (setq week (cons (mhc-calendar/cw-string cw) week)))
     (unless (= (mhc-end-day-of-week) 6)
       (setq start (+ start 6))
@@ -468,42 +471,45 @@ ww-japanese-long => \"土曜日\"
       (setq week (cons "  " week))
       (setq i (1+ i)))
     (while days
-      (setq cdate (mhc-day-date (car days)))
-      (when (and (null week) (mhc-calendar/cw-week))
-        (if (or (eq mm 1) (eq mm 12))
-            (setq cw (mhc-date-cw cdate))
-          (setq cw (1+ cw)))
-        (setq week (cons (mhc-calendar/cw-string cw) week)))
-      (setq color
-            (cond
-             ((= 0 (mhc-day-day-of-week (car days)))
-              'mhc-calendar-face-sunday)
-             ((mhc-day-holiday (car days))
-              (mhc-face-category-to-face "Holiday"))
-             ((= 6 (mhc-day-day-of-week (car days)))
-              'mhc-calendar-face-saturday)
-             (t 'mhc-calendar-face-default)))
-      (when (mhc-date= today cdate)
-        (setq color (mhc-face-get-today-face color)))
-      (when (mhc-day-busy-p (car days))
-        (setq color (mhc-face-get-busy-face color)))
-      (setq day (format "%2d" (mhc-day-day-of-month (car days))))
-      (when color (mhc-face-put day color))
-      (add-text-properties 0 (length day)
-                           `(mhc-calendar/date-prop ,cdate
-                                                    mouse-face ,(if mhc-calendar-use-mouse-highlight
-                                                                    'highlight nil)
-                                                    help-echo ,(if mhc-calendar-use-help-echo
-                                                                   (mhc-calendar/get-contents cdate dayinfo-cache) nil))
-                           day)
-      (setq week (cons day week))
-      (when (= (mhc-end-day-of-week) (mhc-day-day-of-week (car days)))
-        (setq month (cons (mapconcat
-                           (function identity)
-                           (cons separator (nreverse week))
-                           " ")
-                          month)
-              week nil))
+      (if (or (mhc-date< (mhc-day-date (car days)) from)
+              (mhc-date> (mhc-day-date (car days)) to))
+          ()
+        (setq cdate (mhc-day-date (car days)))
+        (when (and (null week) (mhc-calendar/cw-week))
+          (if (or (eq mm 1) (eq mm 12))
+              (setq cw (mhc-date-cw cdate))
+            (setq cw (1+ cw)))
+          (setq week (cons (mhc-calendar/cw-string cw) week)))
+        (setq color
+              (cond
+               ((= 0 (mhc-day-day-of-week (car days)))
+                'mhc-calendar-face-sunday)
+               ((mhc-day-holiday (car days))
+                (mhc-face-category-to-face "Holiday"))
+               ((= 6 (mhc-day-day-of-week (car days)))
+                'mhc-calendar-face-saturday)
+               (t 'mhc-calendar-face-default)))
+        (when (mhc-date= today cdate)
+          (setq color (mhc-face-get-today-face color)))
+        (when (mhc-day-busy-p (car days))
+          (setq color (mhc-face-get-busy-face color)))
+        (setq day (format "%2d" (mhc-day-day-of-month (car days))))
+        (when color (mhc-face-put day color))
+        (add-text-properties 0 (length day)
+                             `(mhc-calendar/date-prop ,cdate
+                                                      mouse-face ,(if mhc-calendar-use-mouse-highlight
+                                                                      'highlight nil)
+                                                      help-echo ,(if mhc-calendar-use-help-echo
+                                                                     (mhc-calendar/get-contents cdate dayinfo-cache) nil))
+                             day)
+        (setq week (cons day week))
+        (when (= (mhc-end-day-of-week) (mhc-day-day-of-week (car days)))
+          (setq month (cons (mapconcat
+                             (function identity)
+                             (cons separator (nreverse week))
+                             " ")
+                            month)
+                week nil)))
       (setq days (cdr days)))
     (when week
       (setq month (cons (mapconcat
@@ -674,7 +680,7 @@ The keys that are defined for mhc-calendar-mode are:
     (mhc-summary/insert-separator nil nil
                                   (min (1- (window-width))
                                        (* mhc-calendar-next-offset 3)))
-    (mhc-summary-make-contents date date 'mhc-calendar)
+    (mhc-summary-make-contents (mhc-db-scan date date) date date 'mhc-calendar)
     (delete-char -1)
     (set-buffer-modified-p nil)))
 

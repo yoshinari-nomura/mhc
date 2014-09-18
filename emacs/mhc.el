@@ -503,10 +503,11 @@ If HIDE-PRIVATE, private schedules are suppressed."
 
 
 (defun mhc-scan-month (date mailer category-predicate secret)
-  (let ((from  (mhc-date-mm-first date))
-        (to    (mhc-date-mm-last date))
-        (today (mhc-date-now))
-        bfrom bto afrom ato wweek0 wweek1 wweek2)
+  (let* ((from  (mhc-date-mm-first date))
+         (to    (mhc-date-mm-last date))
+         (today (mhc-date-now))
+         (dayinfo-list (mhc-db-scan (mhc-date-mm-- from) (mhc-date-mm++ to)))
+         bfrom bto afrom ato wweek0 wweek1 wweek2)
     (or (eq 'direct mailer)
         (mhc-summary-generate-buffer date mailer))
     (when mhc-use-wide-scope
@@ -547,7 +548,9 @@ If HIDE-PRIVATE, private schedules are suppressed."
       (setq mhc-summary-buffer-current-date-month
             (mhc-date-mm-first date)))
     (when (and bfrom bto)
-      (mhc-summary-make-contents bfrom bto mailer category-predicate secret)
+      (mhc-summary-make-contents
+       dayinfo-list
+       bfrom bto mailer category-predicate secret)
       (if mhc-use-month-separator
           (mhc-summary/insert-separator
            'wide
@@ -561,7 +564,9 @@ If HIDE-PRIVATE, private schedules are suppressed."
              nil
              (when mhc-summary/cw-separator
                (format " CW %d " (mhc-date-cw (mhc-date++ bto))))))))
-    (mhc-summary-make-contents from to mailer category-predicate secret)
+    (mhc-summary-make-contents
+     dayinfo-list
+     from to mailer category-predicate secret)
     (when (and afrom ato)
       (if mhc-use-month-separator
           (mhc-summary/insert-separator
@@ -576,13 +581,16 @@ If HIDE-PRIVATE, private schedules are suppressed."
              nil
              (when mhc-summary/cw-separator
                    (format " CW %d " (mhc-date-cw afrom))))))
-      (mhc-summary-make-contents afrom ato mailer category-predicate secret))
+      (mhc-summary-make-contents
+       dayinfo-list
+       afrom ato mailer category-predicate secret))
     (unless (eq 'direct mailer)
       (when mhc-insert-calendar
         (mhc-calendar-insert-rectangle-at
          date
          (- (mhc-misc-get-width) mhc-calendar-width)
-         mhc-vertical-calendar-length))
+         mhc-vertical-calendar-length
+         dayinfo-list))
       (mhc-summary-mode-setup date mailer)
       (mhc-mode 1)
       (setq inhibit-read-only nil)
