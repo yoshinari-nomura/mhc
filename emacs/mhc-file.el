@@ -74,7 +74,6 @@
   "*Variable to specify the method to control schdule files."
   :group 'mhc
   :type '(radio (const :tag "Backup and remove" mhc-sync)
-                (const :tag "CVS" mhc-cvs)
                 (symbol :tag "Other")))
 
 (defcustom mhc-file-sync-enable-offline nil

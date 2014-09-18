@@ -52,7 +52,6 @@
   '(("mhc"          . t)
     ("mhc-calendar" . t)
     ("mhc-compat"   . t)
-    ("mhc-cvs"      . t)
     ("mhc-date"     . t)
     ("mhc-day"      . t)
     ("mhc-db"       . t)
