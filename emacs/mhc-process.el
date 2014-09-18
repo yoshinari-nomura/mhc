@@ -16,7 +16,8 @@
 
 (defun mhc-start-process ()
   (interactive)
-  (let ((base-dir (mhc-summary-folder-to-path mhc-base-folder)))
+  (let ((base-dir (mhc-summary-folder-to-path mhc-base-folder))
+        (process-connection-type nil)) ;; use PIPE not tty
     (if (and (processp mhc-process)
              (eq (process-status mhc-process) 'run))
         (kill-process mhc-process))
