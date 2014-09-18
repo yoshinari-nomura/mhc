@@ -134,7 +134,7 @@ class MhcCLI < Thor
 
   def server
     require "shellwords"
-    while line = STDIN.gets # STDIN.noecho(&:gets)
+    while line = STDIN.noecho(&:gets)
       argv = line.chomp.shellsplit
       self.class.start(argv)
     end
