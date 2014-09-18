@@ -19,22 +19,8 @@
   :group 'mhc
   :type 'boolean)
 
-;; Internal Variables:
-(defvar mhc-mew-new-virtual-type (boundp 'mew-regex-summary2)
-  "*Mew virtual format type. Non-nil means Mew 3.0.55 or later.")
-
 (defconst mhc-mew/summary-filename-regex
-  (if mhc-mew-new-virtual-type
-      ".*[^\006\n]+\006 \\+\\([^ ]*\\) \\([0-9]+\\)$"
-    ".*\r *\\+\\([^ \t]+\\)[ \t]+\\([^ \t\n]+\\)"))
-
-;; Mew 6.x does not need invisible property at (beginning-of-line)
-(defconst mhc-mew/header-string "")
-(defconst mhc-mew/header-string-review "")
-
-(defconst mhc-mew/summary-message-alist
-  '((mew-summary-mode . mew-message-mode)
-    (mew-virtual-mode . mew-message-mode)))
+  ".*\r *\\+\\([^ \t]+\\)[ \t]+\\([^ \t\n]+\\)")
 
 (defconst mhc-mew/cs-m17n
   (if (>= emacs-major-version 20) 'ctext '*ctext*))
@@ -69,10 +55,7 @@
       (beginning-of-line)
       (if (not (looking-at mhc-mew/summary-filename-regex))
           ()
-        (setq folder (buffer-substring (match-beginning 1) (match-end 1))
-              number (buffer-substring (match-beginning 2) (match-end 2)))
-        (mhc-summary-folder-to-path folder number)))))
-
+        (buffer-substring (match-beginning 2) (match-end 2))))))
 
 (defun mhc-mew-summary-display-article ()
   "Display the article on the current."
@@ -96,8 +79,7 @@
             (mew-summary-display-command))
            (t (mew-summary-display))))))
   (save-window-excursion
-    (if (eq (cdr (assq major-mode mhc-mew/summary-message-alist))
-            (progn (other-window 1) major-mode))
+    (if (eq (progn (other-window 1) major-mode) 'mew-message-mode)
         (current-buffer))))
 
 
@@ -119,41 +101,9 @@
 
 
 (defun mhc-mew/schedule-foldermsg (schedule)
-  (let ((path (mhc-record-name (mhc-schedule-record schedule))) fld-msg)
-    (if (and
-         path
-         (string-match
-          (concat "^"
-                  (regexp-quote (file-name-as-directory mhc-mail-path)))
-          path))
-        (if (fboundp 'mew-summary-parent-id)
-            (progn
-              (setq fld-msg (concat "+" (substring path (match-end 0))))
-              (setq fld (directory-file-name (file-name-directory fld-msg)))
-              (setq msg (file-name-nondirectory fld-msg))
-              (with-temp-buffer
-                (mew-insert-message fld msg mew-cs-text-for-read mew-header-reasonable-size)
-                (setq msgid (or (mew-idstr-get-first-id
-                                 (mew-header-get-value "X-SC-Record-Id:"))
-                                " "))
-                (setq ref (or (mew-idstr-get-first-id
-                               (mew-header-get-value mew-message-id:))
-                              " ")))
-              (concat "\r " (directory-file-name (file-name-directory fld-msg))
-                      " " (file-name-nondirectory fld-msg)
-                      " " msgid " " ref "  "))
-          (setq fld-msg (concat "+" (substring path (match-end 0))))
-          (concat "\r "
-                  (if mhc-mew-new-virtual-type "<> <> \006 ")
-                  (directory-file-name (file-name-directory fld-msg))
-                  " "
-                  (file-name-nondirectory fld-msg)))
-      "")))
-
+  (concat "\r +MHC " (mhc-record-name (mhc-schedule-record schedule))))
 
 (defun mhc-mew-insert-summary-contents (inserter)
-  (insert (if mhc-tmp-schedule
-              mhc-mew/header-string-review mhc-mew/header-string))
   (funcall inserter)
   (insert (mhc-mew/schedule-foldermsg mhc-tmp-schedule)
           "\n"))
