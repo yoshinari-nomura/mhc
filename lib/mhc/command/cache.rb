@@ -3,7 +3,7 @@ module Mhc
     class Cache
 
       def initialize(calendar)
-        calendar.entries.each do |event|
+        calendar.events.each do |event|
           range = event.range
           puts "#{range.min.to_mhc_string},#{range.max.to_mhc_string},#{event.uid},#{event.subject}"
         end

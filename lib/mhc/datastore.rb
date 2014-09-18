@@ -1,44 +1,38 @@
 require "fileutils"
 
 module Mhc
-  # DataStore provides simple key-value store using background file system.
-  # keys and values are simply mapped to filename and their contents.
-  #
   class DataStore
     def initialize(basedir)
       unless basedir and File.directory?(File.expand_path(basedir.to_s))
         raise Mhc::ConfigurationError, "datastore directory '#{basedir}' not found"
       end
-      @basedir   = Pathname.new(File.expand_path(basedir))
-      @slot_top  = @basedir
-      @uid_top   = @basedir + "db/uid"
-      @logfile   = @basedir + 'db/mhc-db-transaction.log'
+      @basedir = Pathname.new(File.expand_path(basedir))
+      @cache   = Cache.new(File.expand_path("status/cache/events.pstore", @basedir))
     end
 
-    def yield_mhcc(yielder, filename)
-      string = File.open(filename, "r"){|f| f.read }
-      string.scrub!
-      string.gsub!(/^\s*#.*$/, "") # strip comments
-      string.strip!
-      string.split(/\n\n\n*/).each do |header|
-        yielder << [nil, header]
+    def entries(date_range = nil)
+      if date_range
+        int_range = date_range.min.absolute_from_epoch .. date_range.max.absolute_from_epoch
       end
-    end
-
-    def entries(slot = nil)
-      paths = slot_to_path_list(slot)
 
       Enumerator.new do |yielder|
-        paths.each do |path|
-          next unless File.directory?(path)
-          Dir.glob(path + "/**/*.mhc*").each do |ent|
-            if ent =~ /\.mhcc$/
-              yield_mhcc(yielder, ent)
-            else
-              yielder << [ent, File.open(ent, "r"){|f| f.gets("\n\n") }]
+        ["inbox", "spool", "presets"].each do |slot|
+          dir = File.expand_path(slot, @basedir)
+          next unless File.directory?(dir)
+
+          Dir.chdir(dir) do
+            Dir.foreach(".") do |ent|
+              parse_mhcc(ent).each {|ev| yielder << ev} if /\.mhcc$/ =~ ent
+              next unless /\.mhc$/ =~ ent
+              uid = $`
+              cache_entry = @cache.lookup(uid, ent)
+              if !date_range || cache_entry.involved?(int_range)
+                yielder << Event.parse_file(File.expand_path(ent))
+              end
             end
           end
         end
+        @cache.save
       end
     end
 
@@ -46,41 +40,24 @@ module Mhc
       @logger ||= Mhc::Logger.new(@logfile)
     end
 
-    def store(uid, slot, data)
-      path = new_path_in_slot(slot)
-      store_data(path, data)
-      store_uid(uid, path)
-    end
-
     def find_by_uid(uid)
       path = find_path(uid)
       return nil unless path
-
-      File.open(path, "r") do |file|
-        return file.read
-      end
+      return Event.parse_file(path)
     end
 
-    def delete(uid)
-      find_path(uid)
-    end
-
+    ################################################################
     private
 
-    def store_data(path, data)
-      File.open(path, "w") do |file|
-        file.write(data)
-      end
-    end
-
-    def store_uid(uid, path)
-      File.open(@uid_top + uid, "w") do |file|
-        file.write(path)
+    def parse_mhcc(filename)
+      string = File.open(filename).read.scrub.gsub(/^\s*#.*$/, "").strip
+      string.split(/\n\n\n*/).map do |header|
+        Event.parse(header)
       end
     end
 
     def find_path(uid)
-      glob = @slot_top + ('**/' + uid + '.mhc')
+      glob = @basedir + ('**/' + uid + '.mhc')
       return Dir.glob(glob).first
     end
 
@@ -88,35 +65,67 @@ module Mhc
       return @uid_pool + uid
     end
 
-    def slot_to_path_list(slot = nil)
-      if slot
-        [File.expand_path(slot.to_s, @slot_top)]
-      else
-        Dir.glob(File.expand_path("{[0-9][0-9][0-9][0-9],inbox,intersect,presets}", @slot_top)).to_a
-      end
-    end
+  end # class DataStore
+end # module Mhc
 
-    def new_path_in_slot(slot)
-      return nil if !makedir_or_higher(slot)
-      new = 1
-      Dir.open(slot).each do |file|
-        if (file =~ /^\d+$/)
-          num = file.to_i
-          new = num + 1 if new <= num
+module Mhc
+  class DataStore
+    class Cache
+      require 'pstore'
+
+      def initialize(cache_filename)
+        @pstore = PStore.new(cache_filename)
+        load
+      end
+
+      def lookup(uid, filename)
+        unless c = get(uid) and File.mtime(filename).to_i <= c.mtime
+          c = CacheEntry.new(filename)
+          put(uid, c)
+        end
+        return c
+      end
+
+      def save
+        return self unless @dirty
+        @pstore.transaction do
+          @pstore["root"] = @db
         end
       end
-      return slot + '/' + new.to_s
-    end
 
-    def makedir_or_higher(dir)
-      return true if File.directory?(dir)
-      parent = File.dirname(dir)
-      if makedir_or_higher(parent)
-        Dir.mkdir(dir)
-        File.open(dir, "r") {|f| f.sync} if File.method_defined?("fsync")
-        return true
+      private
+
+      def get(uid)
+        @db[uid]
       end
-      return false
-    end
+
+      def put(uid, value)
+        @db[uid] = value
+        @dirty = true
+      end
+
+      def load
+        @pstore.transaction do
+          @db = @pstore["root"] || {}
+        end
+      end
+
+    end # class Cache
+
+    class CacheEntry
+      attr_reader :mtime, :range
+
+      def initialize(filename)
+        @mtime, event = File.mtime(filename).to_i, Event.parse_file(filename)
+        @range = event.range.min.absolute_from_epoch ..
+                 event.range.max.absolute_from_epoch
+      end
+
+      def involved?(range)
+        range.min <= @range.max && @range.min <= range.max
+      end
+
+    end # class CacheEntry
+
   end # class DataStore
 end # module Mhc
