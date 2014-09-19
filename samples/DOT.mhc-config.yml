@@ -36,6 +36,7 @@
 GENERAL:
 ################################################################
   TZID: "Asia/Tokyo"
+  REPOSITORY: ~/MHC
 
 ################################################################
 SYNC_CHANNELS:
@@ -67,7 +68,6 @@ CALENDARS:
 - &mhc_default
   NAME: master
   TYPE: mhc
-  REPOSITORY: ~/Mail/schedule
 
 # MHC: Personal calendar mirroed to my Android
 - <<: *mhc_default

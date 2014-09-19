@@ -23,7 +23,7 @@ module Mhc
       when "lastnote"
         db = Mhc::LastNote::Client.new(calendar.name)
       when "mhc"
-        db = Mhc::Calendar.new(Mhc::DataStore.new(calendar.repository), calendar.modifiers, &calendar.filter)
+        db = Mhc::Calendar.new(Mhc::DataStore.new(@config.general.repository), calendar.modifiers, &calendar.filter)
       end
       return db
     end
@@ -49,7 +49,7 @@ module Mhc
       return Mhc::Sync::StatusManager.new(calendar, etag_db)
     end
 
-    def cache_directory_pair(channel, top_directory = "#{ENV['HOME']}/tmp/mhc-etag-cache")
+    def cache_directory_pair(channel, top_directory = File.expand_path("status/sync_channels", @config.general.repository))
       base = File.expand_path(channel.name, top_directory)
 
       directory1 = File.join(base, channel.calendar1)

@@ -104,3 +104,47 @@
       #+END_SRC
 
    You may add ~/src/mhc/bin directory to your $PATH for dogfooding
+
+* SETUP
+  #+BEGIN_SRC shell-script
+    $ mhc init ~/MHC
+  #+END_SRC
+* DIRECTORY STRUCTURE
+** Configuration Directory
+   Default configuration directory is =~/.config/mhc=.
+   If environment variable =MHC_CONFIG_HOME= or =XDG_CONFIG_HOME= is set,
+   it is taken as =$MHC_CONFIG_HOME/mhc= or =$XDG_CONFIG_HOME/mhc=.
+
+   Configuration directory =~/.config/mhc= has these stuffs:
+   + config.yml :: Configuration file (mandatory).
+   + plugins :: Your home-made Ruby functions.
+   See [[file:samples][samples]] for details.
+
+** Spool Directory
+   Location of the spool directory should be set
+   by =TOPDIR:= element in =config.yml=.
+
+   For example, if you have =TOPDIR: ~/MHC= entry
+   in your =config.yml=, you will have these directory structure
+   under =~/MHC=:
+
+   + spool/*.mhc :: MHC event database. All events are flatly located
+                    in this directory in the form of ={x-sc-message-id}.mhc=
+   + draft/*.mhc :: Draft files of events.
+                    Opening a file in directory by Emacs,
+                    and Typing =C-cC-c= will move the file into =spool= directory.
+   + inbox/*.mhc :: Mainly same as =spool=. You will have a chance to
+                    review these events in this directory afterwards.
+                    (Not implemented yet. Should be empty for now.)
+   + presets/*.mhcc :: Database for fixed anniversary events
+                       such as birthdays or national holidays.
+   + trash/*.mhc :: Removed events from =spool= directory.
+   + status/ ::
+     + cache/* :: Cache files for speed-up.
+                  You can remove these files without any damage to MHC Database.
+     + log/* :: log files for debug.
+                You can remove these files without any damage to MHC DB.
+
+     + sync_channels/* :: Sync records of MHC DB.
+          If you remove any files under this directory,
+          MHC Sync will be DAMAGED.

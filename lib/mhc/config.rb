@@ -143,7 +143,8 @@ module Mhc
     ## concrete config classes
 
     class General < Base
-      define_syntax :tzid => String
+      define_syntax :tzid => String,
+                    :repository => String
     end # class General
 
     class SyncChannel < Base
@@ -156,7 +157,6 @@ module Mhc
     class Calendar < Base
       define_syntax :name => String,
                     :type => String,
-                    :repository => String,
                     :user => String,
                     :password => String,
                     :url => String,
