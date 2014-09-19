@@ -1,7 +1,7 @@
 ################################################################
 # Setup config file ~/.mhc/config.yml
 #
-# Google Calenar URL for CalDAV is in the form of:
+# Google Calendar URL for CalDAV is in the form of:
 #   https://www.google.com/calendar/dav/{calendar_id}/events
 #
 # calendar_id:
@@ -13,7 +13,7 @@
 # calendar at calendar.google.com and selecting 'Calendar Settings'.
 # Be sure to use HTTPS in your URL, as an http address will not work.
 #
-# for more details about google caelndar settings:
+# for more details about Google Calendar settings:
 #   http://www.google.com/support/calendar/bin/answer.py?answer=99358
 #   and click Sunbird section.
 #
@@ -24,12 +24,16 @@
 #
 # Articles in past 90 days and future 90 days in MHC
 # will be mirrored to target Google Calendar.
-# (Hardcoded in lib/mhc/calendar.rb for now)
-# Also other articles in Google calendar will be DELETED.
+# (Hard-coded in lib/mhc/calendar.rb for now)
+# Also other articles in Google Calendar will be DELETED.
 #
 # Before the first try, I recommend you to
-# make a new calendar on your google calendar,
+# make a new calendar on your Google Calendar,
 # and backup MHC folder ~/Mai/schedule.
+#
+# Currently, the type of STRATEGY in SYNC_CHANNELS allows only "mirror"
+# from MHC to Google Calendar. We are planning to support the
+# true two-way sync soon.
 #
 ---
 ################################################################
