@@ -872,24 +872,6 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
     (put-text-property pos (point) 'mhc-dayinfo mhc-tmp-dayinfo)))
 
 
-(defun mhc-todo-line-insert ()
-  "Insert todo line."
-  (let ((mhc-tmp-deadline (mhc-schedule-todo-deadline mhc-tmp-schedule))
-        (mhc-tmp-priority (mhc-schedule-priority mhc-tmp-schedule)))
-    (funcall mhc-todo/line-inserter)))
-
-(defun mhc-overdue-todo-line-insert ()
-  "Insert overdue todo line."
-  (let ((mhc-tmp-deadline (mhc-schedule-todo-deadline mhc-tmp-schedule))
-        (mhc-tmp-priority (mhc-schedule-priority mhc-tmp-schedule)))
-    (funcall mhc-overdue-todo/line-inserter)))
-
-(defun mhc-memo-line-insert ()
-  "Insert memo line."
-  (let ((mhc-tmp-priority (mhc-schedule-priority mhc-tmp-schedule)))
-    (funcall mhc-memo/line-inserter)))
-
-
 (provide 'mhc-summary)
 
 ;;; Copyright Notice:

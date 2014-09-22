@@ -114,7 +114,7 @@ refer to mhc-calendar-hnf-face-alist-internal.")
         (font    (nth 4 prop))
         (stipple (nth 5 prop))
         (face    nil))
-    (if (and (mhc-facep symbol) (not overwrite))
+    (if (and (facep symbol) (not overwrite))
         symbol
       (setq face (if parent (copy-face parent symbol) (make-face symbol)))
       (if fg      (set-face-foreground  face fg))
@@ -141,7 +141,7 @@ refer to mhc-calendar-hnf-face-alist-internal.")
                            (symbol-name face) "-"
                            (symbol-name effect))))
         effect-list)
-    (if (mhc-facep new-face)
+    (if (facep new-face)
         ()
       (copy-face face new-face)
       (if (setq effect-list (cdr (assq effect mhc-face-effect-alist)))
@@ -199,26 +199,6 @@ refer to mhc-calendar-hnf-face-alist-internal.")
          (cdr lst)
          overwrite)))
       (setq alist (cdr alist)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; facep for emacs 19.28
-
-(cond
- ((fboundp 'find-face)
-  (defalias 'mhc-facep 'find-face))
- ((fboundp 'facep)
-  (defalias 'mhc-facep 'facep))
- (t
-  ;; Introduced in Emacs 19.29.
-  (defun mhc-facep (x)
-    "Return non-nil if X is a face name or an internal face vector."
-    (or (and (fboundp 'internal-facep)
-             (let ((fn 'internal-facep))
-               ;; Avoid compile warning under old Emacsen.
-               (funcall fn x)))
-        (and (symbolp x)
-             (assq x (and (boundp 'global-face-data)
-                          (symbol-value 'global-face-data))))))))
 
 (provide 'mhc-face)
 

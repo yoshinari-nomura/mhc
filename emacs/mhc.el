@@ -17,8 +17,6 @@
 ;; for Mew user:
 ;;   (autoload 'mhc-mew-setup "mhc-mew")
 ;;   (add-hook 'mew-init-hook 'mhc-mew-setup)
-;;; optional setting for Mew-1.94 (Raw JIS header decoding)
-;;  (add-hook 'mew-message-hook 'mhc-mew-decode-header)
 ;;
 ;; for Wanderlust user:
 ;;   (autoload 'mhc-wl-setup "mhc-wl")
