@@ -49,7 +49,7 @@
   (let ((file (expand-file-name file))
         (new-path (expand-file-name
                    "trash"
-                   (mhc-summary-folder-to-path mhc-base-folder))))
+                   (mhc-config-base-directory))))
     (or (file-directory-p new-path)
         (make-directory new-path))
     (rename-file file (mhc-misc-get-new-path new-path file))))

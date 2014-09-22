@@ -7,7 +7,13 @@
 ;; Created: 05/12/2000
 ;; Reviesd: $Date: 2008/03/06 09:40:12 $
 
+;;; Code:
+
 ;;; Configration Variables:
+
+(require 'mhc-vars)
+(require 'mhc-face)
+(require 'mhc-e21)
 
 (defcustom mhc-calendar-language 'english
   "*Language of the calendar."
@@ -235,14 +241,15 @@ ww-japanese-long => \"土曜日\"
   (autoload 'hnf-mode "hnf-mode"))
 
 ;; Compatibilities between emacsen
-(if (fboundp 'text-property-any)
+(eval-and-compile
+  (if (fboundp 'text-property-any)
+      (defsubst mhc-calendar/tp-any (beg end prop value)
+        (text-property-any beg end prop value))
     (defsubst mhc-calendar/tp-any (beg end prop value)
-      (text-property-any beg end prop value))
-  (defsubst mhc-calendar/tp-any (beg end prop value)
-    (while (and beg (< beg end)
-                (not (eq value (get-text-property beg prop))))
-      (setq beg (next-single-property-change beg prop nil end)))
-    (if (eq beg end) nil beg)))
+      (while (and beg (< beg end)
+                  (not (eq value (get-text-property beg prop))))
+        (setq beg (next-single-property-change beg prop nil end)))
+      (if (eq beg end) nil beg))))
 
 (if (fboundp 'event-buffer)
     (defalias 'mhc-calendar/event-buffer 'event-buffer)
@@ -937,6 +944,12 @@ The keys that are defined for mhc-calendar-mode are:
         (setq rlst (mhc-calendar/get-day-list datebeg datelst dateend))
         (mhc-calendar/get-day-select rlst)))))
 
+;; selector
+(defvar mhc-calendar/select-alist nil)
+(defvar mhc-calendar/select-hist nil)
+(defvar mhc-calendar/select-map nil)
+(defvar mhc-calendar/select-buffer "*Completions*")
+
 (defun mhc-calendar/get-day-select (lst)
   (cond
    ((= (length lst) 0) (error "Something error occur."))
@@ -979,12 +992,6 @@ The keys that are defined for mhc-calendar-mode are:
             (message "%d days (%d weeks) in region." date (/ date 7))
           (message "%d days (%d weeks + %d days) in region."
                    date (/ date 7) (% date 7)))))))
-
-;; selector
-(defvar mhc-calendar/select-alist nil)
-(defvar mhc-calendar/select-hist nil)
-(defvar mhc-calendar/select-map nil)
-(defvar mhc-calendar/select-buffer "*Completions*")
 
 (if mhc-calendar/select-map
     ()

@@ -1,0 +1,25 @@
+;; -*- coding:utf-8 mode:lisp-interaction -*-
+
+;; see: http://cask.readthedocs.org/en/latest/
+
+(source org)
+(source melpa)
+
+(package "mhc"
+  "0.25.0" "Message Harmonized Calendaring system")
+
+(files "mhc.el" "mhc-*.el")
+
+(depends-on "org-plus-contrib")
+(depends-on "htmlize")
+(depends-on "calfw")
+
+(development
+ (depends-on "f")
+ (depends-on "ecukes")
+ (depends-on "ert-runner")
+ (depends-on "el-mock"))
+
+;; Local Variables:
+;; flycheck-mode: nil
+;; End:

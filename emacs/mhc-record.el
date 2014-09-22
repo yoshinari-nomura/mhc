@@ -30,16 +30,18 @@
 (require 'mhc-summary)
 (require 'mhc-file)
 (require 'mhc-draft)
+(require 'mhc-logic)
 
+(eval-when-compile
+  (mhc-file-setup))
 
 ;; Global Variable:
 
 (defcustom mhc-record-log-file
-  (expand-file-name ".mhc-db-log" (mhc-summary-folder-to-path mhc-base-folder))
-  "*スケジュールファイルの操作履歴ログ"
+  "mhc-db.log"
+  "*Log file of DB transaction."
   :group 'mhc
   :type 'file)
-
 
 ;; Internal Variable:
 
@@ -155,7 +157,9 @@
           (mhc-write-region-as-coding-system mhc-default-coding-system
                                              (point-min)
                                              (point-max)
-                                             mhc-record-log-file
+                                             (expand-file-name
+                                              mhc-record-log-file
+                                              (expand-file-name "status/log" (mhc-config-base-directory)))
                                              'append
                                              'nomsg)))))
 
@@ -194,4 +198,4 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;;; mhc-record.el ends here.
+;;; mhc-record.el ends here

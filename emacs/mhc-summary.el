@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
+;;; mhc-summary.el --- Summary major mode in MHC.
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -66,6 +66,9 @@
 ;;    (put 'mhc-foo 'eword-decode-string     'mhc-foo-eword-decode-string)
 ;;    (put 'mhc-foo 'decode-header           'mhc-foo-decode-header)
 
+;;; Code:
+
+(require 'mhc-vars)
 (require 'mhc-day)
 (require 'mhc-compat)
 (require 'mhc-schedule)
@@ -138,16 +141,6 @@
   :group 'mhc
   :type 'hook)
 
-(defcustom mhc-summary-display-todo t
-  "*Display TODO in summary."
-  :group 'mhc
-  :type 'boolean)
-
-(defcustom mhc-insert-overdue-todo nil
-  "*Display overdue TODO on TODAY."
-  :group 'mhc
-  :type 'boolean)
-
 (defcustom mhc-summary-line-format
   (if (eq mhc-summary-language 'japanese)
       "%M%月%D%日%(%曜%) %b%e %c%i%s %p%l"
@@ -181,123 +174,6 @@ which are replaced by the given information:
   :group 'mhc
   :type 'string)
 
-(defcustom mhc-todo-line-format "   %p %c%i%s %l%d"
-  "*A format string for summary todo line of MHC.
-It may include any of the following format specifications
-which are replaced by the given information:
-
-%i The icon for the schedule.
-%c The checkbox of the TODO.
-%s The subject of the schedule.
-%l The location of the schedule.
-%p The priority of the schedule.
-%d The deadline of the schedule.
-\(`mhc-todo-string-remaining-day' or `mhc-todo-string-deadline-day' is used\)
-"
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-overdue-todo-line-format
-  (concat (if (eq mhc-summary-language 'japanese)
-              "             "
-            "          ")
-          "%T  %p %c%i%s %l%d")
-  "*A format string for summary overdue todo line of MHC.
-It may include any of the following format specifications
-which are replaced by the given information:
-
-%T The indicator for TODO.
-%i The icon for the schedule.
-%c The checkbox of the TODO.
-%s The subject of the schedule.
-%l The location of the schedule.
-%p The priority of the schedule.
-%d The deadline of the schedule.
-\(`mhc-todo-string-remaining-day' or `mhc-todo-string-deadline-day' is used\)
-"
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-todo-position 'bottom
-  "Variable to specify position of TODO list."
-  :group 'mhc
-  :type '(radio (const :tag "Bottom" 'bottom)
-                (const :tag "Top" 'top))
-;;              (const :tag "Above of vertical calender" 'above)
-;;              (const :tag "Below of vertical calender" 'below))
-  )
-
-(defcustom mhc-todo-string-remaining-day
-  (if (eq mhc-summary-language 'japanese) "(あと %d 日)" "(%d days to go)")
-  "*String format which is displayed in TODO entry.
-'%d' is replaced with remaining days."
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-todo-string-deadline-day
-    (if (eq mhc-summary-language 'japanese) "(〆切日)" "(due this date)")
-  "*String which indicates deadline day in TODO."
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-todo-string-excess-day
-    (if (eq mhc-summary-language 'japanese) "(%d 日超過)" "(%d days overdue)")
-  "*String format which is displayed in TODO entry.
-'%d' is replaced with excess days."
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-todo-string-heading
-      (if (eq mhc-summary-language 'japanese)
-          "TODO(s) at %04d年%02d月%02d日"
-        "TODO(s) at %04d/%02d/%02d")
-  "*String which is displayed as heading of TODO.
-First %d is replaced with year, second one is replaced with month,
-third one is replaced with day of month."
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-todo-mergin 1
-  "*Mergin line number between TODO and schedule."
-  :group 'mhc
-  :type 'integer)
-
-
-(defcustom mhc-todo-string-done
-  (if (eq mhc-summary-language 'japanese) "■" "[X]")
-  "*String which indicates done TODO."
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-todo-string-not-done
-  (if (eq mhc-summary-language 'japanese) "□" "[ ]")
-  "*String which indicates not-done TODO."
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-todo-display-done t
-  "*Display TODO which is marked as done."
-  :group 'mhc
-  :type 'boolean)
-
-(defcustom mhc-memo-line-format "   %p %i%s %l"
-  "*A format string for summary memo line of MHC.
-It may include any of the following format specifications
-which are replaced by the given information:
-
-%i The icon for the schedule.
-%s The subject of the schedule.
-%l The location of the schedule.
-%p The priority of the schedule.
-"
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-memo-string-heading "MEMO(s)"
-  "*String which is displayed as heading of MEMO."
-  :group 'mhc
-  :type 'string)
-
 ;;; Internal Variable:
 
 (defconst mhc-summary-major-mode-alist
@@ -325,12 +201,6 @@ which are replaced by the given information:
 
 ;; Inserter (internal variable)
 (defvar mhc-summary/line-inserter nil)
-
-(defvar mhc-todo/line-inserter nil)
-
-(defvar mhc-overdue-todo/line-inserter nil)
-
-(defvar mhc-memo/line-inserter nil)
 
 (defvar mhc-summary-line-format-alist
   '((?Y (mhc-summary/line-year-string)
@@ -408,95 +278,18 @@ It indicates a type of the property to put on the inserted string.
 PROP-VALUE is the property value correspond to PROP-TYPE.
 ")
 
-(defvar mhc-todo-line-format-alist
-  '((?T "TODO" 'face 'mhc-category-face-todo)
-    (?i (not mhc-tmp-private) 'icon
-        (delete "todo"
-                (delete "done"
-                        (copy-sequence
-                         (mhc-schedule-categories mhc-tmp-schedule)))))
-    (?c (if (and (mhc-use-icon-p)
-                 (mhc-icon-exists-p "todo")
-                 (mhc-icon-exists-p "done"))
-            t
-          (if (mhc-schedule-in-category-p mhc-tmp-schedule "done")
-              mhc-todo-string-done
-            mhc-todo-string-not-done))
-        (if (and (mhc-use-icon-p)
-                 (mhc-icon-exists-p "todo")
-                 (mhc-icon-exists-p "done"))
-            'icon 'face)
-        (if (and (mhc-use-icon-p)
-                 (mhc-icon-exists-p "todo")
-                 (mhc-icon-exists-p "done"))
-            (list
-             (if (mhc-schedule-in-category-p mhc-tmp-schedule "done")
-                 "done" "todo"))
-          'mhc-summary-face-sunday))
-    (?s (mhc-summary/line-subject-string)
-        'face
-        (mhc-face-category-to-face
-         (car (mhc-schedule-categories mhc-tmp-schedule))))
-    (?l (mhc-summary/line-location-string)
-        'face 'mhc-summary-face-location)
-    (?p (if mhc-tmp-priority
-            (format "%5s" (format "[%d]" mhc-tmp-priority))
-          "     ")
-        'face (cond
-               ((null mhc-tmp-priority) nil)
-               ((>= mhc-tmp-priority 80) 'mhc-summary-face-sunday)
-               ((>= mhc-tmp-priority 50) 'mhc-summary-face-saturday)))
-    (?d (unless (mhc-schedule-in-category-p mhc-tmp-schedule "done")
-          (mhc-todo/line-deadline-string))
-        'face (mhc-todo/line-deadline-face)))
-  "An alist of format specifications that can appear in todo lines.
-Each element is a list of following:
-\(SPEC STRING-EXP PROP-TYPE PROP-VALUE\)
-SPEC is a character for format specification.
-STRING is an expression to get string to insert.
-PROP-TYPE is an expression to get one of the two symbols `face' or `icon'.
-It indicates a type of the property to put on the inserted string.
-PROP-VALUE is the property value correspond to PROP-TYPE.
-")
-
-(defvar mhc-memo-line-format-alist
-  '((?i (not mhc-tmp-private) 'icon
-        (if (mhc-schedule-in-category-p mhc-tmp-schedule "done")
-            (delete "todo"
-                    (copy-sequence (mhc-schedule-categories mhc-tmp-schedule)))
-          (mhc-schedule-categories mhc-tmp-schedule)))
-    (?s (mhc-summary/line-subject-string)
-        'face
-        (mhc-face-category-to-face
-         (car (mhc-schedule-categories mhc-tmp-schedule))))
-    (?l (mhc-summary/line-location-string)
-        'face 'mhc-summary-face-location)
-    (?p (if mhc-tmp-priority
-            (format "%5s" (format "[%d]" mhc-tmp-priority))
-          "     ")
-        'face (cond
-               ((null mhc-tmp-priority) nil)
-               ((>= mhc-tmp-priority 80) 'mhc-summary-face-sunday)
-               ((>= mhc-tmp-priority 50) 'mhc-summary-face-saturday))))
-  "An alist of format specifications that can appear in memo lines.
-Each element is a list of following:
-\(SPEC STRING-EXP PROP-TYPE PROP-VALUE\)
-SPEC is a character for format specification.
-STRING is an expression to get string to insert.
-PROP-TYPE is an expression to get one of the two symbols `face' or `icon'.
-It indicates a type of the property to put on the inserted string.
-PROP-VALUE is the property value correspond to PROP-TYPE.
-")
 
 (defvar mhc-summary/cw-separator nil)
 (defvar mhc-summary/cw-week nil)
 
 ;;; MUA Backend Functions:
 
-(defun mhc-summary-mailer-type ()
-  "Return mailer backend symbol using currently."
-  (or (cdr (assq major-mode mhc-summary-major-mode-alist))
-      (intern (concat "mhc-" (symbol-name mhc-mailer-package)))))
+;; (defun mhc-summary-mailer-type ()
+;;   "Return mailer backend symbol using currently."
+;;   (or (cdr (assq major-mode mhc-summary-major-mode-alist))
+;;       (intern (concat "mhc-" (symbol-name mhc-mailer-package)))))
+
+(defun mhc-summary-mailer-type () 'mhc-mua)
 
 (defun mhc-summary/true (&rest args)
   "This is the dummy backend function, which always returns t."
@@ -573,15 +366,6 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
     (if filename
         (mhc-parse-file filename))))
 
-(defun mhc-summary-folder-to-path (folder &optional msg)
-  (let ((fld
-         (if (eq (string-to-char folder) ?+)
-             (substring mhc-base-folder 1) folder)))
-    (if msg
-        (format "%s/%s/%s" mhc-mail-path fld msg)
-      (format "%s/%s" mhc-mail-path fld))))
-
-
 ;;; Codes:
 (defsubst mhc-summary/make-string (count character)
   (make-string (max 4 count) character))        ;; xxxx 4 ?
@@ -638,11 +422,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
     (if schedules
         (progn
           (while schedules
-            (if (and (if mhc-summary-display-todo
-                         t
-                       (not (mhc-schedule-in-category-p
-                             (car schedules) "todo")))
-                     (funcall category-predicate (car schedules)))
+            (if (funcall category-predicate (car schedules))
                 (progn
                   (setq mhc-tmp-begin (mhc-schedule-time-begin (car schedules))
                         mhc-tmp-end (mhc-schedule-time-end (car schedules))
@@ -750,23 +530,6 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
          (concat "[" location "]"))))
 
 
-(defun mhc-todo/line-deadline-string ()
-  (and mhc-tmp-deadline
-       (if (mhc-date= mhc-tmp-deadline mhc-tmp-day)
-           mhc-todo-string-deadline-day
-         (let ((remaining (mhc-date- mhc-tmp-deadline mhc-tmp-day)))
-           (if (> remaining 0)
-               (format mhc-todo-string-remaining-day remaining)
-             (format mhc-todo-string-excess-day (abs remaining)))))))
-
-
-(defun mhc-todo/line-deadline-face ()
-  (and mhc-tmp-deadline
-       (if (> (mhc-date- mhc-tmp-deadline mhc-tmp-day) 0)
-           'mhc-summary-face-default
-         'mhc-summary-face-sunday)))
-
-
 ;;; Line format parsing
 
 (defmacro mhc-line-insert (string)
@@ -825,7 +588,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 
 
 (defun mhc-summary-line-inserter-setup ()
-  "Setup MHC summary and todo line inserter."
+  "Setup MHC summary and line inserter."
   (interactive)
   (if (and (called-interactively-p 'interactive)
            (mhc-use-icon-p))
@@ -838,19 +601,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
   (mhc-line-inserter-setup
    mhc-summary/line-inserter
    mhc-summary-line-format
-   mhc-summary-line-format-alist)
-  (mhc-line-inserter-setup
-   mhc-todo/line-inserter
-   mhc-todo-line-format
-   mhc-todo-line-format-alist)
-  (mhc-line-inserter-setup
-   mhc-overdue-todo/line-inserter
-   mhc-overdue-todo-line-format
-   mhc-todo-line-format-alist)
-  (mhc-line-inserter-setup
-   mhc-memo/line-inserter
-   mhc-memo-line-format
-   mhc-memo-line-format-alist))
+   mhc-summary-line-format-alist))
 
 
 (defun mhc-summary-line-insert ()
@@ -871,6 +622,120 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
     (funcall mhc-summary/line-inserter)
     (put-text-property pos (point) 'mhc-dayinfo mhc-tmp-dayinfo)))
 
+
+(defvar mhc-summary-mode-map nil)
+
+;; (unless mhc-summary-mode-map
+  (setq mhc-summary-mode-map (make-sparse-keymap))
+  (define-key mhc-summary-mode-map " " 'mhc-summary-scroll-message-forward)
+  (define-key mhc-summary-mode-map (kbd "DEL") 'mhc-summary-scroll-message-backward)
+  (define-key mhc-summary-mode-map "." 'mhc-summary-display)
+  (define-key mhc-summary-mode-map "\C-m" 'mhc-summary-scroll-message-line-forward)
+  (define-key mhc-summary-mode-map "v" 'mhc-summary-toggle-display-message)
+
+  (define-key mhc-summary-mode-map "g" 'mhc-goto-month)
+  (define-key mhc-summary-mode-map ">" 'mhc-goto-next-month)
+  (define-key mhc-summary-mode-map "N" 'mhc-goto-next-year)
+  (define-key mhc-summary-mode-map "<" 'mhc-goto-prev-month)
+  (define-key mhc-summary-mode-map "P" 'mhc-goto-prev-year)
+
+  (define-key mhc-summary-mode-map "s" 'mhc-rescan-month)
+  (define-key mhc-summary-mode-map "d" 'mhc-delete)
+  (define-key mhc-summary-mode-map "c" 'mhc-set-default-category)
+  (define-key mhc-summary-mode-map "?" 'mhc-calendar)
+  (define-key mhc-summary-mode-map "t" 'mhc-calendar-toggle-insert-rectangle)
+  (define-key mhc-summary-mode-map "E" 'mhc-edit)
+  (define-key mhc-summary-mode-map "M" 'mhc-modify)
+
+  (define-key mhc-summary-mode-map "n" 'mhc-summary-display-next)
+  (define-key mhc-summary-mode-map "p" 'mhc-summary-display-previous)
+  (define-key mhc-summary-mode-map "f" 'forward-char)
+  (define-key mhc-summary-mode-map "b" 'backward-char)
+
+  (define-key mhc-summary-mode-map "j" 'mhc-summary-display-next)
+  (define-key mhc-summary-mode-map "k" 'mhc-summary-display-previous)
+  (define-key mhc-summary-mode-map "l" 'forward-char)
+  (define-key mhc-summary-mode-map "h" 'backward-char)
+;; )
+
+(defun mhc-summary-mode ()
+  "Major mode for MHC summary.
+
+\\{mhc-summary-mode-map}"
+  (interactive)
+  (setq major-mode 'mhc-summary-mode
+        mode-name  "MHC")
+  (setq mode-line-buffer-identification (propertized-buffer-identification
+                                         "MHC: %12b"))
+  (setq buffer-read-only t)
+  (setq truncate-lines t)
+  (use-local-map mhc-summary-mode-map)
+  (run-hooks 'mhc-summary-mode-hook))
+
+(defun mhc-summary-display-message ()
+  (interactive)
+  (save-selected-window
+    (mhc-summary-display-article)))
+
+(defun mhc-summary-toggle-display-message ()
+  (interactive)
+  (if (mhc-message-visible-p)
+      (mhc-message-delete-windows)
+    (mhc-summary-display-message)))
+
+(defvar mhc-message-file-name nil)
+(make-variable-buffer-local 'mhc-message-file-name)
+
+(defun mhc-message-set-file-name (file-name)
+  (setq mhc-message-file-name file-name))
+
+(defun mhc-message-visible-p (&optional file-name)
+  "Return non-nil if MHC message is currently displaying, or nil if none."
+  (and (get-buffer-window "*MHC message*")
+       (or (null file-name)
+           (save-selected-window
+             (pop-to-buffer "*MHC message*")
+             (and (stringp mhc-message-file-name)
+                  (string= mhc-message-file-name file-name))))))
+
+(defun mhc-message-delete-windows ()
+  (delete-windows-on "*MHC message*"))
+
+(defalias 'mhc-summary-display 'mhc-summary-display-message)
+
+(defun mhc-summary-display-next ()
+  (interactive)
+  (forward-line)
+  (if (mhc-message-visible-p)
+      (mhc-summary-display)))
+
+(defun mhc-summary-display-previous ()
+  (interactive)
+  (forward-line -1)
+  (if (mhc-message-visible-p)
+      (mhc-summary-display)))
+
+(defun mhc-summary-scroll-message-line-forward ()
+  (interactive)
+  (mhc-summary-scroll-message-forward 1))
+
+(defun mhc-summary-scroll-message-forward (&optional lines)
+  (interactive)
+  (mhc-summary-scroll-message 'forward lines))
+
+(defun mhc-summary-scroll-message-backward (&optional lines)
+  (interactive)
+  (mhc-summary-scroll-message 'backward lines))
+
+(defun mhc-summary-scroll-message (direction &optional lines)
+  (interactive)
+  (if (mhc-message-visible-p (mhc-summary-filename))
+      (save-selected-window
+        (pop-to-buffer "*MHC message*")
+        (if (eq direction 'forward)
+            (mhc-message-scroll-page-forward lines)
+          (mhc-message-scroll-page-backward lines)))
+    (mhc-summary-display-message)))
 
 (provide 'mhc-summary)
 

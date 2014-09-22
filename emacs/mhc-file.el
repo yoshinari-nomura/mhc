@@ -68,6 +68,7 @@
 (require 'mhc-compat)
 (require 'mhc-vars)
 
+;;; Code:
 
 ;;; Global Variables
 (defcustom mhc-file-method 'mhc-sync
@@ -220,4 +221,4 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;;; mhc-file.el ends here.
+;;; mhc-file.el ends here

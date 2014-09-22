@@ -34,9 +34,7 @@ Example:
                 (string :tag "XPM File Name"))))
 
 (defcustom mhc-icon-function-alist
-  '(("Todo" . mhc-todo-set-as-done)
-    ("Done" . mhc-todo-set-as-not-done)
-    ("Link" . mhc-browse-x-url))
+  '(("Link" . mhc-browse-x-url))
   "*Alist to define callback function for icons.
 Each element should have the form
  (NAME . FUNCTION)

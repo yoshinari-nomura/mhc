@@ -26,7 +26,6 @@
     ("x-sc-alarm"       "X-SC-Alarm:"           mhc-parse/alarm)
     ("x-sc-category"    "X-SC-Category:"        mhc-parse/category)
     ("x-sc-recurrence-tag" "X-SC-Recurrence-Tag:" mhc-parse/recurrence-tag)
-;    ("x-sc-todo"       "X-SC-ToDo:"            mhc-parse/todo)
     ("x-sc-priority"    "X-SC-Priority:"        mhc-parse/priority)
     ("x-sc-record-id"   "X-SC-Record-Id:"       mhc-parse/record-id)
     ("x-sc-schedule"    "X-SC-Schdule:"         mhc-parse/schedule)
@@ -79,6 +78,17 @@ If REGEXP, HEADER is a regular expression."
         (mhc-header-goto-end)
         (delete-region (match-beginning 0) (point))))))
 
+(defun mhc-header-delete-empty-header (header &optional regexp)
+  "Remove HEADER if empty in the narrowed buffer.
+If REGEXP, HEADER is a regular expression."
+  (save-excursion
+    (let ((case-fold-search t)
+          (regexp (if regexp (concat header " *$")
+                    (concat "^" (regexp-quote header) ": *$"))))
+      (goto-char (point-min))
+      (while (re-search-forward regexp nil t)
+        (mhc-header-goto-end)
+        (delete-region (match-beginning 0) (point))))))
 
 (defun mhc-header-put-value (header value)
   "Overwrite VALUE of HEADER in the narrowed buffer."

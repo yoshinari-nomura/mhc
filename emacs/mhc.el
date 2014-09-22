@@ -1,4 +1,4 @@
-;;; mhc.el -- MH Calendar.
+;;; mhc.el --- MH Calendar.
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>
 ;;
@@ -6,7 +6,7 @@
 ;; Revised: $Date: 2009/05/31 12:54:50 $
 
 ;;;
-;;; Commentay:
+;;; Commentary:
 ;;;
 
 ;; Mhc is the personal schedule management package cooperating
@@ -26,6 +26,8 @@
 ;;   (autoload 'mhc-gnus-setup "mhc-gnus")
 ;;   (add-hook 'gnus-startup-hook 'mhc-gnus-setup)
 
+;;; Code:
+
 (eval-when-compile (require 'cl))
 
 ;; For Mule 2.3
@@ -36,9 +38,11 @@
 
 (require 'mhc-vars)
 (require 'mhc-record)
+(require 'mhc-parse)
 (require 'mhc-file)
-(require 'mhc-db)
 (require 'mhc-process)
+(require 'mhc-db)
+(require 'mhc-message)
 (require 'mhc-misc)
 (require 'mhc-date)
 (require 'mhc-guess)
@@ -142,7 +146,6 @@
   (define-key mhc-prefix-map "T" 'mhc-file-toggle-offline)
   (define-key mhc-prefix-map "S" 'mhc-file-sync)
   (define-key mhc-prefix-map "R" 'mhc-reset)
-  (define-key mhc-prefix-map "@" 'mhc-todo-toggle-done)
   (define-key mhc-mode-map mhc-prefix-key mhc-prefix-map)
   (cond
    ((featurep 'xemacs)
@@ -648,6 +651,7 @@ Returns t if the importation was succeeded."
         (if import-buffer
             (progn
               (delete-other-windows)
+              (goto-char (point-min))
               (if (y-or-n-p "Do you want to import this article? ")
                   (let* ((original (with-current-buffer
                                        (if (consp import-buffer)
@@ -868,30 +872,6 @@ the default action of this command is changed to the latter."
   (interactive)
   (mhc-modify-file (mhc-summary-filename)))
 
-(defun mhc-todo-set-as-done ()
-  "Set TODO as DONE."
-  (interactive)
-  (mhc-modify-file (mhc-summary-filename))
-  (mhc-draft-set-as-done)
-  (mhc-draft-finish)
-  (message ""))
-
-(defun mhc-todo-set-as-not-done ()
-  "Set TODO as NOT-DONE."
-  (interactive)
-  (mhc-modify-file (mhc-summary-filename))
-  (mhc-draft-set-as-not-done)
-  (mhc-draft-finish)
-  (message ""))
-
-(defun mhc-todo-toggle-done ()
-  "Toggle between done and not for todo"
-  (interactive)
-  (mhc-modify-file (mhc-summary-filename))
-  (mhc-draft-toggle-done)
-  (mhc-draft-finish)
-  (message ""))
-
 (defcustom mhc-browse-x-url-function 'browse-url
   "*A function to browse URL."
   :group 'mhc
@@ -915,12 +895,8 @@ the default action of this command is changed to the latter."
 (defun mhc-modify-file (file)
   (if (and (stringp file) (file-exists-p file))
       (let* ((name (format
-                    "*mhc draft %s/%s*"
-                    mhc-base-folder
-                    (file-relative-name
-                     file
-                     (file-name-as-directory
-                      (mhc-summary-folder-to-path mhc-base-folder)))))
+                    "*mhc draft %s*"
+                    (file-name-nondirectory file)))
              (buffer (get-buffer name)))
         (if (buffer-live-p buffer)
             (progn
@@ -964,13 +940,6 @@ the default action of this command is changed to the latter."
 ;; manipulate data from mhc-summary-buffer.
 
 (defconst mhc-summary-day-regex  "\\([^|]+| +\\)?[0-9]+/\\([0-9]+\\)")
-(defconst mhc-summary-buf-regex
-  (concat mhc-base-folder "/\\([0-9]+\\)/\\([0-9]+\\)"))
-
-;(defun mhc-summary-buffer-p (&optional buffer)
-;  (string-match mhc-summary-buf-regex
-;               (buffer-name
-;                (or buffer (current-buffer)))))
 
 (defun mhc-summary-buffer-p (&optional buffer)
   (if buffer
@@ -988,14 +957,6 @@ the default action of this command is changed to the latter."
               (or (setq dayinfo (get-text-property (point) 'mhc-dayinfo))
                   (forward-char -1)))
             (and dayinfo (mhc-day-date dayinfo)))))))
-
-; (defun mhc-current-date-month ()
-;   (let ((buf (buffer-name)) yy mm dd)
-;     (if (not (string-match mhc-summary-buf-regex buf))
-;       nil
-;       (mhc-date-new (string-to-number (match-string 1 buf))
-;                   (string-to-number (match-string 2 buf))
-;                   1))))
 
 (defun mhc-current-date-month ()
   mhc-summary-buffer-current-date-month)

@@ -13,6 +13,7 @@
 
 ;;; Code:
 (require 'mhc-compat)
+(require 'mhc-process)
 
 
 ;;; Constants:
@@ -24,29 +25,12 @@
   "Various sorts of MH Calender."
   :group 'mail)
 
-(defcustom mhc-mailer-package 'mew
+(defcustom mhc-mailer-package 'mua
   "*Variable to set your favorite mailer."
   :group 'mhc
   :type '(radio (const :tag "Mew" mew)
                 (const :tag "Wanderlust" wl)
                 (const :tag "Gnus" gnus)))
-
-(defcustom mhc-base-folder "+schedule"
-  "*Base foler of MHC"
-  :group 'mhc
-  :type 'string)
-
-(defcustom mhc-mail-path
-  (expand-file-name
-   (if (and (boundp 'mew-mail-path) mew-mail-path) mew-mail-path "~/Mail"))
-  "*Base directory your mailer recognized as `+'"
-  :group 'mhc
-  :type 'directory)
-
-(defcustom mhc-schedule-file (expand-file-name "~/.schedule")
-  "*MHC DB file which contains holiday and anniversary settings."
-  :group 'mhc
-  :type 'file)
 
 (defcustom mhc-start-day-of-week 0
   "*Day of the week as the start of the week."
@@ -70,16 +54,6 @@
   :type '(radio (integer :tag "Show length (current month is center)" 3)
                 (cons (integer :tag "             Show length" 3)
                       (integer :tag "Length of before current" 1))))
-
-(defcustom mhc-insert-todo-list t
-  "*If non nil value, display TODO list."
-  :group 'mhc
-  :type 'boolean)
-
-(defcustom mhc-insert-memo-list t
-  "*If non nil value, display MEMO list."
-  :group 'mhc
-  :type 'boolean)
 
 (defcustom mhc-default-coding-system
   (if (>= emacs-major-version 20) 'utf-8-unix '*iso-2022-ss2-7*)
@@ -131,6 +105,13 @@
   "*If non-nil value, ask the alarm string in making draft."
   :group 'mhc
   :type 'boolean)
+
+(defun mhc-config-get-property (&optional dot-separated-key)
+  (mhc-process-send-command
+   (format "config --format=emacs %s" (or dot-separated-key ""))))
+
+(defun mhc-config-base-directory ()
+  (expand-file-name (mhc-config-get-property "general.repository")))
 
 (provide 'mhc-vars)
 

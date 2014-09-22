@@ -130,6 +130,10 @@
   :group 'mhc
   :type 'symbol)
 
+(defcustom mhc-ps-save-directory "~/"
+  "*Directory to save PostScript file."
+  :group 'mhc
+  :type 'directory)
 
 ;;; Internal Variables:
 (defconst mhc-ps/string "\
@@ -1041,7 +1045,7 @@ showpage
        year month
        (expand-file-name
         (mhc-date-format date "mhc%04d%02d.ps" yy mm)
-        (mhc-summary-folder-to-path mhc-base-folder))
+        mhc-ps-save-directory)
        mhc-default-category-predicate-sexp))
      ((memq char '(?i ?I))
       (mhc-ps-insert-buffer
@@ -1065,7 +1069,7 @@ showpage
   (mhc-ps/process mhc-ps-preview-command mhc-ps-preview-command-arguments
                   (expand-file-name
                    (format "mhc%04d%02d.ps" year month)
-                   (mhc-summary-folder-to-path mhc-base-folder))
+                   mhc-ps-save-directory)
                   nil
                   year month
                   category-predicate))
@@ -1083,7 +1087,7 @@ showpage
   (mhc-ps/process mhc-ps-print-command mhc-ps-print-command-arguments
                   (expand-file-name
                    (format "mhc%04d%02d.ps" year month)
-                   (mhc-summary-folder-to-path mhc-base-folder))
+                   mhc-ps-save-directory)
                   nil
                   year month
                   category-predicate))
@@ -1096,7 +1100,7 @@ showpage
           (date (mhc-input-month "Month: " cdate))
           (default (expand-file-name
                     (mhc-date-format date "mhc%04d%02d.ps" yy mm)
-                    (mhc-summary-folder-to-path mhc-base-folder)))
+                    mhc-ps-save-directory))
           (file (read-file-name "Save file: " default default)))
      (list
       (mhc-date-yy date)

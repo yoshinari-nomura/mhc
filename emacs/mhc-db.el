@@ -19,20 +19,15 @@
 (require 'mhc-schedule)
 
 (defun mhc-db-scan (b e &optional nosort category)
-  (let ((command nil))
-    (unless (and (processp mhc-process)
-                 (eq (process-status mhc-process) 'run))
-      (mhc-start-process))
-    (setq command (format "scan --format=emacs %04d%02d%02d-%04d%02d%02d%s"
-                          (mhc-date-yy b)
-                          (mhc-date-mm b)
-                          (mhc-date-dd b)
-                          (mhc-date-yy e)
-                          (mhc-date-mm e)
-                          (mhc-date-dd e)
-                          (if category  (format " --category=%s" category) "")))
-    (message "COMMAND: %s" command)
-    (mhc-process-send-command command)))
+  (mhc-process-send-command
+   (format "scan --format=emacs %04d%02d%02d-%04d%02d%02d%s"
+           (mhc-date-yy b)
+           (mhc-date-mm b)
+           (mhc-date-dd b)
+           (mhc-date-yy e)
+           (mhc-date-mm e)
+           (mhc-date-dd e)
+           (if category  (format " --category=%s" category) ""))))
 
 (defun mhc-db-scan-month (year month &optional nosort category)
   (let ((first-date (mhc-date-new year month 1)))
@@ -46,30 +41,19 @@
          (directory (and slot
                          (file-name-as-directory
                           (expand-file-name
-                           "spool"
-                           (mhc-summary-folder-to-path mhc-base-folder)))))
+                           "spool" (mhc-config-base-directory)))))
          (old-record))
     (unless slot (error "Cannot get schedule slot"))
     (if (mhc-record-name record)
-        ;; 既存のスケジュールを編集した場合
-        (if (string= directory
-                     (file-name-directory
-                      (directory-file-name
-                       (mhc-record-name record))))
-            (setq old-record record)
-          ;; スケジュール変更によって、ディレクトリの変更が必要な場合
-          (setq old-record (mhc-record-copy record))
-          (mhc-record-set-name record (mhc-misc-get-new-path directory record)))
-      ;; 新規のスケジュールを保存する場合
+        ;; Modifying existing record
+        (setq old-record record)
+      ;; Creating new record
       (mhc-record-set-name record (mhc-misc-get-new-path directory record)))
     (if (or force-refile
             (y-or-n-p (format
                        "Refile %s to %s "
-                       (mhc-misc-sub (if old-record
-                                         (mhc-record-name old-record) "")
-                                     mhc-mail-path "+")
-                       (mhc-misc-sub (mhc-record-name record)
-                                     mhc-mail-path "+"))))
+                       (or (mhc-record-name old-record) "it")
+                       (mhc-record-name record))))
         (progn
           (mhc-record-write-buffer record buffer old-record)
           (if (and old-record

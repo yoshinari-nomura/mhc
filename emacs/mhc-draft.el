@@ -126,26 +126,6 @@ If optional argument NO-CONFIRM is non-nil, kill without confirmation."
 (defvar mhc-draft-finish-hook nil
   "Hook run after `mhc-draft-finish'.")
 
-(defun mhc-draft-set-as-done ()
-  "Set current draft as DONE."
-  (interactive)
-  (if (mhc-draft-in-category-p "todo")
-      (mhc-draft-append-category "Done")))
-
-(defun mhc-draft-set-as-not-done ()
-  "Set current draft as NOT-DONE."
-  (interactive)
-  (if (mhc-draft-in-category-p "todo")
-      (mhc-draft-delete-category "done")))
-
-(defun mhc-draft-toggle-done ()
-  "Set current draft as DONE if not; remove done if there."
-  (interactive)
-  (if  (mhc-draft-in-category-p "todo")
-      (if (mhc-draft-in-category-p "done")
-          (mhc-draft-delete-category "done")
-        (mhc-draft-append-category "Done"))))
-
 (defun mhc-draft-append-category (category)
   "Append CATEGORY if it is not contained yet."
   (mhc-header-narrowing

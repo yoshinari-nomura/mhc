@@ -46,11 +46,6 @@
   (mhc-logic-parse-duration (mhc-schedule-condition schedule))
   schedule)
 
-;; FIXME: Need to be deleted.
-(defun mhc-parse/todo (record schedule)
-  (mhc-logic-parse-todo (mhc-schedule-condition schedule))
-  schedule)
-
 (defun mhc-parse/priority (record schedule)
   (if (looking-at mhc-logic/space-regexp)
       (goto-char (match-end 0)))

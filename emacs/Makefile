@@ -1,40 +1,58 @@
 # -*- Makefile -*-
 
-# MEW_OPTS  = --with-mew
-# WL_OPTS   = --with-wl
-# GNUS_OPTS = --with-gnus
+################################################################
+## Use Emacs.app if available and anothr EMACS is not specified by user
 
-## To change install directory.
-# INST_OPTS = --with-lispdir=/usr/local/share/emacs/site-lisp/mhc
+COCOA_EMACS := /Applications/Emacs.app/Contents/MacOS/Emacs
 
-## To add paths of additional emacs-lisp libraries.
-# INST_OPTS = --with-addpath=/foo:/bar:/baz
+ifneq ("$(wildcard $(COCOA_EMACS))", "")
+	EMACS ?= $(COCOA_EMACS)
+else
+	EMACS ?= emacs
+endif
 
-EMACS  = emacs
-XEMACS = xemacs
-FLAGS  = -batch -q -no-site-file -l MHC-MK
-OPTS   = $(INST_OPTS) $(MEW_OPTS) $(WL_OPTS) $(GNUS_OPTS)
+################################################################
+## Use cask if available and another CASK is not specified by user
 
-elc:
-	$(EMACS) $(FLAGS) -f make-mhc-compile $(OPTS)
+CASK_VERSION := $(shell EMACS="$(EMACS)" cask --version 2>/dev/null)
 
-install:
-	$(EMACS) $(FLAGS) -f make-mhc-install $(OPTS) # $(MAKE)
+ifdef CASK_VERSION
+	CASK ?= cask
+endif
 
-package:
-	$(XEMACS) $(FLAGS) -f make-mhc-compile-package $(OPTS)
+ifdef CASK
+	CASK_EXEC    ?= exec
+	CASK_INSTALL ?= install
+endif
 
-install-package:
-	$(XEMACS) $(FLAGS) -f make-mhc-install-package $(OPTS) # $(MAKE)
+################################################################
+## cask, emacs and flags
 
-clean:
-	-rm -f *.elc auto-autoloads.el custom-load.el
+COMPILER := $(CASK) $(CASK_EXEC) $(EMACS)
+#FLAGS    := -Q -batch -L . -L .cask/24.3.1/elpa/org-plus-contrib-20140922 -L .cask/24.3.1/elpa/calfw-20140407.2212 -l mhc
+FLAGS    := -Q -batch -L . -l mhc
+ELFILES  := $(wildcard *.el)
+ELCFILES := $(ELFILES:el=elc)
 
-### Suffix rules
+################################################################
+## Suffix rules
+
 .SUFFIXES: .elc .el
 
 .el.elc:
 	-rm -f $@
-	$(EMACS) -batch -q -no-site-file \
-		-eval '(setq load-path (cons default-directory load-path))' \
-		-l mhc.el -f batch-byte-compile $<
+	$(COMPILER) $(FLAGS) -f batch-byte-compile $<
+
+################################################################
+### Targets
+
+all: setup build
+
+build: $(ELCFILES)
+#	$(COMPILER) $(FLAGS) -f batch-byte-compile *.el
+
+clean:
+	-rm -f *.elc auto-autoloads.el custom-load.el *~
+
+setup:
+	$(CASK) $(CASK_INSTALL)
