@@ -1,0 +1,142 @@
+################################################################
+# config.yml file for MHC created by mhc init command.
+#
+<%
+  repository = @config[:topdir] || '~/mhc'
+  tzid = @config[:tzid] || 'Unknown'
+-%>
+---
+################################################################
+GENERAL:
+################################################################
+
+# TZID defines timezone of all articles.
+# It must be in the form of "Asia/Tokyo".
+# ``mhc init'' is clever enough to set your timezone automatically,
+# but, you may want to change this value.
+# Valid names for TZID is:
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+  TZID: "<%= @config[:tzid] || 'Unknown' %>"
+
+# All MHC articles and status files are placed under this directory:
+
+  REPOSITORY: "<%= @config[:topdir] || '~/mhc' %>"
+
+################################################################
+SYNC_CHANNELS:
+################################################################
+
+# Each sync channel binds two CALENDARS (see below) for
+# data-synchronization.  Currently, STRATEGY allows only "mirror",
+# CALENDAR1 must be a local MHC calendar, and CALENDAR2 must be a
+# Google Calendar.  True two-way sync is not yet implemented.
+
+- NAME: business
+  CALENDAR1: business
+  CALENDAR2: google_business
+  STRATEGY: mirror
+
+- NAME: family
+  CALENDAR1: family
+  CALENDAR2: google_family
+  STRATEGY: mirror
+
+################################################################
+CALENDARS:
+################################################################
+
+################################################################
+## MHC local
+
+# First entry under CALENDARS: is your default calendar.
+# It must be a local MHC calendar, which has ``TYPE: mhc'' entry.
+
+# Master calendar (default)
+- &mhc_default
+  NAME: master
+  TYPE: mhc
+
+# This ``business'' is a sample calendar, which is derived from
+# ``master'' calendar with some filters and modifiers.  Filters hide
+# or select articles from master calendar.  Modifiers decorate
+# articles by preset decorators: hide_details, hide_description,
+# hide_location, hide_time_range.  You can write your original
+# decorators (written in Ruby) in plugins/ directory located at the
+# same place with this file.
+
+- <<: *mhc_default
+  NAME: business
+  FILTER: '!category:private & !subject:"TODO"'
+  MODIFIERS:
+  - hide_description
+  - hide_location
+  - replace_subject_by_category
+
+# Another sample, supposed to be published to your family's Google
+# Calendar.
+- <<: *mhc_default
+  NAME: family
+  FILTER: 'category:[birthday holiday private]'
+  MODIFIERS:
+  - hide_description
+
+################################################################
+## Google Calendar
+
+# Currently, Google Calendar stuffs work only as destinations
+# to publish from local MHC calendars.
+#
+# Since MHC uses standard CalDAV protocol, I believe
+# it works with other CalDAV-based network calendars such as
+# iCloud, but I did not confirmed.
+#
+# Google Calendar URL for CalDAV is in the form of:
+#   https://www.google.com/calendar/dav/{calendar_id}/events
+#
+# calendar_id:
+#  for primary calendar is just your email address.
+#  for others will be in the form of:
+#    [long-string-of-characters]@group.calendar.google.com
+#
+# You can get them by clicking the down arrow next to your
+# calendar at calendar.google.com and selecting 'Calendar Settings'.
+# Be sure to use HTTPS in your URL, as an http address will not work.
+#
+# for more details about Google Calendar settings:
+#   http://www.google.com/support/calendar/bin/answer.py?answer=99358
+#   and click Sunbird section.
+#
+# Fill in the blanks indicated as ***, and invoke the command:
+#
+#   % mhc sync {sync_channel_name}
+#
+# {sync_channel_name} must exist in the section of SYNC_CHANNELS:
+#
+# NOTE:
+# Articles between past 90 days and future 90 days in MHC will be
+# published to the target Google Calendar.  90 is hard-coded in
+# lib/mhc/calendar.rb for now. Other articles out of the range in
+# Google Calendar will be DELETED.
+#
+# Before the first try, I recommend you to make a new calendar on your
+# Google Calendar dedicated to MHC.  and backup your local spool of
+# MHC.
+
+# Displayname: MHC
+- &google_default
+  NAME: google_personal
+  TYPE: caldav
+  USER: "***@gmail.com"
+  PASSWORD: "***"
+  URL: "https://calendar.google.com/calendar/dav/***@group.calendar.google.com/events/"
+
+# Displayname: For Colleagues
+- <<: *google_default
+  NAME: google_business
+  URL: "https://calendar.google.com/calendar/dav/***@group.calendar.google.com/events/"
+
+# Displayname: For Family
+- <<: *google_default
+  NAME: google_family
+  URL: "https://calendar.google.com/calendar/dav/***@group.calendar.google.com/events/"

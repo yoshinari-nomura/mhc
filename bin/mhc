@@ -26,24 +26,55 @@ require "mhc"
 Encoding.default_external="UTF-8"
 
 class MhcCLI < Thor
+  ################################################################
+  # constants
+
   DEFAULT_CONFIG_HOME = File.join((ENV["XDG_CONFIG_HOME"] || "~/.config"), "mhc")
   DEFAULT_CONFIG_FILE = "config.yml"
   DEFAULT_CONFIG_PATH = File.join(DEFAULT_CONFIG_HOME, DEFAULT_CONFIG_FILE)
 
+  package_name 'MHC'
+
+  ################################################################
+  # class methods
+
   class << self
     attr_accessor :calendar
+    attr_accessor :popular_options
   end
 
-  check_unknown_options! :except => :completions
-  package_name 'MHC'
+  def self.register_option(name, options)
+    @popular_options ||= {}
+    @popular_options[name] = options
+  end
+
+  def self.named_option(*names)
+    names.each do |name|
+      method_option name, @popular_options[name]
+    end
+  end
 
   ################################################################
   # global options
 
-  class_option :debug, :type => :boolean, :desc => "Set debug flag"
-  class_option :profile, :type => :boolean, :desc => "Set profiler flag"
-  class_option :repository, :desc => "Set MHC top directory", :banner => "DIRECTORY"
-  class_option :config, :desc => "Set config path (default: #{DEFAULT_CONFIG_PATH})", :banner => "FILE"
+  class_option :debug,   :desc => "Set debug flag", :type => :boolean
+  class_option :profile, :desc => "Set profiler flag", :type => :boolean
+  class_option :config,  :desc => "Set config path (default: #{DEFAULT_CONFIG_PATH})", :banner => "FILE"
+
+  check_unknown_options! :except => :completions
+
+  ################################################################
+  # frequently used options
+
+  register_option :repository, :desc => "Set MHC top directory", :banner => "DIRECTORY"
+  register_option :calendar,   :desc => "Set source CALENDAR"
+  register_option :category,   :desc => "Pick items only in CATEGORY"
+  register_option :format,     :desc => "Set printing format", :enum => %w(text mail orgtable emacs icalendar calfw howm)
+  register_option :search,     :desc => "Search items by complex expression"
+  register_option :dry_run,    :desc => "Perform a trial run with no changes made", :type => :boolean
+
+  ################################################################
+  # command name mappings
 
   map ["--version", "-v"] => :version
 
@@ -85,6 +116,15 @@ class MhcCLI < Thor
   end
 
   ################################################################
+  ################################################################
+  # Command: init
+  ################################################################
+  desc "init DIRECTORY", "Initialize MHC repository and configuration template"
+
+  def init(top_dir)
+    Mhc::Command::Init.new(top_dir, options[:config] || DEFAULT_CONFIG_PATH, ENV["MHC_TZID"])
+  end
+
   # Command: scan
   ################################################################
   desc "scan RANGE", "Scan events in date RANGE"
