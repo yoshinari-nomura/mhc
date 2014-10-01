@@ -8,6 +8,10 @@ module Mhc
       @name = name
     end
 
+    def to_s
+      @name.to_s
+    end
+
     def decorate(event)
       if deco = Decorator.find_subclass(@name.to_sym)
         deco.new(event)
@@ -131,6 +135,15 @@ module Mhc
           Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Time)
         end
       end # class HideTimeRange
+
+      class ReplaceSubjectByCategory < Decorator
+        def subject
+          categories = @event.categories
+          return "BUSY" if categories.empty?
+          return categories.first.to_s.capitalize
+        end
+      end # class ReplaceSubjectByCategory
+
     end # class Decorator
   end # class Modifier
 end # module Mhc

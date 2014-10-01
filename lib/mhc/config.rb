@@ -44,7 +44,7 @@ module Mhc
 
     # Parse Key-Value object in YAML
     class Base
-      attr_accessor :name
+      # attr_accessor :name
 
       def self.create_from_yaml_file(yaml_file)
         yaml_string = File.open(File.expand_path(yaml_file)).read
@@ -59,7 +59,7 @@ module Mhc
       def self.define_syntax(config)
         @syntax = Syntax.new(config)
         @syntax.keyword_symbols.each do |sym|
-          attr_accessor sym
+          attr_accessor sym # XXX: attr_reader is enough?
         end
       end
 
@@ -68,11 +68,29 @@ module Mhc
       end
 
       def initialize(hash = {})
+        @original_hash = hash
         (hash || {}).each do |key, val|
           raise Mhc::ConfigurationError, "config syntax error (#{key})" unless syntax.keyword?(key)
           var = syntax.instance_variable_name(key)
           obj = create_subnode(key, val)
           instance_variable_set(var, obj)
+        end
+      end
+
+      attr_reader :original_hash
+
+      def get_value(dot_separated_string = nil)
+        if dot_separated_string.to_s == ""
+          return original_hash
+        end
+
+        key, subkey = dot_separated_string.to_s.upcase.split(".", 2)
+        subnode = get_subnode(key)
+
+        if subnode.respond_to?(:get_value)
+          return subnode.get_value(subkey)
+        else
+          return subnode.to_s
         end
       end
 
@@ -85,7 +103,7 @@ module Mhc
         syntax.keywords.each do |key|
           var = syntax.instance_variable_name(key)
           obj = instance_variable_get(var)
-          obj = obj.to_hash if obj.respond_to?(:to_hash)
+          obj = obj.respond_to?(:to_hash) ? obj.to_hash : obj.to_s
           hash[key] = obj
         end
         return hash
@@ -94,6 +112,11 @@ module Mhc
       private
       def syntax
         self.class.syntax
+      end
+
+      def get_subnode(key)
+        raise Mhc::ConfigurationError, "Invalid key: #{key}" unless syntax.keyword?(key)
+        return instance_variable_get(syntax.instance_variable_name(key))
       end
 
       def create_subnode(keyword, value)
@@ -114,6 +137,7 @@ module Mhc
       include Enumerable
 
       def initialize(item_class, array = [])
+        @original_hash = array
         @configs = []
         (array || []).each do |value|
           item = item_class.new(value)
@@ -125,12 +149,14 @@ module Mhc
         @configs.find {|c| c.name == key}
       end
 
+      alias_method :get_subnode, :[]
+
       def <<(conf)
         @configs << conf
       end
 
       def to_hash # XXX: actually, it returns a Array
-        return @configs.map {|c| c.to_hash}
+        return @configs.map {|c| c.respond_to?(:to_hash) ? c.to_hash : c.to_s}
       end
 
       def each

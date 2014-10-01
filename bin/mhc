@@ -93,7 +93,9 @@ class MhcCLI < Thor
   ################################################################
   # Command: cache
   ################################################################
-  desc "cache", "List cache slot"
+  desc "cache", "Dump cache file"
+
+  named_option :repository
 
   def cache
     Mhc::Command::Cache.new(calendar)
@@ -116,6 +118,16 @@ class MhcCLI < Thor
   end
 
   ################################################################
+  # Command: config
+  ################################################################
+  desc "configration", "Show current configration in various formats."
+
+  named_option :format
+
+  def configration(name = nil)
+    puts Mhc::Converter::Emacs.new.to_emacs(config.get_value(name))
+  end
+
   ################################################################
   # Command: init
   ################################################################
@@ -125,6 +137,7 @@ class MhcCLI < Thor
     Mhc::Command::Init.new(top_dir, options[:config] || DEFAULT_CONFIG_PATH, ENV["MHC_TZID"])
   end
 
+  ################################################################
   # Command: scan
   ################################################################
   desc "scan RANGE", "Scan events in date RANGE"
@@ -155,10 +168,7 @@ class MhcCLI < Thor
     \x5 mhc scan thismonth --search 'category:Business & !subject:"Trip"'
   LONGDESC
 
-  method_option :calendar, :desc => "Set source CALENDAR"
-  method_option :category, :desc => "Pick items only in CATEGORY"
-  method_option :format,   :desc => "Set printing format", :enum => %w(text mail orgtable emacs icalendar calfw howm)
-  method_option :search,   :desc => "Search items by complex expression"
+  named_option :calendar, :category, :format, :repository, :search
 
   def scan(range)
     begin
@@ -174,11 +184,14 @@ class MhcCLI < Thor
   ################################################################
   desc "server", "Invoked as server (backend of emacs)"
 
+  named_option :repository
+
   def server
     require "shellwords"
-    while line = STDIN.noecho(&:gets)
+    while line = STDIN.gets # STDIN.noecho(&:gets)
       argv = line.chomp.shellsplit
       self.class.start(argv)
+      STDOUT.flush
     end
   end
 
@@ -187,7 +200,7 @@ class MhcCLI < Thor
   ################################################################
   desc "show MESSAGE_ID", "Show article found by MESSAGE_ID"
 
-  method_option :calendar, :desc => "Set source CALENDAR"
+  named_option :calendar, :repository
 
   def show(message_id)
     event = exit_on_error do
@@ -201,7 +214,7 @@ class MhcCLI < Thor
   ################################################################
   desc "sync SYNC_CHANNEL", "Synchronize DBs via SYNC_CHANNEL"
 
-  method_option :dry_run, :type => :boolean, :desc => "Perform a trial run with no changes made"
+  named_option :dry_run
 
   def sync(channel_name)
     driver = exit_on_error do
@@ -216,7 +229,7 @@ class MhcCLI < Thor
 
   no_commands do
     def invoke_command(command, *args)
-      setup_global_options
+      setup_global_options unless command.name == "init"
       result = super
       teardown
       result
@@ -248,7 +261,6 @@ class MhcCLI < Thor
       end
 
       calname  = options[:calendar] || @config.calendars.first.name
-      calendar = @config.calendars[calname]
       @config.general.repository = options[:repository] if options[:repository]
 
       self.class.calendar ||= builder.calendar(calname)
@@ -263,6 +275,7 @@ class MhcCLI < Thor
     end
     if options[:debug]
       require "pp"
+      $MHC_DEBUG = true
     end
   end
 

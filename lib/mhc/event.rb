@@ -41,6 +41,8 @@ module Mhc
     end
 
     def parse_file(path, lazy = true)
+      STDOUT.puts "parsing #{File.expand_path(path)}" if $MHC_DEBUG
+
       clear
       header, body = nil, nil
 
@@ -260,7 +262,9 @@ module Mhc
       min = duration.first if duration.first && duration.first > min
       max = duration.last  if duration.last  && duration.last  < max
 
-      return min..max if min <= max
+      return min..max if min && max && min <= max
+
+      STDERR.puts "Warn: invalid date range? #{self.uid}"
       return min0..max0
     end
 
