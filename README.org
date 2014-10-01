@@ -1,7 +1,7 @@
 #+TITLE: MHC -- Message Harmonized Calendaring system.
 #+AUTHOR: Yoshinari Nomura
 #+EMAIL:
-#+DATE: 2014-03-25
+#+DATE: 2014-10-01
 #+OPTIONS: H:3 num:2 toc:nil
 #+OPTIONS: ^:nil @:t \n:nil ::t |:t f:t TeX:t
 #+OPTIONS: skip:nil
@@ -16,7 +16,6 @@
 #+DESCRIPTION:
 #+KEYWORDS:
 #+LANGUAGE: ja
-#+STARTUP: odd
 #+LATEX_CLASS: jsarticle
 #+LATEX_CLASS_OPTIONS: [a4j]
 # #+LATEX_HEADER: \usepackage{plain-article}
@@ -25,7 +24,6 @@
 # #+LaTeX: \thispagestyle{empty}
 
 * MHC -- Message Harmonized Calendaring system.
-
 ** DESCRIPTION
    MHC is designed to help those who receive most appointments via email.
    Using MHC, you can easily import schedule articles from emails.
@@ -53,6 +51,7 @@
    + Ruby 2.1 or newer
    + Emacs 24 or newer
 
+* Information for Developers
 ** INSTALL for developers:
    1) Install rbenv + ruby-build
       (see https://github.com/sstephenson/rbenv#basic-github-checkout for details)
@@ -84,67 +83,128 @@
         $ git clone git@github.com:yoshinari-nomura/mhc.git ~/src/mhc
       #+END_SRC
 
-   3) Set default ruby version in MHC project
+   4) Set default ruby version in MHC project
       #+BEGIN_SRC shell-script
         $ cd ~/src/mhc
         $ echo '2.1.2' > .ruby-version
         $ ruby -v # -> You will see: ruby 2.1.2...
       #+END_SRC
 
-   4) Install requied gem packages in sandbox ~/src/mhc/vendor/bundle
+   5) Install requied gem packages in sandbox ~/src/mhc/vendor/bundle
       #+BEGIN_SRC shell-script
         $ cd ~/src/mhc
         $ bundle install --path vendor/bundle
       #+END_SRC
 
-   5) Check if TODAY is good.
+   6) Initialize config file and spool directory
       #+BEGIN_SRC shell-script
-        $ export MHC_TZID="Asia/Tokyo"
-        $ ~/src/mhc/bin/mhc scan today
+        $ bin/mhc init ~/mhc
+
+        Guessing current local timezone ...
+                  ok  guess timezone ... Asia/Tokyo
+        Making directries under ~/mhc ...
+              create  ~/mhc/draft
+              create  ~/mhc/inbox
+              create  ~/mhc/presets
+              create  ~/mhc/spool
+              create  ~/mhc/trash
+              create  ~/mhc/status/cache
+              create  ~/mhc/status/log
+              create  ~/mhc/status/sync_channels
+        Copying config file(s) into ~/.config/mhc/config.yml ...
+                  ok  copy ~/.config/mhc/config.yml
+        Done.
+
+        # Read comments in config.yml carefully
+        $ vi ~/.config/mhc/config.yml
+
+        # Add Japanese Holidays if needed.
+        $ cp samples/japanese-holidays.mhcc ~/mhc/presets/
+
+        # Add ~/src/mhc/bin directory to your $PATH for dogfooding
+        $ export PATH=$HOME/src/mhc/bin:$PATH
+      #+END_SRC
+
+   7) Byte-compile Emacs client
+      #+BEGIN_SRC shell-script
+        $ cd emacs
+        $ make
+      #+END_SRC
+
+   8) Add setup in your =.emacs.d/init.el=
+      #+BEGIN_SRC emacs-lisp
+        (setq load-path
+              (cons "~/src/mhc/emacs" load-path))
+        (autoload 'mhc-mua-setup "mhc-mua")
+        (mhc-mua-setup)
+
+        ;; M-x mhc-goto-this-month
+      #+END_SRC
+
+   9) Check if TODAY is good.
+      #+BEGIN_SRC shell-script
+        $ mhc scan today
       #+END_SRC
 
    You may add ~/src/mhc/bin directory to your $PATH for dogfooding
 
-* SETUP
+** DIRECTORY STRUCTURE
+*** Configuration Directory
+    Default configuration directory is =~/.config/mhc=.
+    If environment variable =MHC_CONFIG_HOME= or =XDG_CONFIG_HOME= is set,
+    it is taken as =$MHC_CONFIG_HOME/mhc= or =$XDG_CONFIG_HOME/mhc=.
+
+    Configuration directory =~/.config/mhc= has these stuffs:
+    + config.yml :: Configuration file (mandatory).
+    + plugins :: Your home-made Ruby functions.
+    See [[file:samples][samples]] for details.
+
+*** Spool Directory
+    Location of the spool directory should be set
+    by =TOPDIR:= element in =config.yml=.
+
+    For example, if you have =TOPDIR: ~/MHC= entry
+    in your =config.yml=, you will have these directory structure
+    under =~/MHC=:
+
+    + spool/*.mhc :: MHC event database. All events are flatly located
+                     in this directory in the form of ={x-sc-message-id}.mhc=
+    + draft/*.mhc :: Draft files of events.
+                     Opening a file in directory by Emacs,
+                     and Typing =C-cC-c= will move the file into =spool= directory.
+                     (Not implemented yet. Should be empty for now.)
+    + inbox/*.mhc :: Mainly same as =spool=. You will have a chance to
+                     review these events in this directory afterwards.
+                     (Not implemented yet. Should be empty for now.)
+    + presets/*.mhcc :: Database for fixed anniversary events
+                        such as birthdays or national holidays.
+    + trash/*.mhc :: Removed events from =spool= directory.
+    + status/ ::
+      + cache/* :: Cache files for speed-up.
+                   You can remove these files without any damage to MHC Database.
+      + log/* :: log files for debug.
+                 You can remove these files without any damage to MHC DB.
+
+      + sync_channels/* :: Sync records of MHC DB.
+           If you remove any files under this directory,
+           MHC Sync will be DAMAGED.
+* How to convert from the old MHC spool
+  [[https://gist.github.com/yoshinari-nomura/bb9a197e0e01ad81c883][update-uuid.sh]] would help you.
+
+  New format is:
+  + =X-SC-Record-Id= is now in UUID style.
+  + Each filename is in the form of ={UUID}.mhc=, not =[0-9]+=.
+  + UUID in =X-SC-Record-Id= is same as its file's base name.
+  + All articles are flatly placed in TOP/spool/ directory.
+
   #+BEGIN_SRC shell-script
-    $ mhc init ~/MHC
+    $ ./update-uuid.sh ~/Mail/schedule ~/mhc
+
+    Converting... logfile will be in /Users/nom/mhc/update-uuid.sh34485.log
   #+END_SRC
-* DIRECTORY STRUCTURE
-** Configuration Directory
-   Default configuration directory is =~/.config/mhc=.
-   If environment variable =MHC_CONFIG_HOME= or =XDG_CONFIG_HOME= is set,
-   it is taken as =$MHC_CONFIG_HOME/mhc= or =$XDG_CONFIG_HOME/mhc=.
 
-   Configuration directory =~/.config/mhc= has these stuffs:
-   + config.yml :: Configuration file (mandatory).
-   + plugins :: Your home-made Ruby functions.
-   See [[file:samples][samples]] for details.
-
-** Spool Directory
-   Location of the spool directory should be set
-   by =TOPDIR:= element in =config.yml=.
-
-   For example, if you have =TOPDIR: ~/MHC= entry
-   in your =config.yml=, you will have these directory structure
-   under =~/MHC=:
-
-   + spool/*.mhc :: MHC event database. All events are flatly located
-                    in this directory in the form of ={x-sc-message-id}.mhc=
-   + draft/*.mhc :: Draft files of events.
-                    Opening a file in directory by Emacs,
-                    and Typing =C-cC-c= will move the file into =spool= directory.
-   + inbox/*.mhc :: Mainly same as =spool=. You will have a chance to
-                    review these events in this directory afterwards.
-                    (Not implemented yet. Should be empty for now.)
-   + presets/*.mhcc :: Database for fixed anniversary events
-                       such as birthdays or national holidays.
-   + trash/*.mhc :: Removed events from =spool= directory.
-   + status/ ::
-     + cache/* :: Cache files for speed-up.
-                  You can remove these files without any damage to MHC Database.
-     + log/* :: log files for debug.
-                You can remove these files without any damage to MHC DB.
-
-     + sync_channels/* :: Sync records of MHC DB.
-          If you remove any files under this directory,
-          MHC Sync will be DAMAGED.
+  For Japanese people, character-code conversion might be needed.
+  #+BEGIN_SRC shell-script
+    $ cd ~/mhc/spool
+    $ find . -name '*.mhc' | xargs -n 10 nkf --overwrite
+  #+END_SRC
