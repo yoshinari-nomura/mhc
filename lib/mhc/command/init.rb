@@ -66,6 +66,7 @@ module Mhc
         end
 
         begin
+          mkdir_p(File.expand_path("..", dest_path))
           File.open(dest_path, "w", 0600) do |file|
             file.write(template.result(binding))
           end
