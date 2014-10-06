@@ -120,11 +120,11 @@ class MhcCLI < Thor
   ################################################################
   # Command: config
   ################################################################
-  desc "configration", "Show current configration in various formats."
+  desc "configuration", "Show current configuration in various formats."
 
   named_option :format
 
-  def configration(name = nil)
+  def configuration(name = nil)
     puts Mhc::Converter::Emacs.new.to_emacs(config.get_value(name))
   end
 
