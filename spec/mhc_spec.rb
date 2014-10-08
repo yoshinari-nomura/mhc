@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+### Rspec file for MHC
+
 describe Mhc do
   it 'should have a version number' do
     expect(Mhc::VERSION).not_to be_nil
@@ -415,8 +417,44 @@ describe Mhc::Event do
     EOF
   end
 
-  it "should be created from iCalendar string" do
-    pending "Not implemented yet"
+  it "should create 20100311 10:30-12:00 event from iCalendar" do
+    ev = Mhc::Event.new_from_ics <<-EOF.strip_heredoc
+      BEGIN:VCALENDAR
+      PRODID;X-RICAL-TZSOURCE=TZINFO:-//Quickhack.net//MHC 0.25.0//EN
+      CALSCALE:GREGORIAN
+      VERSION:2.0
+      BEGIN:VEVENT
+      CREATED;VALUE=DATE-TIME:20140101T000000Z
+      DTSTART;TZID=Asia/Tokyo;VALUE=DATE-TIME:20100311T103000
+      DTEND;TZID=Asia/Tokyo;VALUE=DATE-TIME:20100311T120000
+      DTSTAMP;VALUE=DATE-TIME:20140101T000000Z
+      LAST-MODIFIED;VALUE=DATE-TIME:20140101T000000Z
+      UID:69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      DESCRIPTION:This is Description.
+      SUMMARY:CS1
+      SEQUENCE:0
+      END:VEVENT
+      END:VCALENDAR
+    EOF
+    expect(ev.dump).to eq <<-'EOF'.strip_heredoc
+      X-SC-Subject: CS1
+      X-SC-Location: 
+      X-SC-Day: 20100311
+      X-SC-Time: 01:30-03:00
+      X-SC-Category: 
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: 
+      X-SC-Duration: 
+      X-SC-Alarm: 
+      X-SC-Record-Id: 69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      X-SC-Sequence: 0
+
+      This is Description.
+    EOF
+  end
+
+  it "should create all-day event 20140508-20140509 from iCalendar" do
     ev = Mhc::Event.new_from_ics <<-EOF.strip_heredoc
       BEGIN:VCALENDAR
       PRODID;X-RICAL-TZSOURCE=TZINFO:-//Quickhack.net//MHC 0.25.0//EN
@@ -429,7 +467,7 @@ describe Mhc::Event do
       DTSTAMP;VALUE=DATE-TIME:20140101T000000Z
       LAST-MODIFIED;VALUE=DATE-TIME:20140101T000000Z
       UID:69CFD0DF-4058-425B-8C2B-40D81E6A2392
-      DESCRIPTION:
+      DESCRIPTION:This is Description.
       SUMMARY:CS1
       SEQUENCE:0
       END:VEVENT
@@ -449,12 +487,12 @@ describe Mhc::Event do
       X-SC-Record-Id: 69CFD0DF-4058-425B-8C2B-40D81E6A2392
       X-SC-Sequence: 0
 
+      This is Description.
     EOF
   end
 
   it "should create recurrence condition from iCalendar string" do
-    pending "Not implemented yet"
-    ics = <<-EOF.strip_heredoc
+    ev = Mhc::Event.new_from_ics <<-EOF.strip_heredoc
       BEGIN:VCALENDAR
       PRODID;X-RICAL-TZSOURCE=TZINFO:-//Quickhack.net//MHC 0.25.0//EN
       CALSCALE:GREGORIAN
@@ -475,12 +513,6 @@ describe Mhc::Event do
       END:VEVENT
       END:VCALENDAR
     EOF
-    ev = Mhc::Event.new_from_ics(ics)
-    ical = RiCal.parse_string(ics).first
-    iev = ical.events.first
-    #puts "************ #{iev.rrule_property.first.until}"
-    #puts iev.rrule_property.first.by_list[:byday].map{|w| %w(Sun Mon Tue Wed Thu Fri Sat)[w.wday] }.join(' ')
-    # RiCal::PropertyValue::RecurrenceRule.new(nil, :freq => "monthly", :byday => ["MO", "-3SU"]).by_list[:byday].map{|w| pp w.index}
     expect(ev.dump).to eq <<-'EOF'.strip_heredoc
       X-SC-Subject: Wednesday and Sunday Weekly event
       X-SC-Location: Office

@@ -66,6 +66,10 @@ module Mhc
       return self
     end
 
+    def self.new_from_ics(ics_string)
+      Mhc::Converter::IcalendarImporter.parse_ics(ics_string)
+    end
+
     def path
       return @path
     end

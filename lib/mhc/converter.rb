@@ -176,7 +176,7 @@ module Mhc
     end # class Icalendar
 
     class IcalendarImporter
-      def self.new_from_ics(ics)
+      def self.parse_ics(ics)
         # * 3.8.1.  Descriptive Component Properties
         # ** CATEGORIES  3.8.1.2.  Categories
         # ** DESCRIPTION  3.8.1.5.  Description
@@ -218,20 +218,38 @@ module Mhc
         return nil unless ical
 
         iev = ical.events.first
-        ev = self.new
-
         allday = !iev.dtstart.respond_to?(:hour)
 
-        ev.uid         = iev.uid
-        ev.sequence    = iev.sequence.to_i
-        ev.categories  = iev.categories.to_a.join(" ")
-        ev.subject     = iev.summary
-        ev.location    = iev.location
-        ev.description = iev.description
+        dates = iev.dtstart.to_time.strftime("%Y%m%d")
+        if allday && (iev.dtend - iev.dtstart).to_i > 1
+          dates += "-" + (iev.dtend - 1).to_time.strftime("%Y%m%d")
+        end
 
-        #ev.recurrence_condition = iev.rrule_property
+        unless allday
+          time = tz_convert(iev.dtstart).strftime("%H:%M")
+          if iev.dtend
+            time += "-" + tz_convert(iev.dtend).strftime("%H:%M")
+          end
+        end
 
-        if iev.rrule.first.to_s != "" # X-SC-Duration is only for recurring articles
+        ev = Mhc::Event.parse "X-SC-Subject: #{iev.summary}\n"  +
+          "X-SC-Location: #{iev.location}\n"         +
+          "X-SC-Day: #{dates}\n" +
+          "X-SC-Time: #{time}\n"           +
+          "X-SC-Category: #{iev.categories.to_a.join(' ')}\n"       +
+          "X-SC-Mission-Tag: \n"   +
+          "X-SC-Recurrence-Tag: \n"       +
+          "X-SC-Cond: \n" +
+          "X-SC-Duration: \n"         +
+          "X-SC-Alarm: \n"               +
+          "X-SC-Record-Id: #{iev.uid}\n"       +
+          "X-SC-Sequence: #{iev.sequence.to_i}\n\n" + iev.description.to_s
+
+        # X-SC-Cond
+        ev.recurrence_condition.set_from_ics(iev.rrule.first)
+
+        # X-SC-Duration is only for recurring articles
+        unless iev.rrule.empty?
           duration_string = iev.dtstart.to_time.strftime("%Y%m%d") + "-"
           if iev.rrule.first.to_s.match(/until=(\d+)(T\d{6}Z)?/i)
             duration_string += $1
@@ -239,14 +257,26 @@ module Mhc
           ev.duration = duration_string
         end
 
-        # ev.created       = iev.created
-        # ev.last_modified = iev.last_modified
-
-        ev.dates       = iev.dtstart.to_time.strftime("%Y%m%d") + "-" + (iev.dtend - 1).to_time.strftime("%Y%m%d")
-        unless allday
-          ev.time_range = iev.dtend.strftime("%H:%m") + '-' + iev.dtend.strftime("%H:%m")
-        end
         return ev
+      end
+
+      private
+
+      def self.tz_convert(date_time)
+        # puts "date_time = #{date_time}"
+        # puts "dst_tz = #{Mhc.default_tzid}"
+        dst_tz = TZInfo::Timezone.get(Mhc.default_tzid)
+
+        if date_time.respond_to?(:tzid)
+          src_tz = TZInfo::Timezone.get(date_time.tzid)
+        else
+          src_tz = dst_tz
+        end
+
+        # puts "src_tz = #{src_tz}"
+
+        utc = src_tz.local_to_utc(date_time.to_time)
+        return dst_tz.utc_to_local(utc)
       end
 
     end # IcalendarImporter

@@ -122,6 +122,7 @@ module Mhc
       #
       #
       def set_from_ics(rrule)
+        return nil if rrule.to_s == ""
         return 1 if rrule =~ /(BYSECOND|BYMINUTE|BYHOUR|COUNT|BYYEARDAY|BYWEEKNO|BYSETPOS)/i
         return 2 if rrule =~ /INTERVAL=(\d+)/i and $1.to_i != 1
         return 3 if rrule =~ /FREQ=([^;]+)/i   and $1 !~ /WEEKLY|MONTHLY|YEARLY/i
@@ -148,9 +149,9 @@ module Mhc
           end
 
           # every week has the same number prefixes:
-          # 3WE,3SU is OK
+          # 3WE,3SU is OK  => 3(WE|SU)
           # 3WE,2SU is NG
-          # 2WE,3WE,2SU,3SU OK
+          # 2WE,3WE,2SU,3SU OK => (2|3)(SU|WE)
           #
           return 9 unless week.values.all?{|orders| orders.sort == week.values.first.sort}
           order = week.values.first.sort
