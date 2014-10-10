@@ -989,7 +989,7 @@ the default action of this command is changed to the latter."
 (defvar mhc-tmp-buffer-list nil)
 
 (defun mhc-get-buffer-create (name)
-  "Return buffer for temporary use of MHC."
+  "Return NAME buffer for temporary use of MHC."
   (let ((buf (get-buffer name)))
     (or (and buf (buffer-name buf))
         (progn
