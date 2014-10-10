@@ -143,8 +143,8 @@
 
 (defcustom mhc-summary-line-format
   (if (eq mhc-summary-language 'japanese)
-      "%M%月%D%日%(%曜%) %b%e %c%i%s %p%l"
-    "%M%/%D%S%W %b%e %c%i%s %p%l")
+      "%Y%年%M%月%D%日%(%曜%) %b%e %c%i%s %p%l"
+    "%Y%/%M%/%D%S%W %b%e %c%i%s %p%l")
   "*A format string for summary line of MHC.
 It may include any of the following format specifications
 which are replaced by the given information:
@@ -483,7 +483,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 (defun mhc-summary/line-year-string ()
   (if mhc-tmp-first
       (format "%4d" (mhc-day-year mhc-tmp-dayinfo))
-    (make-string 2 ? )))
+    (make-string 4 ? )))
 
 
 (defun mhc-summary/line-month-string ()
