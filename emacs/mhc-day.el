@@ -32,12 +32,12 @@
 
 ;; Function and macros to manipulate MHC-DAY structure:
 
-(defun mhc-day-new (date year month day-of-month &optional day-of-week holiday schedules)
+(defun mhc-day-new (date &optional year month day-of-month day-of-week holiday schedules)
   "Constructor of MHC-DAY structure."
   (cons date
-        (vector year
-                month
-                day-of-month
+        (vector (or year (mhc-date-yy date))
+                (or month (mhc-date-mm date))
+                (or day-of-month (mhc-date-dd date))
                 (or day-of-week (mhc-date-ww date))
                 holiday
                 schedules)))

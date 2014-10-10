@@ -602,6 +602,28 @@ If HIDE-PRIVATE, private schedules are suppressed."
       (mhc-goto-today t)
       (message "%s" (mhc-date-format date "Scanning %04d/%02d...done" yy mm)))))
 
+(defun mhc-search (string &optional subject-only)
+  "Search events by STRING.
+If SUBJECT-ONLY is non-nil, it will search only on X-SC-Subject:"
+  (interactive "sSearch: \nP")
+  (let ((query (if subject-only
+                   (format "subject:\"%s\"" string)
+                 (format "subject:\"%s\" | body:\"%s\"" string string))))
+    (mhc-scan (mhc-db-search query))))
+
+(defun mhc-scan (events &optional insert-current-buffer clip-from clip-to)
+  "Create mhc-summary buffer using EVENTS list.
+If INSERT-CURRENT-BUFFER is non-nil, insert contents in the current buffer.
+if CLIP-FROM and CLIP-TO are specified, clip EVENTS by date using these two params."
+  (unless insert-current-buffer
+    (mhc-summary-generate-buffer "MHC SEARCH")
+    (setq mhc-summary-buffer-current-date-month "MHC SEARCH"))
+  (message "Listing MHC events...")
+  (mhc-summary-make-contents events clip-from clip-to)
+  (mhc-summary-mode)
+  (goto-char (point-min))
+  (message "Listing MHC events...done"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; import, edit, delete, modify
 

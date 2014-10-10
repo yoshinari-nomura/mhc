@@ -211,7 +211,6 @@ module Mhc
 
       def prepare(context)
         expand_multiple_days_occurrences
-        pad_empty_dates
       end
 
       def format_header(context);  "(";   end

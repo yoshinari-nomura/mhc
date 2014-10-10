@@ -89,12 +89,14 @@ message and cdr keeps a visible message."
         (cons buffer buffer)
       buffer)))
 
-(defun mhc-mua-generate-summary-buffer (date)
-  "Generate a summary buffer for DATE, and change current buffer to it."
+(defun mhc-mua-generate-summary-buffer (name-or-date)
+  "Generate a summary buffer for DATE-OR-DATE, and change current buffer to it."
   (switch-to-buffer
    (set-buffer
     (mhc-get-buffer-create
-     (mhc-date-format date "%04d-%02d" yy mm))))
+     (if (stringp name-or-date)
+         name-or-date
+       (mhc-date-format name-or-date "%04d-%02d" yy mm)))))
   (setq inhibit-read-only t
         buffer-read-only nil
         selective-display t

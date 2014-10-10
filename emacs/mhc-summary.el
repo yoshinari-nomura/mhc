@@ -457,28 +457,31 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 
 
 (defun mhc-summary-make-contents
-  (dayinfo-list from to mailer &optional category-predicate secret)
-  (let (todo-list overdue deadline mhc-tmp-day)
-    (setq mhc-summary/today (mhc-date-now))
-    (while dayinfo-list
-      (if (or (mhc-date< (mhc-day-date (car dayinfo-list)) from)
-              (mhc-date> (mhc-day-date (car dayinfo-list)) to))
-          ()
+  (dayinfo-list &optional from to mailer category-predicate secret)
+  (let* ((sparse (or from to))
+         (from (or from (mhc-day-date (car dayinfo-list))))
+         (to   (or to   (mhc-day-date (car (last dayinfo-list)))))
+         (date from) dayinfo
+         (separator-format (and mhc-summary-use-cw
+                                mhc-use-week-separator
+                                (eq mhc-start-day-of-week 1)
+                                " CW %d ")))
+    (while (mhc-date<= date to)
+      (setq dayinfo (or (assoc date dayinfo-list)
+                        (and sparse (mhc-day-new date))))
+      (when dayinfo
         (mhc-summary/insert-dayinfo
-         (car dayinfo-list) mailer
+         dayinfo
+         (or mailer 'mhc-mua)
          (or category-predicate mhc-default-category-predicate-sexp)
-         secret)
-        (and mhc-use-week-separator
-             (eq (mhc-day-day-of-week (car dayinfo-list))
-                 (mhc-end-day-of-week))
-             (> (length dayinfo-list) 1)
-             (mhc-summary/insert-separator
-              nil
-              (when mhc-summary/cw-separator
-                (format " CW %d " (mhc-date-cw
-                                   (mhc-date++ (mhc-day-date (car dayinfo-list)))))))))
-      (setq dayinfo-list (cdr dayinfo-list)))))
-
+         secret))
+      (setq date (mhc-date++ date))
+      ;; insert separators
+      (and sparse mhc-use-week-separator
+           (eq (mhc-date-ww date) mhc-start-day-of-week)
+           (mhc-summary/insert-separator
+            nil
+            (and separator-format (format separator-format (mhc-date-cw date))))))))
 
 (defun mhc-summary/line-year-string ()
   (if mhc-tmp-first
@@ -634,6 +637,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
   (define-key mhc-summary-mode-map "v" 'mhc-summary-toggle-display-message)
 
   (define-key mhc-summary-mode-map "g" 'mhc-goto-month)
+  (define-key mhc-summary-mode-map "/" 'mhc-search)
   (define-key mhc-summary-mode-map ">" 'mhc-goto-next-month)
   (define-key mhc-summary-mode-map "N" 'mhc-goto-next-year)
   (define-key mhc-summary-mode-map "<" 'mhc-goto-prev-month)

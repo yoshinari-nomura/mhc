@@ -18,16 +18,22 @@
 (require 'mhc-process)
 (require 'mhc-schedule)
 
-(defun mhc-db-scan (b e &optional nosort category)
+(defun mhc-db-scan (b e &optional nosort category search)
   (mhc-process-send-command
-   (format "scan --format=emacs %04d%02d%02d-%04d%02d%02d%s"
+   (format "scan --format=emacs %04d%02d%02d-%04d%02d%02d%s%s"
            (mhc-date-yy b)
            (mhc-date-mm b)
            (mhc-date-dd b)
            (mhc-date-yy e)
            (mhc-date-mm e)
            (mhc-date-dd e)
-           (if category  (format " --category=%s" category) ""))))
+           (if category  (format " --category=%s" category) "")
+           (if search  (format " --search='%s'" search) ""))))
+
+(defun mhc-db-search (search)
+  (let ((b (mhc-date-new 1970 1 1))
+        (e (mhc-date-yy++ (mhc-date-now))))
+    (mhc-db-scan b e nil nil search)))
 
 (defun mhc-db-scan-month (year month &optional nosort category)
   (let ((first-date (mhc-date-new year month 1)))
