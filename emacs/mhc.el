@@ -502,89 +502,64 @@ If HIDE-PRIVATE, private schedules are suppressed."
   "Indicate summary buffer's month. It is also used by mhc-summary-buffer-p")
 (make-variable-buffer-local 'mhc-summary-buffer-current-date-month)
 
+(defun mhc-expand-date-scope-backward (date scope)
+  "Expand date scope backward involving the whole first week of month.
+DATE can be any date of the target month.
+SCOPE is one of:
+  + 'week: Expand to involve the whole first week of month.
+  + 'wide: Just like 'week, but if 'week does not expand nothing,
+    it takes 7 days.
+  + number: Expand N days backward."
+(let ((edge-date (mhc-date-mm-first date)))
+  (cond
+   ((integerp scope)
+    (mhc-date- edge-date scope))
+   ((eq scope 'week)
+    (mhc-date-ww-first edge-date mhc-start-day-of-week))
+   ((eq scope 'wide)
+    (mhc-date-ww-first (mhc-date-- edge-date) mhc-start-day-of-week)))))
+
+(defun mhc-expand-date-scope-forward (date scope)
+  "Expand date scope forward involving the whole last week of month.
+DATE can be any date of the target month.
+SCOPE is one of:
+  + 'week: Expand to involve the whole last week of month.
+  + 'wide: Just like 'week, but if 'week does not expand nothing,
+    it takes 7 days.
+  + number: Expand N days forward."
+(let ((edge-date (mhc-date-mm-last date)))
+  (cond
+   ((integerp scope)
+    (mhc-date+ edge-date scope))
+   ((eq scope 'week)
+    (mhc-date-ww-last edge-date mhc-start-day-of-week))
+   ((eq scope 'wide)
+    (mhc-date-ww-last (mhc-date++ edge-date) mhc-start-day-of-week)))))
 
 (defun mhc-scan-month (date mailer category-predicate secret)
-  (let* ((from  (mhc-date-mm-first date))
-         (to    (mhc-date-mm-last date))
+  "Make summary buffer for a month indicated by DATE.
+DATE can be any date of the target month.
+If MAILER is 'direct, insert scanned result into current buffer.
+CATEGORY-PREDICATE must be a function that can take one mhc-schedule
+argument and return a boolean value indicates opacity of the article.
+If SECRET is non-nil, hide articles those categories are
+listed in ``mhc-category-as-private''."
+  (let* ((from (mhc-date-mm-first date))
+         (to (mhc-date-mm-last date))
          (today (mhc-date-now))
-         (dayinfo-list (mhc-db-scan (mhc-date-mm-- from) (mhc-date-mm++ to)))
-         bfrom bto afrom ato wweek0 wweek1 wweek2)
-    (or (eq 'direct mailer)
-        (mhc-summary-generate-buffer date mailer))
-    (when mhc-use-wide-scope
-      (if (and mhc-use-week-separator
-               (not (eq (mhc-end-day-of-week) 0)))
-          (setq wweek0 0 wweek1 6 wweek2 7)
-        (setq wweek0 1 wweek1 0 wweek2 8))
-      (cond
-       ((integerp mhc-use-wide-scope)
-        (setq bfrom (mhc-date- from mhc-use-wide-scope))
-        (setq bto (mhc-date-mm-last bfrom))
-        (setq ato (mhc-date+ to mhc-use-wide-scope))
-        (setq afrom (mhc-date-mm-first ato)))
-       ((eq mhc-use-wide-scope 'week)
-        (if (eq (mhc-date-ww from) wweek0)
-            (setq bfrom nil bto nil)
-          (setq bfrom
-                (mhc-date+ (mhc-date- from 7)
-                           (% (mhc-date- wweek2 (mhc-date-ww from)) 7)))
-          (setq bto (mhc-date-mm-last bfrom)))
-        (if (eq (mhc-date-ww to) wweek1)
-            (setq afrom nil ato nil)
-          (setq ato (mhc-date+ to (mhc-date- wweek2 (mhc-date-ww to) 1)))
-          (setq afrom (mhc-date-mm-first ato))))
-       ((eq mhc-use-wide-scope 'wide)
-        (if (eq (mhc-date-ww from) wweek0)
-            (setq bfrom (mhc-date- from 7))
-          (setq bfrom
-                (mhc-date+ (mhc-date- from 7)
-                           (% (mhc-date- wweek2 (mhc-date-ww from)) 7))))
-        (setq bto (mhc-date-mm-last bfrom))
-        (if (eq (mhc-date-ww to) wweek1)
-            (setq ato (mhc-date+ to 7))
-          (setq ato (mhc-date+ to (mhc-date- wweek2 (mhc-date-ww to) 1))))
-        (setq afrom (mhc-date-mm-first ato)))))
-    (message "%s" (mhc-date-format date "Scanning %04d/%02d..." yy mm))
+         ;; need three months for mini-calendar
+         (dayinfo-list (mhc-db-scan (mhc-date-mm-- from) (mhc-date-mm++ to))))
     (unless (eq 'direct mailer)
+      (mhc-summary-generate-buffer date mailer)
       (setq mhc-summary-buffer-current-date-month
             (mhc-date-mm-first date)))
-    (when (and bfrom bto)
-      (mhc-summary-make-contents
-       dayinfo-list
-       bfrom bto mailer category-predicate secret)
-      (if mhc-use-month-separator
-          (mhc-summary/insert-separator
-           'wide
-           (when (eq (mhc-end-day-of-week) (mhc-date-ww bto))
-             (if mhc-summary/cw-separator
-                 (format " CW %d " (mhc-date-cw (mhc-date++ bto)))
-               (make-string (length " CW 00 ") mhc-summary-month-separator))))
-        (if (and mhc-use-week-separator
-                 (eq (mhc-end-day-of-week) (mhc-date-ww bto)))
-            (mhc-summary/insert-separator
-             nil
-             (when mhc-summary/cw-separator
-               (format " CW %d " (mhc-date-cw (mhc-date++ bto))))))))
+    (when mhc-use-wide-scope
+      (setq from (mhc-expand-date-scope-backward date mhc-use-wide-scope))
+      (setq to   (mhc-expand-date-scope-forward  date mhc-use-wide-scope)))
+    (message "%s" (mhc-date-format date "Scanning %04d/%02d..." yy mm))
     (mhc-summary-make-contents
      dayinfo-list
      from to mailer category-predicate secret)
-    (when (and afrom ato)
-      (if mhc-use-month-separator
-          (mhc-summary/insert-separator
-           'wide
-           (when (eq mhc-start-day-of-week (mhc-date-ww afrom))
-             (if mhc-summary/cw-separator
-                 (format " CW %d " (mhc-date-cw afrom))
-               (make-string (length " CW 00 ") mhc-summary-month-separator))))
-        (if (and mhc-use-week-separator
-                 (eq mhc-start-day-of-week (mhc-date-ww afrom)))
-            (mhc-summary/insert-separator
-             nil
-             (when mhc-summary/cw-separator
-                   (format " CW %d " (mhc-date-cw afrom))))))
-      (mhc-summary-make-contents
-       dayinfo-list
-       afrom ato mailer category-predicate secret))
     (unless (eq 'direct mailer)
       (when mhc-insert-calendar
         (mhc-calendar-insert-rectangle-at
