@@ -606,10 +606,13 @@ If HIDE-PRIVATE, private schedules are suppressed."
   "Search events by STRING.
 If SUBJECT-ONLY is non-nil, it will search only on X-SC-Subject:"
   (interactive "sSearch: \nP")
-  (let ((query (if subject-only
-                   (format "subject:\"%s\"" string)
-                 (format "subject:\"%s\" | body:\"%s\"" string string))))
-    (mhc-scan (mhc-db-search query))))
+  (let* ((query (if subject-only
+                    (format "subject:\"%s\"" string)
+                  (format "subject:\"%s\" | body:\"%s\"" string string)))
+         (match (mhc-db-search query)))
+    (if (null match)
+        (message "No match")
+      (mhc-scan match))))
 
 (defun mhc-scan (events &optional insert-current-buffer clip-from clip-to)
   "Create mhc-summary buffer using EVENTS list.
