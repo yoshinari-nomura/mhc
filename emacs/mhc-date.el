@@ -497,6 +497,19 @@
   `(mhc-date-let ,date
      (mhc-date-new yy mm (mhc-date/last-day-of-month yy mm) t)))
 
+(defun mhc-date-ww-first (date &optional wkst)
+  "Return the first day of week immediate before DATE.
+WKST specifies start day of week (0:Sunday...6:Saturday).
+If WKST is not specified, 0 (Sunday) is used."
+  (setq wkst (or wkst 0))
+  (mhc-date- date (mod (- (mhc-date-ww date) wkst) 7)))
+
+(defun mhc-date-ww-last (date &optional wkst)
+  "Return the last day of week immediate after DATE.
+WKST specifies start day of week (0:Sunday...6:Saturday).
+If WKST is not specified, 0 (Sunday) is used."
+  (mhc-date+ (mhc-date-ww-first date wkst) 6))
+
 ;;
 ;; predicate
 ;;
