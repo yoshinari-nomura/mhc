@@ -97,42 +97,67 @@ module Mhc
 
       # convert RRULE to X-SC-Cond:
       #
-      # * Not allowed
-      #   + BYSECOND
-      #   + BYMINUTE
-      #   + BYHOUR
-      #   + COUNT
-      #   + BYYEARDAY (-366 to 366)
-      #   + BYWEEKNO  (-53  to  53)
-      #   + BYSETPOS  (-366 to 366)
+      # Due to the over-killing complexity of iCalendar (RFC5545)
+      # format, converting RRULE to X-SC-* format has some restrictions:
       #
-      # * Restricted
-      #   + FREQ should be one of WEEKLY, MONTHLY, YEARLY
-      #   + INTERVAL should be 1
-      #   + BYDAY should be (1|2|3|4|-1)(MO|TU|WE|TH|FR|SA|SU) and FREQ should be:
-      #     MONTHLY if (1|2|3|4|-1) exists
-      #     WEEKLY otherwise
-      #   + BYMONTHDAY should be (1..31)
-      #   + WKST should be MO
+      # * Not allowed elements:
+      #   * BYSECOND
+      #   * BYMINUTE
+      #   * BYHOUR
+      #   * COUNT
+      #   * BYYEARDAY (-366 to 366)
+      #   * BYWEEKNO  (-53  to  53)
+      #   * BYSETPOS  (-366 to 366)
+      #   * Recurrence-ID (not part of RRULE)
       #
-      # * Fully Converted
-      #   + UNTIL (YYYYMMDD) => X-SC-Duration: -YYYYMMDD
-      #   + BYMONTH (1..12)* => (Jan|Feb|Mar|Jul|Aug|Sep|Oct|Nov|Dec)*
+      # * Restricted elements:
       #
-      # * Other restrictions
-      #   + Recurrence-ID is not allowed
+      #   * INTERVAL:
+      #     * it should be 1
       #
+      #   * BYMONTHDAY:
+      #     * it should be (1..31)
       #
-      def set_from_ics(rrule)
-        return nil if rrule.to_s == ""
+      #   * WKST:
+      #     * it should be MO
+      #
+      #   * FREQ:
+      #     * should be one of WEEKLY, MONTHLY, YEARLY
+      #     * should be MONTHLY if BYDAY has (1|2|3|4|-1)
+      #     * should be WEEKLY if BYDAY does not have (1|2|3|4|-1)
+      #
+      #   * BYDAY:
+      #     * should be a list of (1|2|3|4|-1)?(MO|TU|WE|TH|FR|SA|SU)
+      #
+      #     * Every week should have the same number-prefix set:
+      #       WE,SU           is OK => Wed Sun
+      #       3WE,3SU         is OK => 3rd Wed Sun
+      #       2WE,3WE,2SU,3SU is OK => 2nd 3rd Sun Wed
+      #       3WE,2SU         is NG
+      #       3WE,SU          is NG
+      #
+      # * Fully converted elements:
+      #
+      #   * UNTIL
+      #     * YYYYMMDD should goes to X-SC-Duration: -YYYYMMDD
+      #
+      #   * BYMONTH
+      #     * (1..12)* => (Jan|Feb|Mar|Jul|Aug|Sep|Oct|Nov|Dec)*
+      #
+      def validate_rrule(rrule)
+        return true if rrule.to_s == ""
         return 1 if rrule =~ /(BYSECOND|BYMINUTE|BYHOUR|COUNT|BYYEARDAY|BYWEEKNO|BYSETPOS)/i
         return 2 if rrule =~ /INTERVAL=(\d+)/i and $1.to_i != 1
-        return 3 if rrule =~ /FREQ=([^;]+)/i   and $1 !~ /WEEKLY|MONTHLY|YEARLY/i
-        return 4 if rrule =~ /BYDAY=([^;]+)/i  and $1 !~ /((1|2|3|4|-1)?(MO|TU|WE|TH|FR|SA|SU))+/i
-        return 5 if rrule =~ /BYDAY=([^;]+)/i  and $1 =~ /\d/ and rrule !~ /FREQ=MONTHLY/i
-        return 6 if rrule =~ /BYDAY=([^;]+)/i  and $1 !~ /\d/ and rrule !~ /FREQ=WEEKLY/i
-        return 7 if rrule =~ /BYMONTHDAY=([^;]+)/i and $1.split(",").map(&:to_i).any?{|i| i < 1 or i > 31}
-        return 8 if rrule =~ /WKST=([^;]+)/i and $1 !~ /MO/
+        return 3 if rrule =~ /BYMONTHDAY=([^;]+)/i and $1.split(",").map(&:to_i).any?{|i| i < 1 or i > 31}
+        return 4 if rrule =~ /WKST=([^;]+)/i and $1 !~ /MO/
+        return 5 if rrule =~ /FREQ=([^;]+)/i   and $1 !~ /WEEKLY|MONTHLY|YEARLY/i
+        return 6 if rrule =~ /BYDAY=([^;]+)/i  and $1 =~ /\d/ and rrule !~ /FREQ=MONTHLY/i
+        return 7 if rrule =~ /BYDAY=([^;]+)/i  and $1 !~ /\d/ and rrule !~ /FREQ=WEEKLY/i
+        return 8 if rrule =~ /BYDAY=([^;]+)/i  and $1 !~ /((1|2|3|4|-1)?(MO|TU|WE|TH|FR|SA|SU))+/i
+      end
+
+      def set_from_ics(rrule)
+        validate_rrule(rrule)
 
         cond_mon = []
         if rrule =~ /BYMONTH=([^;]+)/
@@ -147,22 +172,16 @@ module Mhc
         if rrule =~ /BYDAY=([^;]+)/
           $1.scan(/(1|2|3|4|-1)?(MO|TU|WE|TH|FR|SA|SU)/).each do |o,w|
             week[w] ||= []
-            week[w] << o.to_i # non numberd prefix is replaced as 0
+            week[w] << o.to_i # unpefixed week is replaced as 0
           end
 
-          # every week has the same number prefixes:
-          # 3WE,3SU is OK  => 3(WE|SU)
-          # 3WE,2SU is NG
-          # 2WE,3WE,2SU,3SU OK => (2|3)(SU|WE)
-          #
+          # Every week should have the same number-prefix set:
           return 9 unless week.values.all?{|orders| orders.sort == week.values.first.sort}
-          order = week.values.first.sort
 
-          # if number prefixed week cannot coexist with non-number prefixed week
-          #
-          # WE,3WE is NG
-          # WE,3WE is NG
-          #
+          order = week.values.first.sort
+          #     * Number-prefixed week cannot coexist with unprefixed week
+          #       WE,SU  is OK => Wed Sun
+          #       WE,3SU is NG
           return 10 if order.length > 1 and order.member?(0) # 0 means non-numberd prefix
 
           order.delete(0)

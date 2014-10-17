@@ -219,12 +219,24 @@ module Mhc
 
         iev = ical.events.first
         allday = !iev.dtstart.respond_to?(:hour)
+        recurring = !iev.rrule.empty?
 
-        dates = iev.dtstart.to_time.strftime("%Y%m%d")
-        if allday && (iev.dtend - iev.dtstart).to_i > 1
-          dates += "-" + (iev.dtend - 1).to_time.strftime("%Y%m%d")
+        # X-SC-Day: (from DTSTART, DTEND)
+        # for recurring event, DTSTSRT is a start part of X-SC-Duration:
+        dates = []
+        unless recurring
+          date = iev.dtstart.to_time.strftime("%Y%m%d")
+          if allday && (iev.dtend - iev.dtstart).to_i > 1
+            date += "-" + (iev.dtend - 1).to_time.strftime("%Y%m%d")
+          end
+          dates << date
         end
 
+        # X-SC-Day: (from RDATE, EXDATE)
+        dates += iev.rdate.flatten.map{|d| d.to_time.strftime("%Y%m%d")}
+        exdates = iev.exdate.flatten.map{|d| d.to_time.strftime("!%Y%m%d")}
+
+        # X-SC-Time:
         unless allday
           time = tz_convert(iev.dtstart).strftime("%H:%M")
           if iev.dtend
@@ -234,7 +246,7 @@ module Mhc
 
         ev = Mhc::Event.parse "X-SC-Subject: #{iev.summary}\n"  +
           "X-SC-Location: #{iev.location}\n"         +
-          "X-SC-Day: #{dates}\n" +
+          "X-SC-Day: #{(dates + exdates).join(' ')}\n" +
           "X-SC-Time: #{time}\n"           +
           "X-SC-Category: #{iev.categories.to_a.join(' ')}\n"       +
           "X-SC-Mission-Tag: \n"   +
@@ -245,11 +257,11 @@ module Mhc
           "X-SC-Record-Id: #{iev.uid}\n"       +
           "X-SC-Sequence: #{iev.sequence.to_i}\n\n" + iev.description.to_s
 
-        # X-SC-Cond
+        # X-SC-Cond:
         ev.recurrence_condition.set_from_ics(iev.rrule.first)
 
-        # X-SC-Duration is only for recurring articles
-        unless iev.rrule.empty?
+        # X-SC-Duration: is only for recurring articles
+        if recurring
           duration_string = iev.dtstart.to_time.strftime("%Y%m%d") + "-"
           if iev.rrule.first.to_s.match(/until=(\d+)(T\d{6}Z)?/i)
             duration_string += $1

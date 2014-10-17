@@ -516,7 +516,7 @@ describe Mhc::Event do
     expect(ev.dump).to eq <<-'EOF'.strip_heredoc
       X-SC-Subject: Wednesday and Sunday Weekly event
       X-SC-Location: Office
-      X-SC-Day: 20140402
+      X-SC-Day: 
       X-SC-Time: 
       X-SC-Category: Work
       X-SC-Mission-Tag: 
@@ -526,6 +526,47 @@ describe Mhc::Event do
       X-SC-Alarm: 
       X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
       X-SC-Sequence: 0
+
+      this is description
+    EOF
+  end
+
+  it "should create recurrence condition from iCalendar string with RDATE" do
+    Mhc.default_tzid = "Asia/Tokyo"
+    ev = Mhc::Event.new_from_ics <<-EOF.strip_heredoc
+      BEGIN:VCALENDAR
+      BEGIN:VEVENT
+      RDATE;TZID=Asia/Tokyo;VALUE=DATE-TIME:20141114T124500
+      EXDATE;TZID=Asia/Tokyo;VALUE=DATE-TIME:20141022T124500,20141119T124500,20
+       141231T124500,20150107T124500
+      CREATED;VALUE=DATE-TIME:20140924T004619Z
+      DTEND;TZID=Asia/Tokyo;VALUE=DATE-TIME:20141001T141500
+      DTSTART;TZID=Asia/Tokyo;VALUE=DATE-TIME:20141001T124500
+      DTSTAMP;VALUE=DATE-TIME:20141017T061129Z
+      CATEGORIES:Lecture
+      LAST-MODIFIED;VALUE=DATE-TIME:20140924T004619Z
+      UID:FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      DESCRIPTION:this is description\n
+      SUMMARY:PP
+      RRULE:FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE;UNTIL=20150128T034500Z
+      LOCATION:Room11
+      SEQUENCE:4
+      END:VEVENT
+      END:VCALENDAR
+    EOF
+    expect(ev.dump).to eq <<-'EOF'.strip_heredoc
+      X-SC-Subject: PP
+      X-SC-Location: Room11
+      X-SC-Day: 20141114 !20141022 !20141119 !20141231 !20150107
+      X-SC-Time: 12:45-14:15
+      X-SC-Category: Lecture
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: Wed
+      X-SC-Duration: 20141001-20150128
+      X-SC-Alarm: 
+      X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      X-SC-Sequence: 4
 
       this is description
     EOF
