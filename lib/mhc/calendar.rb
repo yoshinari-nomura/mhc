@@ -30,6 +30,9 @@ module Mhc
       return ocs.sort
     end
 
+    ################################################################
+    ## for sync manager
+
     def report_etags(uid = nil)
       return find(uid) if uid
       date_range = (Mhc::PropertyValue::Date.today - 90)..
@@ -39,6 +42,46 @@ module Mhc
 
     def get_with_etag(uid)
       find(uid: uid)
+    end
+
+    def put_if_match(uid, ics_string, expected_etag)
+      STDERR.print "Mhc::Calendar#put_if_match(uid:#{uid}, expected_etag:#{expected_etag})..."
+      if ev = find(uid: uid) and ev.etag != expected_etag
+        STDERR.print "failed: etag not match #{ev.etag} != #{expected_etag}\n"
+        return nil
+      end
+      if expected_etag and (not ev)
+        STDERR.print "failed: etag not match #{expected_etag} != nil\n"
+      end
+      # begin
+        ev = Mhc::Event.new_from_ics(ics_string)
+        @datastore.update(ev)
+        STDERR.print "succeeded #{ev.etag}\n"
+        return true
+     # rescue Exception => e
+        # STDERR.print "failed: (#{e.to_s})\n"
+        # return nil
+      # end
+    end
+
+    def delete_if_match(uid, expected_etag)
+      STDERR.print "Mhc::Calendar#delete_if_match(uid:#{uid}, expected_etag:#{expected_etag})..."
+      unless ev = find(uid: uid)
+        STDERR.print "failed: uid #{uid} not found\n"
+        return nil
+      end
+      unless ev.etag == expected_etag
+        STDERR.print "failed: etag not match #{ev.etag} != #{expected_etag}\n"
+        return nil
+      end
+      begin
+        @datastore.delete(ev)
+        STDERR.print "succeeded: #{ev.etag}\n"
+        return ev
+      rescue Exception => e
+        STDERR.print "failed: #{e.to_s}\n"
+        return nil
+      end
     end
 
     ################################################################

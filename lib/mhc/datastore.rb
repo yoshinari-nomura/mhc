@@ -46,6 +46,37 @@ module Mhc
       return Event.parse_file(path)
     end
 
+    def create(event)
+      if find_by_uid(event.uid)
+        raise "Already exist uid:#{uid} in #{@basedir}"
+      end
+      File.open(path, "w") do |f|
+        f.write(event.dump)
+      end
+    end
+
+    def update(event)
+      unless path = uid_to_path(event.uid)
+        raise "Not found uid:#{uid} in #{@basedir}"
+      end
+      File.open(path, "w") do |f|
+        f.write(event.dump)
+      end
+    end
+
+    def delete(uid_or_event)
+      uid = if uid_or_event.respond_to?(:uid)
+              uid_or_event.uid
+            else
+              uid_or_event
+            end
+      if path = find_path(uid)
+        File.delete(path)
+      else
+        raise "Not found uid:#{uid} in #{@basedir}"
+      end
+    end
+
     ################################################################
     private
 
@@ -62,7 +93,7 @@ module Mhc
     end
 
     def uid_to_path(uid)
-      return @uid_pool + uid
+      return @basedir + ('spool/' + uid + '.mhc')
     end
 
   end # class DataStore
@@ -91,6 +122,7 @@ module Mhc
         @pstore.transaction do
           @pstore["root"] = @db
         end
+        @dirty = false
       end
 
       private
@@ -108,6 +140,7 @@ module Mhc
         @pstore.transaction do
           @db = @pstore["root"] || {}
         end
+        @dirty = false
       end
 
     end # class Cache
