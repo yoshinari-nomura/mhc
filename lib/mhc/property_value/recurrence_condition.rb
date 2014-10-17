@@ -2,6 +2,7 @@ module Mhc
   module PropertyValue
     class RecurrenceCondition < Base
 
+      # :stopdoc:
       MON_LABEL = %w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
       MON_VALUE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
       MON_L2V   = Hash[*MON_LABEL.zip(MON_VALUE).flatten]
@@ -22,6 +23,7 @@ module Mhc
       ORD_REGEXP = /^#{ORD_LABEL.join('|')}$/oi
       WEK_REGEXP = /^#{WEK_LABEL.join('|')}$/oi
       NUM_REGEXP = /^\d+$/oi
+      # :startdoc:
 
       def cond_mon; return @cond_mon; end
       def cond_ord; return @cond_ord; end
@@ -41,26 +43,26 @@ module Mhc
         return o
       end
 
-      ##
-      ##  MON NUM ORD WEK  RFC2445-TYPE (!: invalid)
-      ## ------------------------------------------------------------------
-      ##   -   -   -   -   ! EMPTY
-      ##   -   -   -   Y     WEEKLY  BYDAY=wek
-      ##   -   -   Y   -   ! MONTHLY BYDAY=ord*ALL
-      ##   -   -   Y   Y     MONTHLY BYDAY=ord*wek
-      ##   -   Y   -   -     MONTHLY BYMONTHDAY=num
-      ##   -   Y   -   Y     MONTHLY BYMONTHDAY=num,BYDAY=wek
-      ##   -   Y   Y   -   ! MONTHLY BYMONTHDAY=num,BYDAY=ord*ALL
-      ##   -   Y   Y   Y     MONTHLY BYMONTHDAY=num,BYDAY=ord*wek
-      ##   Y   -   -   -   ! YEARLY  BYMONTH=mon,BYDAY=ALL
-      ##   Y   -   -   Y     YEARLY  BYMONTH=mon,BYDAY=wek
-      ##   Y   -   Y   -   ! YEARLY  BYMONTH=mon,BYDAY=ord*ALL
-      ##   Y   -   Y   Y     YEARLY  BYMONTH=mon,BYDAY=ord*wek
-      ##   Y   Y   -   -     YEARLY  BYMONTH=mon,BYMONTHDAY=num
-      ##   Y   Y   -   Y     YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=wek
-      ##   Y   Y   Y   -   ! YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*ALL
-      ##   Y   Y   Y   Y     YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*wek
-      ##
+      #--
+      #  MON NUM ORD WEK  RFC2445-TYPE (!: invalid)
+      # ------------------------------------------------------------------
+      #   -   -   -   -   ! EMPTY
+      #   -   -   -   Y     WEEKLY  BYDAY=wek
+      #   -   -   Y   -   ! MONTHLY BYDAY=ord*ALL
+      #   -   -   Y   Y     MONTHLY BYDAY=ord*wek
+      #   -   Y   -   -     MONTHLY BYMONTHDAY=num
+      #   -   Y   -   Y     MONTHLY BYMONTHDAY=num,BYDAY=wek
+      #   -   Y   Y   -   ! MONTHLY BYMONTHDAY=num,BYDAY=ord*ALL
+      #   -   Y   Y   Y     MONTHLY BYMONTHDAY=num,BYDAY=ord*wek
+      #   Y   -   -   -   ! YEARLY  BYMONTH=mon,BYDAY=ALL
+      #   Y   -   -   Y     YEARLY  BYMONTH=mon,BYDAY=wek
+      #   Y   -   Y   -   ! YEARLY  BYMONTH=mon,BYDAY=ord*ALL
+      #   Y   -   Y   Y     YEARLY  BYMONTH=mon,BYDAY=ord*wek
+      #   Y   Y   -   -     YEARLY  BYMONTH=mon,BYMONTHDAY=num
+      #   Y   Y   -   Y     YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=wek
+      #   Y   Y   Y   -   ! YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*ALL
+      #   Y   Y   Y   Y     YEARLY  BYMONTH=mon,BYMONTHDAY=num,BYDAY=ord*wek
+      #++
       def frequency
         return :none    if empty?
         return :daily   if daily?
