@@ -23,33 +23,32 @@
 # #+LATEX_HEADER: \pagestyle{empty}
 # #+LaTeX: \thispagestyle{empty}
 
-* MHC -- Message Harmonized Calendaring system.
-** DESCRIPTION
-   MHC is designed to help those who receive most appointments via email.
-   Using MHC, you can easily import schedule articles from emails.
+* DESCRIPTION
+  MHC is designed to help those who receive most appointments via email.
+  Using MHC, you can easily import schedule articles from emails.
 
-   You can get the latest version from:
-   + https://github.com/yoshinari-nomura/mhc
-   + http://www.quickhack.net/mhc
+  You can get the latest version from:
+  + https://github.com/yoshinari-nomura/mhc
+  + http://www.quickhack.net/mhc
 
-   MHC has following features:
+  MHC has following features:
 
-   + Easy import your schedule from email articles.
-     Using with Mew/Gnus/Wanderlust (MUAs on Emacs),
-     you can easily compose your schedule items from
-     appoint-emails. MHC will guess the title,
-     date, time and description by scanning the email.
-   + Simple data structure allows you to manipulate stored data in many ways.
-   + Appointments can be made to repeat in flexible ways.
-   + powerful but simple expression of appointments.
+  + Easy import your schedule from email articles.
+    Using with Mew/Gnus/Wanderlust (MUAs on Emacs),
+    you can easily compose your schedule items from
+    appoint-emails. MHC will guess the title,
+    date, time and description by scanning the email.
+  + Simple data structure allows you to manipulate stored data in many ways.
+  + Appointments can be made to repeat in flexible ways.
+  + powerful but simple expression of appointments.
 
-   MHC stores schedule articles in the same form of MH; you can manipulate
-   these messages not only by above tools but also by many other MUAs,
-   editors, UNIX commandline tools or your own scripts.
+  MHC stores schedule articles in the same form of MH; you can manipulate
+  these messages not only by above tools but also by many other MUAs,
+  editors, UNIX commandline tools or your own scripts.
 
-** SYSTEM REQUIREMENTS
-   + Ruby 2.1 or newer
-   + Emacs 24 or newer
+* SYSTEM REQUIREMENTS
+  + Ruby 2.1 or newer
+  + Emacs 24 or newer
 
 * Information for Developers
 ** INSTALL for developers:
