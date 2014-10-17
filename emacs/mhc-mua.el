@@ -1,9 +1,7 @@
-;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
+;;; mhc-mua.el --- MUA backend for MHC
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>
 ;; Created: 2014-09-20
-;; Revised: $Date$
-
 
 ;;; Commentary:
 

@@ -812,7 +812,8 @@ Returns t if the importation was succeeded."
 The default action of this command is to import a schedule from the
 current article without MIME attachements.  If you want to import a
 schedule including MIME attachements, call this command with a prefix
-argument.  Set non-nil to `mhc-default-import-original-article', and
+argument GET-ORIGINAL.
+Set non-nil to `mhc-default-import-original-article', and
 the default action of this command is changed to the latter."
   (interactive
    (list (if mhc-default-import-original-article
@@ -823,12 +824,12 @@ the default action of this command is changed to the latter."
     ;; failed.
     (mhc-window-pop)))
 
-(defun mhc-import-from-region (s e)
-  "Import a schedule from region."
+(defun mhc-import-from-region (beg end)
+  "Import a schedule from region BEG END."
   (interactive "r")
   (save-restriction
-    (narrow-to-region s e)
-    (let ((str (buffer-substring s e)))
+    (narrow-to-region beg end)
+    (let ((str (buffer-substring beg end)))
       (mhc-import)
       (goto-char (point-max))
       (insert str)
