@@ -299,9 +299,6 @@ module Mhc
         time = dst_tz.utc_to_local(time1)
         time.tzid = dst_tzid if time.respond_to?(:tzid)
 
-        if $MHC_IN_RSPEC
-          puts "tz_convert #{src_tzid} to #{dst_tzid} for #{datetime} => #{time} #{time.tzid}"
-        end
         return time
       end
 
