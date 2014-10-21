@@ -17,13 +17,26 @@ module Mhc
         @strategy = Strategy::Factory.create(strategy)
       end
 
-      def sync_all(dry_run = false)
-        uid_list.each do |uid|
+      def sync_all(dry_run = false, max_count = 30)
+        list_cache = uid_list
+
+        if count_sync_items(list_cache) > max_count
+          STDERR.print "Too many articles to sync... abort\n"
+          return false
+        end
+
+        list_cache.each do |uid|
           sync(uid, dry_run)
         end
+
+        return true
       end
 
       private
+
+      def count_sync_items(sync_uid_list)
+        sync_uid_list.map{|uid| sync(uid, true, true)}.count{|s| s != :ignore}
+      end
 
       def sync(uid, dry_run = false, quiet = false)
         info1 = @db1.syncinfo(uid)
