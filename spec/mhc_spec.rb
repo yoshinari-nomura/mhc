@@ -417,7 +417,7 @@ describe Mhc::Event do
     EOF
   end
 
-  it "should create 20100311 10:30-12:00 event from iCalendar" do
+  it "should convert 2014-03-11 10:30-12:00 (+0900 Asia/Tokyo) event to UTC Event" do
     ev = Mhc::Event.new_from_ics <<-EOF.strip_heredoc
       BEGIN:VCALENDAR
       PRODID;X-RICAL-TZSOURCE=TZINFO:-//Quickhack.net//MHC 0.25.0//EN
@@ -441,6 +441,41 @@ describe Mhc::Event do
       X-SC-Location: 
       X-SC-Day: 20100311
       X-SC-Time: 01:30-03:00
+      X-SC-Category: 
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: 
+      X-SC-Duration: 
+      X-SC-Alarm: 
+      X-SC-Record-Id: 69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      X-SC-Sequence: 0
+
+      This is Description.
+    EOF
+  end
+
+  it "should convert 2014-10-18 22:00-23:00 (Asia/Tokyo) iCalendar to 2014-10-18 15:00-16:00 (Europe/Paris) MHC Event" do
+    Mhc.default_tzid = "Europe/Paris"
+    ev = Mhc::Event.new_from_ics <<-EOF.strip_heredoc
+      BEGIN:VCALENDAR
+      PRODID;X-RICAL-TZSOURCE=TZINFO:-//Quickhack.net//MHC 0.25.0//EN
+      CALSCALE:GREGORIAN
+      VERSION:2.0
+      BEGIN:VEVENT
+      DTSTART;TZID=Asia/Tokyo;VALUE=DATE-TIME:20141018T220000
+      DTEND;VALUE=DATE-TIME:20141018T140000Z
+      UID:69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      DESCRIPTION:This is Description.
+      SUMMARY:CS1
+      SEQUENCE:0
+      END:VEVENT
+      END:VCALENDAR
+    EOF
+    expect(ev.dump).to eq <<-'EOF'.strip_heredoc
+      X-SC-Subject: CS1
+      X-SC-Location: 
+      X-SC-Day: 20141018
+      X-SC-Time: 15:00-16:00
       X-SC-Category: 
       X-SC-Mission-Tag: 
       X-SC-Recurrence-Tag: 
@@ -564,6 +599,42 @@ describe Mhc::Event do
       X-SC-Recurrence-Tag: 
       X-SC-Cond: Wed
       X-SC-Duration: 20141001-20150128
+      X-SC-Alarm: 
+      X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      X-SC-Sequence: 4
+
+      this is description
+    EOF
+  end
+
+  it "should create duration-end considering timezone" do
+    Mhc.default_tzid = "Asia/Tokyo"
+    ev = Mhc::Event.new_from_ics <<-EOF.strip_heredoc
+      BEGIN:VCALENDAR
+      BEGIN:VEVENT
+      EXDATE;TZID=Asia/Tokyo;VALUE=DATE-TIME:20140514T084000,20140723T084000
+      DTEND;TZID=Asia/Tokyo;VALUE=DATE-TIME:20140409T101000
+      DTSTART;VALUE=DATE-TIME:20140408T234000Z
+      CATEGORIES:Lecture
+      UID:FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      DESCRIPTION:this is description\n
+      SUMMARY:CS1
+      RRULE:FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE;UNTIL=20140729T234000Z
+      LOCATION:Room11
+      SEQUENCE:4
+      END:VEVENT
+      END:VCALENDAR
+    EOF
+    expect(ev.dump).to eq <<-'EOF'.strip_heredoc
+      X-SC-Subject: CS1
+      X-SC-Location: Room11
+      X-SC-Day: !20140514 !20140723
+      X-SC-Time: 08:40-10:10
+      X-SC-Category: Lecture
+      X-SC-Mission-Tag: 
+      X-SC-Recurrence-Tag: 
+      X-SC-Cond: Wed
+      X-SC-Duration: 20140409-20140730
       X-SC-Alarm: 
       X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
       X-SC-Sequence: 4
