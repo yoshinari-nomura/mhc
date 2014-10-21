@@ -225,7 +225,7 @@ module Mhc
         # for recurring event, DTSTSRT is a start part of X-SC-Duration:
         dates = []
         unless recurring
-          date = iev.dtstart.to_time.strftime("%Y%m%d")
+          date = tz_convert(iev.dtstart).strftime("%Y%m%d")
           if allday && (iev.dtend - iev.dtstart).to_i > 1
             date += "-" + (iev.dtend - 1).to_time.strftime("%Y%m%d")
           end
@@ -262,8 +262,10 @@ module Mhc
 
         # X-SC-Duration: is only for recurring articles
         if recurring
-          duration_string = iev.dtstart.to_time.strftime("%Y%m%d") + "-"
-          if iev.rrule.first.to_s.match(/until=(\d+)(T\d{6}Z)?/i)
+          duration_string = tz_convert(iev.dtstart).strftime("%Y%m%d") + "-"
+          if iev.rrule.first.to_s.match(/until=([^;]+)/i)
+            duration_string += parse_ical_datetime($1).strftime("%Y%m%d")
+          else
             duration_string += $1
           end
           ev.duration = duration_string
@@ -299,6 +301,26 @@ module Mhc
           puts "tz_convert #{src_tzid} to #{dst_tzid} for #{datetime} => #{time} #{time.tzid}"
         end
         return time
+      end
+
+      def self.parse_ical_datetime(datetime_string, dst_tzid = nil)
+        src_tzid = case datetime_string
+                   when /TZID=([^;]+)/
+                     $1
+                   when /\d{8}T\d{6}Z/
+                     "UTC"
+                   else
+                     Mhc.default_tzid
+                   end
+
+        dst_tzid ||= Mhc.default_tzid
+
+        if /^(\d{4})(\d\d)(\d\d)(?:T(\d\d)(\d\d)(\d\d)Z?)?$/ =~ datetime_string
+          time = Time.utc($1, $2, $3, $4, $5, $6)
+          return tz_convert(time, src_tzid: src_tzid, dst_tzid: dst_tzid)
+        else
+          raise ArgumentError
+        end
       end
 
     end # IcalendarImporter
