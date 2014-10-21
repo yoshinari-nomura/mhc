@@ -91,6 +91,8 @@ module Mhc
           iev.description   = event.description.to_s
           iev.sequence      = (event.sequence.to_i || 0)
           iev.dtstamp       = ::Time.now.utc.strftime("%Y%m%dT%H%M%SZ")
+          iev.add_x_property("X-SC-Recurrence-Tag", event.recurrence_tag.to_s) if event.recurrence_tag.to_s != ""
+          iev.add_x_property("X-SC-Mission-Tag", event.mission_tag.to_s) if event.mission_tag.to_s != ""
         end
         return icalendar
       end
@@ -249,8 +251,8 @@ module Mhc
           "X-SC-Day: #{(dates + exdates).join(' ')}\n" +
           "X-SC-Time: #{time}\n"           +
           "X-SC-Category: #{iev.categories.to_a.join(' ')}\n"       +
-          "X-SC-Mission-Tag: \n"   +
-          "X-SC-Recurrence-Tag: \n"       +
+          "X-SC-Mission-Tag: #{iev.x_sc_mission_tag.first}\n" +
+          "X-SC-Recurrence-Tag: #{iev.x_sc_recurrence_tag.first}\n" +
           "X-SC-Cond: \n" +
           "X-SC-Duration: \n"         +
           "X-SC-Alarm: \n"               +
