@@ -53,15 +53,15 @@ module Mhc
       if expected_etag and (not ev)
         STDERR.print "failed: etag not match #{expected_etag} != nil\n"
       end
-      # begin
+      begin
         ev = Mhc::Event.new_from_ics(ics_string)
         @datastore.update(ev)
         STDERR.print "succeeded #{ev.etag}\n"
         return true
-     # rescue Exception => e
-        # STDERR.print "failed: (#{e.to_s})\n"
-        # return nil
-      # end
+      rescue Exception => e
+        STDERR.print "failed: (#{e.to_s} #{e.backtrace.join("\n")})\n"
+        return nil
+      end
     end
 
     def delete_if_match(uid, expected_etag)
@@ -70,7 +70,7 @@ module Mhc
         STDERR.print "failed: uid #{uid} not found\n"
         return nil
       end
-      unless ev.etag == expected_etag
+      if expected_etag && ev.etag != expected_etag
         STDERR.print "failed: etag not match #{ev.etag} != #{expected_etag}\n"
         return nil
       end
