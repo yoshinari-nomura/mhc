@@ -274,21 +274,31 @@ module Mhc
 
       private
 
-      def self.tz_convert(date_time)
-        # puts "date_time = #{date_time}"
-        # puts "dst_tz = #{Mhc.default_tzid}"
-        dst_tz = TZInfo::Timezone.get(Mhc.default_tzid)
+      def self.tz_convert(datetime, src_tzid: nil, dst_tzid: nil)
+        return datetime unless datetime.respond_to?(:hour)
 
-        if date_time.respond_to?(:tzid)
-          src_tz = TZInfo::Timezone.get(date_time.tzid)
-        else
-          src_tz = dst_tz
+        dst_tzid ||= Mhc.default_tzid
+        src_tzid ||= if datetime.respond_to?(:tzid) and datetime.tzid
+                       datetime.tzid
+                     else
+                       Mhc.default_tzid
+                     end
+        dst_tz = TZInfo::Timezone.get(dst_tzid)
+        src_tz = TZInfo::Timezone.get(src_tzid)
+
+        utc = Time.utc(datetime.year, datetime.month, datetime.day,
+                       datetime.hour, datetime.min, datetime.sec)
+
+        time1 = src_tz.local_to_utc(utc)
+        time1.tzid = src_tzid if time1.respond_to?(:tzid)
+
+        time = dst_tz.utc_to_local(time1)
+        time.tzid = dst_tzid if time.respond_to?(:tzid)
+
+        if $MHC_IN_RSPEC
+          puts "tz_convert #{src_tzid} to #{dst_tzid} for #{datetime} => #{time} #{time.tzid}"
         end
-
-        # puts "src_tz = #{src_tz}"
-
-        utc = src_tz.local_to_utc(date_time.to_time)
-        return dst_tz.utc_to_local(utc)
+        return time
       end
 
     end # IcalendarImporter
