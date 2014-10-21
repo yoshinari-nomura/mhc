@@ -28,16 +28,20 @@ module Mhc
         return :modified   if  etag !=   ex_etag
       end
 
-      def deleted?
-        sync_status == :deleted
+      def modified?
+        sync_status == :created or sync_status == :modified
       end
 
       def unmodified?
-        sync_status == :unmodified or sync_status == :norecord
+        sync_status == :unmodified
       end
 
-      def modified?
-        !unmodified?
+      def norecord?
+        sync_status == :norecord
+      end
+
+      def deleted?
+        sync_status == :deleted
       end
 
       def mark_synced(etag = self.etag)

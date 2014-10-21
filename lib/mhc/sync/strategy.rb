@@ -22,72 +22,100 @@ module Mhc
       #
       # We simply follow the rule on the table below:
       #
-      #                  Local
-      #     +---+---------------------------------+
-      #   R |   | D          M          N         |
-      #   e +---+---------------------------------+
-      #   m | D | -          CONFLICT   DELETE L  |
-      #   o | M | CONFLICT   CONFLICT   PUT R->L  |
-      #   t | N | DELETE R   PUT L->R   -         |
-      #   e +---+---------------------------------+
+      #                    Side 2
+      #   |---+---------+------------+------------+-------|
+      # S |   | M       | U          | N          | D     |
+      # i |---+---------+------------+------------+-------|
+      # d | M | CNF     | OW 1->2    | CP 1->2    | CNF   |
+      # e | U | OW 2->1 | -          | ?? CP 1->2 | DEL 1 |
+      # 1 | N | CP 2->1 | ?? CP 2->1 | -          | -     |
+      #   | D | CNF     | DEL 2      | -          | -     |
+      #   |---+---------+------------+------------+-------|
       #
-      #   D, M, and N indicate status changes on each article after the last sync:
+      #   M, U, N, and D indicate status changes on each article after
+      #   the last sync:
       #
-      #   + D ... Deleted
-      #   + M ... Modified or Created
-      #   + N ... No Cahnge or No Entry
+      #   + M :: Modified (or Created)
+      #   + U :: Unchanged
+      #   + N :: No Record
+      #   + D :: Deleted
+      #
+      #   Each entry in the table means:
+      #   + -- :: No operation (ignore)
+      #   + ?? :: Not occurred in normal cases
+      #   + OW :: Overwrite
+      #   + CP :: Copy
+      #   + DEL :: Delete
+      #   + CNF :: Conflict
       #
       # Before applying the rule to our repository,
-      # we have to set the marks (D, M or N) to all articles
+      # we have to set the marks (M, U, N or D) to all articles
       # in each side.
       #
       # strategy = Mhc::Sync::Strategy.create(strategy_name)
-      # strategy name is one of
+      # strategy name is one of:
       # * :empty  ... ignore on every status
       # * :mirror ... mirror from side1 to side2
       # * :sync   ... sync articles of side1 and side2
       #
-      # strategy.whatnow(side1, side2)
-      # one of:
-      # :ignore:: Already synced ignoreable
-      # :conflict:: Conflicted
-      # :delete_side1:: Should delete the article of side1
-      # :delete_side2:: Should delete the article of side2
-      # :side1_to_side2:: Should copy the article of side1 to side2
-      # :side2_to_side1:: Should copy the article of side2 to side1
+      # and strategy.whatnow(side1, side2) returns a symbol one of:
+      # * :ignore :: Already synced, ignoreable
+      # * :conflict :: Conflicted
+      # * :delete1 :: Should delete the article of side1
+      # * :delete2 :: Should delete the article of side2
+      # * :copy1_to_2 :: Should copy the article of side1 to side2
+      # * :copy2_to_1 :: Should copy the article of side2 to side1
+      # * :overwrite1_to_2 :: Should overwrite the article of side1 to side2
+      # * :overwrite2_to_1 :: Should overwrite the article of side2 to side1
       #
-      # side1 and side2 have to respond to #unmodified?, #deleted?
-      # side1 and side2 can be nil
+      # side1 and side2 have to respond to:
+      #     #nil?, # #modified?, #unmodified?, #norecord?, #deleted?
       #
       class Base
         def whatnow(side1, side2)
           # do nothing
           actions = {
-            "DD" => :ignore,
-            "DM" => :ignore,
-            "DN" => :ignore,
-            "MD" => :ignore,
             "MM" => :ignore,
+            "MU" => :ignore,
             "MN" => :ignore,
-            "ND" => :ignore,
+            "MD" => :ignore,
+
+            "UM" => :ignore,
+            "UU" => :ignore,
+            "UN" => :ignore,
+            "UD" => :ignore,
+
             "NM" => :ignore,
-            "NN" => :ignore
+            "NU" => :ignore,
+            "NN" => :ignore,
+            "ND" => :ignore,
+
+            "DM" => :ignore,
+            "DU" => :ignore,
+            "DN" => :ignore,
+            "DD" => :ignore,
           }
           return actions[status_pair(side1, side2)]
         end
 
         private
-        # * Char (D,M,N) indicates status change on each article
+        # * Char (M,U,N,D) indicates status change on each article
         #   after the last sync:
         #
+        #   + M :: Modified
+        #   + U :: Unchanged
+        #   + N :: No Record
         #   + D :: Deleted
-        #   + M :: Modified or Created
-        #   + N :: No Cahnge or No Entry
         #
         def status_signature(info)
-          return "N" if info.nil? or info.unmodified?
+          return "N" if info.nil?
+
+          return "M" if info.modified?
+          return "U" if info.unmodified?
+          return "N" if info.norecord?
           return "D" if info.deleted?
-          return "M"
+
+          return "?" # NOTREACHED I hope
         end
 
         def status_pair(side1, side2)
@@ -95,59 +123,106 @@ module Mhc
         end
       end # class Base
 
-
-      # * Sync Side1 and Side2
-      #   We simply follow the rule on the table below:
+      # * Sync side1 and side2
       #
-      #                    Side2
-      #     +---+---------------------------------+
-      #   S |   | D          M          N         |
-      #   i +---+---------------------------------+
-      #   d | D | -          CONFLICT   DELETE 2  |
-      #   e | M | CONFLICT   CONFLICT   PUT 1->2  |
-      #   1 | N | DELETE 1   PUT 2->1   -         |
-      #     +---+---------------------------------+
+      #   simply follow the rule on the table below:
+      #
+      #                    Side 2
+      #   |---+---------+------------+------------+-------|
+      # S |   | M       | U          | N          | D     |
+      # i |---+---------+------------+------------+-------|
+      # d | M | CNF     | OW 1->2    | CP 1->2    | CNF   |
+      # e | U | OW 2->1 | -          | ?? -       | DEL 1 |
+      # 1 | N | CP 2->1 | ?? -       | -          | -     |
+      #   | D | CNF     | DEL 2      | -          | -     |
+      #   |---+---------+------------+------------+-------|
+      #
+      #   + M :: Modified (or Created)
+      #   + U :: Unchanged
+      #   + N :: No Record
+      #   + D :: Deleted
+      #
+      #   + -- :: No operation (ignore)
+      #   + ?? :: Not occurred in normal cases
+      #   + OW :: Overwrite
+      #   + CP :: Copy
+      #   + DEL :: Delete
+      #   + CNF :: Conflict
+      #
       class Sync < Base
         def whatnow(side1, side2)
           actions = {
-            "DD" => :ignore,
-            "DM" => :conflict,
-            "DN" => :delete_side2,
-            "MD" => :conflict,
             "MM" => :conflict,
-            "MN" => :side1_to_side2,
-            "ND" => :delete_side1,
-            "NM" => :side2_to_side1,
-            "NN" => :ignore
+            "MU" => :overwrite1_to_2,
+            "MN" => :copy1_to_2,
+            "MD" => :conflict,
+
+            "UM" => :overwrite2_to_1,
+            "UU" => :ignore,
+            "UN" => :ignore,
+            "UD" => :delete1,
+
+            "NM" => :copy2_to_1,
+            "NU" => :ignore,
+            "NN" => :ignore,
+            "ND" => :ignore,
+
+            "DM" => :conflict,
+            "DU" => :delete2,
+            "DN" => :ignore,
+            "DD" => :ignore,
           }
           return actions[status_pair(side1, side2)]
         end
       end # class Sync
 
-
       # * Mirror side1 to side2
-      #   We simply follow the rule on the table below:
       #
-      #                    Side2
-      #     +---+---------------------------------+
-      #   S |   | D          M          N         |
-      #   i +---+---------------------------------+
-      #   d | D | -          DELETE 2   DELETE 2  |
-      #   e | M | PUT 1->2   PUT 1->2   PUT 1->2  |
-      #   1 | N | PUT 1->2   PUT 1->2   -         |
-      #     +---+---------------------------------+
+      #   simply follow the rule on the table below:
+      #
+      #                    Side 2
+      #   |---+---------+----------+------------+---------|
+      # S |   | M       | U        | N          | D       |
+      # i |---+---------+----------+------------+---------|
+      # d | M | OW 1->2 | OW 1->2  | CP 1->2    | CP 1->2 |
+      # e | U | OW 1->2 | --       | ?? --      | CP 1->2 |
+      # 1 | N | DEL 2   | ?? --    | --         | --      |
+      #   | D | DEL 2   | DEL 2    | --         | --      |
+      #   |---+---------+----------+------------+---------|
+      #
+      #   + M :: Modified (or Created)
+      #   + U :: Unchanged
+      #   + N :: No Record
+      #   + D :: Deleted
+      #
+      #   + -- :: No operation (ignore)
+      #   + ?? :: Not occurred in normal cases
+      #   + OW :: Overwrite
+      #   + CP :: Copy
+      #   + DEL :: Delete
+      #
       class Mirror < Base
         def whatnow(side1, side2)
           actions = {
+            "MM" => :overwrite1_to_2,
+            "MU" => :overwrite1_to_2,
+            "MN" => :copy1_to_2,
+            "MD" => :copy1_to_2,
+
+            "UM" => :overwrite1_to_2,
+            "UU" => :ignore,
+            "UN" => :ignore,
+            "UD" => :copy1_to_2,
+
+            "NM" => :delete2,
+            "NU" => :ignore,
+            "NN" => :ignore,
+            "ND" => :ignore,
+
+            "DM" => :delete2,
+            "DU" => :delete2,
+            "DN" => :ignore,
             "DD" => :ignore,
-            "DM" => :delete_side2,
-            "DN" => :delete_side2,
-            "MD" => :ow_side1_to_side2,
-            "MM" => :ow_side1_to_side2,
-            "MN" => :ow_side1_to_side2,
-            "ND" => :ow_side1_to_side2,
-            "NM" => :ow_side1_to_side2,
-            "NN" => :ignore
           }
           return actions[status_pair(side1, side2)]
         end

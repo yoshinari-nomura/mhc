@@ -52,18 +52,18 @@ module Mhc
         when :ignore
           #ignore(side1, side2)
         when :conflict
-          #merge(uid, @db1, @db2)
-        when :delete_side1
+          merge(uid, @db1, @db2)
+        when :delete1
           delete(uid, @db1, @db2)
-        when :delete_side2
+        when :delete2
           delete(uid, @db2, @db1)
-        when :side1_to_side2
+        when :copy1_to_2
           copy(uid, @db1, @db2)
-        when :side2_to_side1
+        when :copy2_to_1
           copy(uid, @db2, @db1)
-        when :ow_side1_to_side2
+        when :overwrite1_to_2
           copy(uid, @db1, @db2, :overwrite)
-        when :ow_side2_to_side1
+        when :overwrite2_to_1
           copy(uid, @db2, @db1, :overwrite)
         end
       end
