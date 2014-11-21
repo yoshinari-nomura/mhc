@@ -630,7 +630,7 @@ Returns t if the importation was succeeded."
     (set-buffer draft-buffer)
     (if import-buffer
         (progn
-          (insert-buffer-substring
+          (insert-buffer-substring-no-properties
            (if (consp import-buffer)
                (cdr import-buffer)
              import-buffer))
