@@ -146,7 +146,7 @@ message and cdr keeps a visible message."
      (1 font-lock-type-face)
      (2 font-lock-comment-face)
      (3 font-lock-builtin-face))
-    ("\\(X-SC-\\(Subject\\|Location\\|Day\\|Time\\|Category\\|Priority\\|Recurrence-Tag\\|Cond\\|Duration\\|Alarm\\|Record-Id\\|Sequence\\):\\)"
+    ("\\(X-SC-\\(Subject\\|Location\\|Day\\|Time\\|Category\\|Priority\\|Recurrence-Tag\\|Mission-Tag:\\|Cond\\|Duration\\|Alarm\\|Record-Id\\|Sequence\\):\\)"
      (1 font-lock-keyword-face))
     ("\\(\\[End of message\\]\\)"
      (1 mhc-message-eof-marker-face))
