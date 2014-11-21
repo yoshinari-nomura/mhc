@@ -144,7 +144,7 @@
 (defcustom mhc-summary-line-format
   (if (eq mhc-summary-language 'japanese)
       "%Y%年%M%月%D%日%(%曜%) %b%e %c%i%s %p%l"
-    "%Y%/%M%/%D%S%W %b%e %c%i%s %p%l")
+    "%Y%/%M%/%D%S%W %b%e %c%r%i%s %p%l")
   "*A format string for summary line of MHC.
 It may include any of the following format specifications
 which are replaced by the given information:
@@ -160,6 +160,7 @@ which are replaced by the given information:
 %s The subject of the schedule.
 %p The priority of the schedule.
 %l The location of the schedule.
+%r Indicator for recurrence-tag (See also `mhc-summary-string-recurrence').
 
 %/ A slash character if first line of the day.
 %( A left parenthesis character if first line of the day.
