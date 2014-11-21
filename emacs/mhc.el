@@ -569,9 +569,6 @@ listed in ``mhc-category-as-private''."
          dayinfo-list))
       (mhc-summary-mode-setup date mailer)
       (mhc-mode 1)
-      (setq inhibit-read-only nil)
-      (setq buffer-read-only t)
-      (set-buffer-modified-p nil)
       (setq mhc-summary-buffer-current-date-month
             (mhc-date-mm-first date))
       (mhc-goto-today t)

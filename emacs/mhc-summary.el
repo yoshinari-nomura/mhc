@@ -655,7 +655,9 @@ If BANNER is set, it is printed on the horizontal line."
         mode-name  "MHC")
   (setq mode-line-buffer-identification (propertized-buffer-identification
                                          "MHC: %12b"))
+  (set-buffer-modified-p nil)
   (setq buffer-read-only t)
+  (setq inhibit-read-only nil)
   (setq truncate-lines t)
   (use-local-map mhc-summary-mode-map)
   (run-hooks 'mhc-summary-mode-hook))
