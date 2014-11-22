@@ -257,7 +257,12 @@ module Mhc
           "X-SC-Duration: \n"         +
           "X-SC-Alarm: \n"               +
           "X-SC-Record-Id: #{iev.uid}\n"       +
-          "X-SC-Sequence: #{iev.sequence.to_i}\n\n" + iev.description.to_s
+          "X-SC-Sequence: #{iev.sequence.to_i}\n\n" + iev.description.to_s +
+          if $MHC_DEBUG_FOR_DEVELOPER # FIXME: should introduce good logger and debug scheme
+            ical.to_s.force_encoding("ASCII-8BIT").gsub(/\r\n/, "\n")
+          else
+            ""
+          end
 
         # X-SC-Cond:
         ev.recurrence_condition.set_from_ics(iev.rrule.first, tz_convert(iev.dtstart))
