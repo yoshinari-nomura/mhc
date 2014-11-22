@@ -260,15 +260,13 @@ module Mhc
           "X-SC-Sequence: #{iev.sequence.to_i}\n\n" + iev.description.to_s
 
         # X-SC-Cond:
-        ev.recurrence_condition.set_from_ics(iev.rrule.first)
+        ev.recurrence_condition.set_from_ics(iev.rrule.first, tz_convert(iev.dtstart))
 
         # X-SC-Duration: is only for recurring articles
         if recurring
           duration_string = tz_convert(iev.dtstart).strftime("%Y%m%d") + "-"
           if iev.rrule.first.to_s.match(/until=([^;]+)/i)
             duration_string += parse_ical_datetime($1).strftime("%Y%m%d")
-          else
-            duration_string += $1
           end
           ev.duration = duration_string
         end

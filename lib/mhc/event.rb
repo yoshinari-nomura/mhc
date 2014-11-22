@@ -260,8 +260,8 @@ module Mhc
         min, max = min0, max0
       else
         min, max = dates.min, dates.max
-        min = min.first if min.respond_to?(:first)
-        max = max.last  if max.respond_to?(:last)
+        min = min.respond_to?(:first) ? min.first : min0
+        max = max.respond_to?(:last)  ? max.last  : max0
       end
       min = duration.first if duration.first && duration.first > min
       max = duration.last  if duration.last  && duration.last  < max
