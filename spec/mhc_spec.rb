@@ -644,6 +644,30 @@ describe Mhc::Event do
   end
 end
 
+describe RiCal do
+  it "creates RiCal::Event form ics string" do
+    Mhc.default_tzid = "Asia/Tokyo"
+    ics = RiCal.parse_string <<-EOF.strip_heredoc
+      BEGIN:VCALENDAR
+      BEGIN:VEVENT
+      EXDATE;TZID=Asia/Tokyo;VALUE=DATE-TIME:20140514T084000,20140723T084000
+      DTEND;TZID=Asia/Tokyo;VALUE=DATE-TIME:20140409T101000
+      DTSTART;VALUE=DATE-TIME:20140408T234000Z
+      CATEGORIES:Lecture
+      UID:FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      DESCRIPTION:this is description\n
+      SUMMARY:CS1
+      RRULE:FREQ=WEEKLY;INTERVAL=1;WKST=MO;BYDAY=WE;UNTIL=20140729T234000Z
+      LOCATION:Room11
+      SEQUENCE:4
+      END:VEVENT
+      END:VCALENDAR
+    EOF
+    iev = ics.first.events.first
+    expect(iev.occurrences.first.dtstart.tzid).to eq "UTC"
+  end
+end
+
 describe Mhc::DateFrame::Yearly do
 end
 
