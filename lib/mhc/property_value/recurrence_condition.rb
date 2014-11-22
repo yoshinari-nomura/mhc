@@ -145,19 +145,23 @@ module Mhc
       #     * (1..12)* => (Jan|Feb|Mar|Jul|Aug|Sep|Oct|Nov|Dec)*
       #
       def validate_rrule(rrule)
+        interval = (rrule =~ /INTERVAL=(\d+)/i) ? $1.to_i : 1
         return true if rrule.to_s == ""
         return 1 if rrule =~ /(BYSECOND|BYMINUTE|BYHOUR|COUNT|BYYEARDAY|BYWEEKNO|BYSETPOS)/i
-        return 2 if rrule =~ /INTERVAL=(\d+)/i and $1.to_i != 1
+        return 2 unless (rrule =~ /FREQ=MONTHLY/i and interval == 12) || interval == 1
         return 3 if rrule =~ /BYMONTHDAY=([^;]+)/i and $1.split(",").map(&:to_i).any?{|i| i < 1 or i > 31}
         return 4 if rrule =~ /WKST=([^;]+)/i and $1 !~ /MO/
         return 5 if rrule =~ /FREQ=([^;]+)/i   and $1 !~ /WEEKLY|MONTHLY|YEARLY/i
         return 6 if rrule =~ /BYDAY=([^;]+)/i  and $1 =~ /\d/ and rrule !~ /FREQ=MONTHLY/i
         return 7 if rrule =~ /BYDAY=([^;]+)/i  and $1 !~ /\d/ and rrule !~ /FREQ=WEEKLY/i
         return 8 if rrule =~ /BYDAY=([^;]+)/i  and $1 !~ /((1|2|3|4|-1)?(MO|TU|WE|TH|FR|SA|SU))+/i
+        return true
       end
 
-      def set_from_ics(rrule)
-        validate_rrule(rrule)
+      def set_from_ics(rrule, dtstart)
+        if (errno = validate_rrule(rrule)) != true
+          raise "Unsupported RRULE string (errno=#{errno}): #{rrule}"
+        end
 
         ################
         ## BYMONTH (cond_mon)
@@ -204,6 +208,26 @@ module Mhc
             cond_num << n.to_i
           end
         end
+
+        ################
+        # Special cases
+
+        interval = (rrule =~ /INTERVAL=(\d+)/i) ? $1.to_i : 1
+
+        # special case of yearly: repeat with 12 months interval
+        # BYMONTH should be taken from DTSTART
+        if interval == 12 and rrule =~ /FREQ=MONTHLY/i and cond_mon.empty?
+          cond_mon << dtstart.month
+        end
+
+        # if RRULE has only FREQ=YEARLY phrase,
+        # BYMONTH and BYMONTHDAY should be taken from DTSTART
+        #
+        if rrule =~ /FREQ=YEARLY/i
+          cond_mon << dtstart.month if cond_mon.empty?
+          cond_num << dtstart.day   if cond_num.empty? and cond_wek.empty?
+        end
+
         @cond_mon, @cond_ord, @cond_wek, @cond_num = cond_mon, cond_ord, cond_wek, cond_num
         return self
       end

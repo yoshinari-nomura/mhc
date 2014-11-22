@@ -131,8 +131,8 @@ module Mhc
       #   |---+---------+------------+------------+-------|
       # S |   | M       | U          | N          | D     |
       # i |---+---------+------------+------------+-------|
-      # d | M | CNF     | OW 1->2    | CP 1->2    | CNF   |
-      # e | U | OW 2->1 | -          | ?? -       | DEL 1 |
+      # d | M | CNF     | CP 1->2    | CP 1->2    | CNF   |
+      # e | U | CP 2->1 | -          | ?? -       | DEL 1 |
       # 1 | N | CP 2->1 | ?? -       | -          | -     |
       #   | D | CNF     | DEL 2      | -          | -     |
       #   |---+---------+------------+------------+-------|
@@ -153,11 +153,11 @@ module Mhc
         def whatnow(side1, side2)
           actions = {
             "MM" => :conflict,
-            "MU" => :overwrite1_to_2,
+            "MU" => :copy1_to_2,
             "MN" => :copy1_to_2,
             "MD" => :conflict,
 
-            "UM" => :overwrite2_to_1,
+            "UM" => :copy2_to_1,
             "UU" => :ignore,
             "UN" => :ignore,
             "UD" => :delete1,
