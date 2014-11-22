@@ -76,7 +76,7 @@ module Mhc
         # Not yet implemented
         s1 = db1.get(uid)
         s2 = db2.get(uid)
-        STDERR.print("Conflict: UID=#{uid}, Summary=#{s1.summary} ... did nothing.\n")
+        STDERR.print("Conflict: UID=#{uid} ... did nothing.\n")
       end
 
 

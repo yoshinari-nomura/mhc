@@ -38,6 +38,12 @@ module Mhc
         end
 
         res = @http.request(req)
+
+        if $MHC_DEBUG
+          STDERR.print "\n* PROPFIND RESPONSE:\n"
+          STDERR.print dump_response(res, true)
+        end
+
         check_status_code(res, 207) # Multi-Status
 
         return res
@@ -101,6 +107,13 @@ module Mhc
         req.content_type = "text/calendar; charset=utf-8" # xxx
         req.body = content
         res = @http.request(req)
+
+        if $MHC_DEBUG
+          STDERR.print "\n* PUT RESPONSE:\n"
+          STDERR.print dump_response(res)
+          STDERR.print "* HEAD RESPONSE:\n"
+          STDERR.print dump_response(head(dest_path))
+        end
 
         check_status_code(res, [201, 204]) # Created or No content
         return res
@@ -169,6 +182,17 @@ module Mhc
         else
           response.value
         end
+      end
+
+      def dump_response(res, include_body = false)
+        string = ""
+
+        res.each do |name, value|
+          string += "  #{name}: #{value}\n"
+        end
+        string += res.body + "\n" if include_body
+
+        return string
       end
 
     end # class Client

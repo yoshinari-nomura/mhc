@@ -159,6 +159,8 @@ module Mhc
       def set_from_ics(rrule)
         validate_rrule(rrule)
 
+        ################
+        ## BYMONTH (cond_mon)
         cond_mon = []
         if rrule =~ /BYMONTH=([^;]+)/
           $1.split(",").each do |mon|
@@ -166,6 +168,8 @@ module Mhc
           end
         end
 
+        ################
+        ## BYDAY (cond_ord, cond_wek)
         cond_ord = []
         cond_wek = []
         week = {}
@@ -192,6 +196,8 @@ module Mhc
           end
         end
 
+        ################
+        ## BYMONTHDAY (cond_num)
         cond_num = []
         if rrule =~ /BYMONTHDAY=([^;]+)/i
           $1.split(",").each do |n|

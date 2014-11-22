@@ -130,6 +130,17 @@ module Mhc
       ## etag_object is an object which respond to #etag method.
       def report_etags(uids = nil) # XXX: handle uids
         ReportCollection.parse(self.propfind.body).collection
+        # FIXME: I want to support schedule-tag (RFC6638) in the future,
+        #        but we need to prepare a right path to migrate from etag-db.
+        # xml = <<-EOS
+        #   <A:propfind xmlns:A="DAV:" xmlns:B="urn:ietf:params:xml:ns:caldav">
+        #     <A:prop>
+        #       <B:schedule-tag/>
+        #       <A:getetag/>
+        #     </A:prop>
+        #   </A:propfind>
+        # EOS
+        # ReportCollection.parse(self.propfind(@top_directory, 1, xml).body).collection
       end
 
       # for caldav sync
@@ -143,7 +154,9 @@ module Mhc
       # return value : true   ... successful but etag is not available
       # return value : String ... successful with new etag
       def put_if_match(uid, ics_string, etag)
-        STDERR.print "CALDAV put_if_match :uid => #{uid}, :etag => #{etag} ..."
+        STDERR.print "CALDAV put_if_match :uid => #{uid}"
+        STDERR.print ", :etag => #{etag}" if etag
+        STDERR.print "... "
         begin
         res = put(ics_string, uid, etag)
         rescue Exception => e

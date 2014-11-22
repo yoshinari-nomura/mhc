@@ -59,7 +59,9 @@ module Mhc
         STDERR.print "succeeded #{ev.etag}\n"
         return true
       rescue Exception => e
-        STDERR.print "failed: (#{e.to_s} #{e.backtrace.join("\n")})\n"
+        STDERR.print "failed: #{e.to_s}\n"
+        STDERR.print "#{e.backtrace.first}\n" if $MHC_DEBUG
+        STDERR.print "#{ics_string}\n" if $MHC_DEBUG
         return nil
       end
     end
