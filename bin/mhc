@@ -276,6 +276,7 @@ class MhcCLI < Thor
     if options[:debug]
       require "pp"
       $MHC_DEBUG = true
+      $MHC_DEBUG_FOR_DEVELOPER = true if ENV["MHC_DEBUG_FOR_DEVELOPER"]
     end
   end
 
