@@ -591,8 +591,7 @@ If SUBJECT-ONLY is non-nil, it will search only on X-SC-Subject:"
 If INSERT-CURRENT-BUFFER is non-nil, insert contents in the current buffer.
 if CLIP-FROM and CLIP-TO are specified, clip EVENTS by date using these two params."
   (unless insert-current-buffer
-    (mhc-summary-generate-buffer "MHC SEARCH")
-    (setq mhc-summary-buffer-current-date-month "MHC SEARCH"))
+    (mhc-summary-generate-buffer "MHC SEARCH"))
   (message "Listing MHC events...")
   (mhc-summary-make-contents events clip-from clip-to)
   (mhc-summary-mode)
