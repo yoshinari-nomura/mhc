@@ -578,10 +578,7 @@ listed in ``mhc-category-as-private''."
   "Search events by STRING.
 If SUBJECT-ONLY is non-nil, it will search only on X-SC-Subject:"
   (interactive "sSearch: \nP")
-  (let* ((query (if subject-only
-                    (format "subject:\"%s\"" string)
-                  (format "subject:\"%s\" | body:\"%s\"" string string)))
-         (match (mhc-db-search query)))
+  (let* ((match (mhc-db-search :subject string :body (unless subject-only string))))
     (if (null match)
         (message "No match")
       (mhc-scan match))))

@@ -30,10 +30,28 @@
            (if category  (format " --category=%s" category) "")
            (if search  (format " --search='%s'" search) ""))))
 
-(defun mhc-db-search (search)
+(defun mhc-db-search (&rest query)
   (let ((b (mhc-date-new 1970 1 1))
         (e (mhc-date-yy++ (mhc-date-now))))
-    (mhc-db-scan b e nil nil search)))
+    (mhc-db-scan b e nil nil (mhc-db/query-to-search-string query))))
+
+(defun mhc-db/quote-string (string)
+  (format "\"%s\"" string))
+
+(defun mhc-db/keyword-to-string (keyword)
+  (format "%s" keyword))
+
+(defun mhc-db/query-to-search-string (query)
+  (let ((keywords '(:subject :body :category)) string)
+    (mapconcat 'identity
+               (delq nil
+                     (mapcar
+                      (lambda (keyword)
+                        (if (setq string (plist-get query keyword))
+                            (format "%s:%s" (substring (symbol-name keyword) 1)
+                                    (mhc-db/quote-string string))))
+                      keywords))
+               " | ")))
 
 (defun mhc-db-scan-month (year month &optional nosort category)
   (let ((first-date (mhc-date-new year month 1)))
