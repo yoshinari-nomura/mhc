@@ -82,6 +82,15 @@ class MhcCLI < Thor
   default_command :help
 
   ################################################################
+  # Command: help
+  ################################################################
+
+  desc "help [COMMAND]", "Describe available commands or one specific command"
+  def help(command = nil)
+    super(command)
+  end
+
+  ################################################################
   # Command: version
   ################################################################
   desc "version", "Show version"
