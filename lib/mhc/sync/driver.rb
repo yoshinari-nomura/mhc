@@ -17,11 +17,12 @@ module Mhc
         @strategy = Strategy::Factory.create(strategy)
       end
 
-      def sync_all(dry_run = false, max_count = 30)
+      def sync_all(dry_run = false, max_count = 50)
         list_cache = uid_list
 
-        if count_sync_items(list_cache) > max_count
-          STDERR.print "Too many articles to sync... abort\n"
+        items = count_sync_items(list_cache)
+        if items > max_count
+          STDERR.print "Too many (#{items}) articles to sync... abort\n"
           return false
         end
 
