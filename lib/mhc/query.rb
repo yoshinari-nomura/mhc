@@ -71,7 +71,7 @@ module Mhc
     # RelationalExpression :: Symbol Operator (Argument || '[' Argument Argument* ']')
     #
     class RelationalExpression
-      KEYWORDS = [:subject, :category, :body, :location]
+      KEYWORDS = [:subject, :category, :body, :location, :recurrence_tag]
 
       def initialize(context)
         @name = context.expect(:symbol).value.downcase.to_sym
@@ -95,6 +95,9 @@ module Mhc
         when :category
           @arguments = @arguments.map{|arg| arg.value.downcase}
           return lambda {|ev| !(ev.categories.map{|c| c.to_s.downcase} & @arguments).empty?}
+        when :recurrence_tag
+          @arguments = @arguments.map{|arg| arg.value.downcase}
+          return lambda {|ev| !!@arguments.find{|v| ev.send(@name).to_s.downcase.toutf8 == v}}
         else
           @arguments = @arguments.map{|arg| Regexp.quote(arg.value)}
           return lambda {|ev| !!@arguments.find{|v| ev.send(@name).to_s.toutf8.match(v)}}
