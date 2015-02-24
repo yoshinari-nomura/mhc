@@ -9,7 +9,7 @@ module Mhc
       @default_scope = default_scope
     end
 
-    def find(uid: uid)
+    def find(uid:)
       if event = @datastore.find_by_uid(uid)
         decorate_event(event)
       end

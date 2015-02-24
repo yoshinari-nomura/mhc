@@ -4,7 +4,7 @@ module Mhc
   class FormatterNameError < StandardError; end
 
   class Formatter
-    def self.build(formatter:, date_range: date_range, **options)
+    def self.build(formatter:, date_range:, **options)
       case formatter.to_sym
       when :text
         Text.new(date_range: date_range, options:options)
@@ -26,7 +26,7 @@ module Mhc
     end
 
     class Base
-      def initialize(date_range: date_range, options:nil)
+      def initialize(date_range:, options:nil)
         @date_range = date_range
         @options = options
         @occurrences, @events, @items = [], [], {}
