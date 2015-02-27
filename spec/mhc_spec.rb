@@ -233,7 +233,8 @@ describe Mhc::Event do
       X-SC-Duration:
       X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
     EOF
-    expect(ev.occurrences.map{|o| o.date.to_s}.length).to eq 95
+    times = Date.today.year + 50 - Date.new(1970, 1, 1).year + 1
+    expect(ev.occurrences.map{|o| o.date.to_s}.length).to eq times
   end
 
   it "should return ``yearly by monthday'' icalendar rrule string" do
