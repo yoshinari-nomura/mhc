@@ -1,7 +1,7 @@
 #+TITLE: MHC -- Message Harmonized Calendaring system.
 #+AUTHOR: Yoshinari Nomura
 #+EMAIL:
-#+DATE: 2014-10-01
+#+DATE: 2015-03-16
 #+OPTIONS: H:3 num:2 toc:nil
 #+OPTIONS: ^:nil @:t \n:nil ::t |:t f:t TeX:t
 #+OPTIONS: skip:nil
@@ -33,8 +33,8 @@
 
   MHC has following features:
 
-  + Easy import your schedule from email articles.
-    Using with Mew/Gnus/Wanderlust (MUAs on Emacs),
+  + Easy import your schedule from existing buffers.
+    For example, using with Mew/Gnus/Wanderlust (MUAs on Emacs),
     you can easily compose your schedule items from
     appoint-emails. MHC will guess the title,
     date, time and description by scanning the email.
