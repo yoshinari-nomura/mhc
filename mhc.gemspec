@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["nom@quickhack.net"]
   spec.summary       = %q{Message Harmonized Calendaring}
   spec.description   = %q{Message Harmonized Calendaring.}
-  spec.homepage      = ""
+  spec.homepage      = "http://www.quickhack.net/mhc"
   spec.license       = "BSD"
 
   spec.files         = `git ls-files -z`.split("\x0")
