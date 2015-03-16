@@ -17,7 +17,7 @@
 
 
 ;;; Constants:
-(defconst mhc-version "mhc 0.25 + snap (CHECKOUT-FROM-CVS)")
+(defconst mhc-version "mhc 1.0.0")
 
 
 ;;; Configration Variables:

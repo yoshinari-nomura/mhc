@@ -6,7 +6,7 @@
 (source melpa)
 
 (package "mhc"
-  "0.25.0" "Message Harmonized Calendaring system")
+  "1.0.0" "Message Harmonized Calendaring system")
 
 (files "mhc.el" "mhc-*.el")
 
