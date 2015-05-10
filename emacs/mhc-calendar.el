@@ -11,6 +11,9 @@
 
 ;;; Configration Variables:
 
+(require 'mhc-date)
+(require 'mhc-day)
+(require 'mhc-schedule)
 (require 'mhc-vars)
 (require 'mhc-face)
 (require 'mhc-e21)
