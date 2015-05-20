@@ -170,9 +170,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 
 ;;; for mhc-draft
 
-(defun mhc-mua-draft-setup-new ()
-  (insert mail-header-separator "\n"))
-
 (defun mhc-mua-draft-reedit-buffer (buffer original)
   ;; If current buffer is specified as buffer, no need to replace.
   (unless (eq (current-buffer) buffer)

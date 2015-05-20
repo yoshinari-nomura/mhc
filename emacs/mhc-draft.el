@@ -63,10 +63,17 @@
 
 (defvar mhc-draft-mode-map)
 
-(defsubst mhc-draft-setup-new ()
+(defun mhc-draft-setup-new ()
   "Setup new draft (Insert header separator, etc)."
-  (funcall (mhc-get-function 'draft-setup-new)))
-
+  (let ((sep-regexp (format "\n\\(%s\\)?\n" (regexp-quote mail-header-separator)))
+        (sep (concat "\n" mail-header-separator "\n")))
+    (save-excursion
+      (goto-char (point-min))
+      (if (re-search-forward sep-regexp nil t)
+          (replace-match sep)
+        (goto-char (point-max))
+        (unless (bolp) (insert "\n"))
+        (insert mail-header-separator "\n")))))
 
 (defsubst mhc-draft-reedit-buffer (buffer &optional original)
   "Restore contents of BUFFER as draft in the current buffer.
