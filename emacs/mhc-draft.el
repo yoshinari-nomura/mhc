@@ -75,6 +75,40 @@
         (unless (bolp) (insert "\n"))
         (insert mail-header-separator "\n")))))
 
+(defun mhc-draft-new (&optional template preset-fields)
+  "Prepare new mhc-draft buffer.
+If TEMPLATE is a string or buffer, it is used for a new draft.
+If PRESET-FIELDS is a list of cons-cell like: ((header-name . value) ...),
+these fields are set to the draft after import TEMPLATE."
+  (interactive)
+  (let ((draft-buffer (generate-new-buffer mhc-draft-buffer-name)))
+        (with-current-buffer draft-buffer
+          ;; insert template
+          (cond
+           ((bufferp template)
+            (insert-buffer-substring-no-properties template))
+           ((stringp template)
+            (insert template)))
+          ;; insert header separator
+          (mhc-draft-setup-new)
+          (mhc-draft-delete-garbage-headers)
+          (mhc-draft-setup-headers preset-fields)
+          ;; remove end of message marker
+          (mhc-draft-remove-tailers)
+          (mhc-draft-mode)
+        (switch-to-buffer draft-buffer t)
+        (goto-char (point-min)))))
+
+(defvar mhc-draft-template)
+
+(defun mhc-draft-store-template (template)
+  "Store common draft template to TEMPLATE."
+  (setq mhc-draft-template template))
+
+(defun mhc-draft-template ()
+  "Get common draft template."
+  mhc-draft-template)
+
 (defsubst mhc-draft-reedit-buffer (buffer &optional original)
   "Restore contents of BUFFER as draft in the current buffer.
 If optional argument ORIGINAL is non-nil, BUFFER is raw buffer."
@@ -164,6 +198,36 @@ If optional argument NO-CONFIRM is non-nil, kill without confirmation."
     (let ((sequence (or (mhc-header-get-value "x-sc-sequence") "0")))
       (mhc-header-put-value "x-sc-sequence"
                             (1+ (string-to-number sequence))))))
+
+(defun mhc-draft-remove-tailers ()
+  (save-excursion
+    (goto-char (point-max))
+    (if (re-search-backward
+         (regexp-quote mhc-message-end-of-messge-marker)
+         (- (point) (length mhc-message-end-of-messge-marker)) t)
+        (replace-match ""))
+    (unless (bolp) (insert "\n"))))
+
+(defun mhc-draft-delete-garbage-headers ()
+  (mhc-header-narrowing
+    (mhc-header-delete-header
+     (concat "^\\(" (mhc-regexp-opt mhc-draft-unuse-hdr-list) "\\)")
+     'regexp)))
+
+(defun mhc-draft-setup-headers (&optional headers-values)
+  "Put X-SC-* headers to draft.
+HEADERS-VALUES is a list of cons-cell like: ((header-name . value) ...)."
+  (let ((xsc-headers (mapcar (lambda (v) (downcase (substring v 0 -1)))
+                             (mhc-header-list)))
+        (item))
+    (mhc-header-narrowing
+      (mapc
+       (lambda (xsc)
+         (if (setq item (assoc xsc headers-values))
+             (mhc-header-put-value xsc (or (cdr item) ""))
+           (unless (mhc-header-get-value xsc)
+             (mhc-header-put-value xsc ""))))
+       xsc-headers))))
 
 (defun mhc-draft-finish ()
   "Add current draft as a schedule."

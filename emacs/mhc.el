@@ -861,6 +861,34 @@ the default action of this command is changed to the latter."
           (and (mhc-calendar-p) (mhc-calendar-rescan)))
       (run-hooks 'mhc-delete-file-hook))))
 
+(defun mhc-reuse-create ()
+  "Create new draft buffer using stored template."
+  (interactive)
+  (let ((date-list (mapconcat
+                    (lambda (day)
+                      (mhc-date-format day "%04d%02d%02d" yy mm dd))
+                    (mhc-input-day "Date: " (mhc-current-date))
+                    " ")))
+    (mhc-window-push)
+    (mhc-draft-new (mhc-draft-template)
+                   `(("x-sc-record-id" . ,(mhc-record-create-id))
+                     ("x-sc-sequence"  . 0)
+                     ("x-sc-day" . ,date-list)))))
+
+(defun mhc-reuse-copy ()
+  "Copy current schedule to template."
+  (interactive)
+  (let ((file (mhc-summary-filename))
+        (record (mhc-summary-record)))
+    (if (and (stringp file) (file-exists-p file))
+        (with-temp-buffer
+          (insert-file-contents file)
+          (mhc-decode-header)
+          (mhc-draft-store-template
+           (buffer-substring-no-properties (point-min) (point-max)))
+          (message "%s is copied." (mhc-record-subject-as-string record)))
+      (message "No file here."))))
+
 (defun mhc-modify ()
   "Modify the current schedule."
   (interactive)

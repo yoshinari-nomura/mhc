@@ -634,6 +634,8 @@ If BANNER is set, it is printed on the horizontal line."
   (define-key mhc-summary-mode-map "t" 'mhc-calendar-toggle-insert-rectangle)
   (define-key mhc-summary-mode-map "E" 'mhc-edit)
   (define-key mhc-summary-mode-map "M" 'mhc-modify)
+  (define-key mhc-summary-mode-map "C" 'mhc-reuse-copy)
+  (define-key mhc-summary-mode-map "Y" 'mhc-reuse-create)
 
   (define-key mhc-summary-mode-map "n" 'mhc-summary-display-next)
   (define-key mhc-summary-mode-map "p" 'mhc-summary-display-previous)
