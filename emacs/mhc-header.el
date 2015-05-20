@@ -17,24 +17,20 @@
 ;; Global Variable:
 
 (defconst mhc-header-table
-  '(("x-sc-day"         "X-SC-Day:"             mhc-parse/day)
-    ("x-sc-cond"        "X-SC-Cond:"            mhc-parse/cond)
-    ("x-sc-duration"    "X-SC-Duration:"        mhc-parse/duration)
-    ("x-sc-subject"     "X-SC-Subject:"         mhc-parse/subject)
-    ("x-sc-location"    "X-SC-Location:"        mhc-parse/location)
-    ("x-sc-time"        "X-SC-Time:"            mhc-parse/time)
-    ("x-sc-alarm"       "X-SC-Alarm:"           mhc-parse/alarm)
-    ("x-sc-category"    "X-SC-Category:"        mhc-parse/category)
-    ("x-sc-recurrence-tag" "X-SC-Recurrence-Tag:" mhc-parse/recurrence-tag)
-    ("x-sc-priority"    "X-SC-Priority:"        mhc-parse/priority)
-    ("x-sc-record-id"   "X-SC-Record-Id:"       mhc-parse/record-id)
-    ("x-sc-schedule"    "X-SC-Schdule:"         mhc-parse/schedule)
-    ("x-sc-sequence"    "X-SC-Sequence:"        mhc-parse/sequence)
-    ;; For backward compatibility
-    ("x-sc-date"        "X-SC-Date:"            mhc-parse/old-style-date)
-    ;; FIXME: 要削除
-    ("x-sc-next"        "X-SC-Next:"            mhc-parse/next)))
-
+  '(
+    ("x-sc-subject"        "X-SC-Subject:"         mhc-parse/subject)
+    ("x-sc-location"       "X-SC-Location:"        mhc-parse/location)
+    ("x-sc-day"            "X-SC-Day:"             mhc-parse/day)
+    ("x-sc-time"           "X-SC-Time:"            mhc-parse/time)
+    ("x-sc-category"       "X-SC-Category:"        mhc-parse/category)
+    ("x-sc-priority"       "X-SC-Priority:"        mhc-parse/priority)
+    ("x-sc-recurrence-tag" "X-SC-Recurrence-Tag:"  mhc-parse/recurrence-tag)
+    ("x-sc-cond"           "X-SC-Cond:"            mhc-parse/cond)
+    ("x-sc-duration"       "X-SC-Duration:"        mhc-parse/duration)
+    ("x-sc-alarm"          "X-SC-Alarm:"           mhc-parse/alarm)
+    ("x-sc-record-id"      "X-SC-Record-Id:"       mhc-parse/record-id)
+    ("x-sc-sequence"       "X-SC-Sequence:"        mhc-parse/sequence)
+    ))
 
 (defmacro mhc-header-list ()
   "Return headers which are referenced by MHC."
