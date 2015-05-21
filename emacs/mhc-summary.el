@@ -24,9 +24,6 @@
 ;;         Return the file name of the article on the current line in
 ;;         this summary buffer.
 ;;
-;;     (mhc-foo-summary-display-article)
-;;         Display the article on the current line in this buffer.
-;;
 ;;     (mhc-foo-get-import-buffer GET-ORIGINAL)
 ;;         Return buffer visiting import article.  If GET-ORIGINAL,
 ;;         return it without MIME decode.
@@ -57,7 +54,6 @@
 ;;
 ;;    (provide 'mhc-foo)
 ;;    (put 'mhc-foo 'summary-filename        'mhc-foo-summary-filename)
-;;    (put 'mhc-foo 'summary-display-article 'mhc-foo-summary-display-article)
 ;;    (put 'mhc-foo 'get-import-buffer       'mhc-foo-get-import-buffer)
 ;;    (put 'mhc-foo 'generate-summary-buffer 'mhc-foo-generate-summary-buffer)
 ;;    (put 'mhc-foo 'insert-summary-contents 'mhc-foo-insert-summary-contents)
@@ -332,9 +328,34 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
           ()
         (buffer-substring (match-beginning 2) (match-end 2))))))
 
-(defsubst mhc-summary-display-article (&optional mailer)
-  "Display article on current line."
-  (funcall (mhc-summary-get-function 'summary-display-article mailer)))
+(defun mhc-summary-display-article ()
+  "Display the current article pointed in summary."
+  (let ((file (mhc-summary-filename)))
+    (if (not (and (stringp file) (file-exists-p file)))
+        (message "File does not exist.")
+      (mhc-window-push)
+      ;; (view-file-other-window file)
+      (pop-to-buffer (get-buffer-create "*MHC message*"))
+      ;; eword decode
+      (let ((buffer-read-only nil))
+        (goto-char (point-min))
+        (erase-buffer)
+        (insert-file-contents file)
+        (mhc-header-narrowing
+          (mhc-header-delete-header
+           "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp))
+        (mhc-header-delete-empty-header
+         "^X-SC-.*:" 'regexp)
+        (mhc-message-mode)
+        (mhc-message-set-file-name file))
+      ;; (setq view-exit-action 'mhc-calendar-view-exit-action)
+      (set-visited-file-name nil)
+      ;; (rename-buffer (file-name-nondirectory file) 'unique)
+      ;; (run-hooks 'mhc-calendar-view-file-hook)
+      (set-buffer-modified-p nil)
+      (setq buffer-read-only t)
+      )))
+
 
 (defsubst mhc-summary-get-import-buffer (&optional get-original mailer)
   "Return buffer to import article."

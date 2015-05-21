@@ -30,34 +30,6 @@
 
 ;;; for mhc-summary
 
-(defun mhc-mua-summary-display-article ()
-  "Display the current article pointed in summary."
-  (let ((file (mhc-summary-filename)))
-    (if (not (and (stringp file) (file-exists-p file)))
-        (message "File does not exist.")
-      (mhc-window-push)
-      ;; (view-file-other-window file)
-      (pop-to-buffer (get-buffer-create "*MHC message*"))
-      ;; eword decode
-      (let ((buffer-read-only nil))
-        (goto-char (point-min))
-        (erase-buffer)
-        (insert-file-contents file)
-        (mhc-header-narrowing
-          (mhc-header-delete-header
-           "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp))
-        (mhc-header-delete-empty-header
-         "^X-SC-.*:" 'regexp)
-        (mhc-message-mode)
-        (mhc-message-set-file-name file))
-      ;; (setq view-exit-action 'mhc-calendar-view-exit-action)
-      (set-visited-file-name nil)
-      ;; (rename-buffer (file-name-nondirectory file) 'unique)
-      ;; (run-hooks 'mhc-calendar-view-file-hook)
-      (set-buffer-modified-p nil)
-      (setq buffer-read-only t)
-      )))
-
 (defun mhc-mua-get-import-buffer (&optional get-raw)
   "Return a buffer visiting import article.
 If GET-RAW is non-nil, return a cons of buffer: car keeps a raw
@@ -165,7 +137,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
     (mhc-summary-display)))
 
 (provide 'mhc-mua)
-(put 'mhc-mua 'summary-display-article 'mhc-mua-summary-display-article)
 (put 'mhc-mua 'get-import-buffer       'mhc-mua-get-import-buffer)
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
 (put 'mhc-mua 'generate-summary-buffer 'mhc-mua-generate-summary-buffer)
