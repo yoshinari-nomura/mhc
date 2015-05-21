@@ -30,22 +30,6 @@
 
 ;;; for mhc-summary
 
-(defun mhc-mua-generate-summary-buffer (name-or-date)
-  "Generate a summary buffer for DATE-OR-DATE, and change current buffer to it."
-  (switch-to-buffer
-   (set-buffer
-    (mhc-get-buffer-create
-     (if (stringp name-or-date)
-         name-or-date
-       (mhc-date-format name-or-date "%04d-%02d" yy mm)))))
-  (setq inhibit-read-only t
-        buffer-read-only nil
-        selective-display t
-        selective-display-ellipses nil
-        indent-tabs-mode nil)
-  (widen)
-  (delete-region (point-min) (point-max)))
-
 (defun mhc-mua/schedule-foldermsg (schedule)
   (concat "\r +MHC " (mhc-record-name (mhc-schedule-record schedule))))
 
@@ -120,7 +104,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 
 (provide 'mhc-mua)
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
-(put 'mhc-mua 'generate-summary-buffer 'mhc-mua-generate-summary-buffer)
 (put 'mhc-mua 'insert-summary-contents 'mhc-mua-insert-summary-contents)
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
 (put 'mhc-mua 'summary-mode-setup      'mhc-mua-summary-mode-setup)

@@ -24,11 +24,6 @@
 ;;         Return the file name of the article on the current line in
 ;;         this summary buffer.
 ;;
-;;     (mhc-foo-generate-summary-buffer DATE)
-;;         Generate summary buffer of mailer, and change current
-;;         buffer to it.  This function will be called at the top of
-;;         mhc-scan-month.
-;;
 ;;     (mhc-foo-insert-summary-contents INSERTER)
 ;;         Insert schedule with INSERTER.
 ;;
@@ -50,7 +45,6 @@
 ;;
 ;;    (provide 'mhc-foo)
 ;;    (put 'mhc-foo 'summary-filename        'mhc-foo-summary-filename)
-;;    (put 'mhc-foo 'generate-summary-buffer 'mhc-foo-generate-summary-buffer)
 ;;    (put 'mhc-foo 'insert-summary-contents 'mhc-foo-insert-summary-contents)
 ;;    (put 'mhc-foo 'summary-mode-setup      'mhc-foo-summary-mode-setup)
 ;;    (put 'mhc-foo 'highlight-message       'mhc-foo-highlight-message)
@@ -371,9 +365,22 @@ message and cdr keeps a visible message."
       buffer)))
 
 
-(defsubst mhc-summary-generate-buffer (date &optional mailer)
-  "Generate buffer with summary mode of MAILER."
-  (funcall (mhc-summary-get-function 'generate-summary-buffer mailer) date))
+(defun mhc-summary-generate-buffer (name-or-date)
+  "Generate a summary buffer for DATE-OR-DATE, and change current buffer to it."
+  (switch-to-buffer
+   (set-buffer
+    (mhc-get-buffer-create
+     (if (stringp name-or-date)
+         name-or-date
+       (mhc-date-format name-or-date "%04d-%02d" yy mm)))))
+  (setq inhibit-read-only t
+        buffer-read-only nil
+        selective-display t
+        selective-display-ellipses nil
+        indent-tabs-mode nil)
+  (widen)
+  (delete-region (point-min) (point-max)))
+
 
 (defsubst mhc-summary-insert-contents (mhc-tmp-schedule
                                        mhc-tmp-private

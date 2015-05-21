@@ -550,7 +550,7 @@ listed in ``mhc-category-as-private''."
          ;; need three months for mini-calendar
          (dayinfo-list (mhc-db-scan (mhc-date-mm-- from) (mhc-date-mm++ to))))
     (unless (eq 'direct mailer)
-      (mhc-summary-generate-buffer date mailer)
+      (mhc-summary-generate-buffer date)
       (setq mhc-summary-buffer-current-date-month
             (mhc-date-mm-first date)))
     (when mhc-use-wide-scope
