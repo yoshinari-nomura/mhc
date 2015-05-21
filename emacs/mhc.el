@@ -1077,6 +1077,11 @@ the default action of this command is changed to the latter."
     (setq mhc-setup-p t)
     (run-hooks 'mhc-setup-hook)))
 
+;;;###autoload
+(defun mhc-mua-setup ()
+  (mhc-setup)
+  (add-hook 'mhc-summary-mode-hook 'mhc-mode))
+
 (defun mhc-reset ()
   "Reset MHC."
   (interactive)

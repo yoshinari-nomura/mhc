@@ -11,12 +11,6 @@
 
 ;; Setup function:
 
-;;;###autoload
-(defun mhc-mua-setup ()
-  (require 'mhc)
-  (mhc-setup)
-  (add-hook 'mhc-summary-mode-hook 'mhc-mode))
-
 ;;; Backend methods:
 
 ;;; for mhc-summary
