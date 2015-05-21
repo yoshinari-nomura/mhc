@@ -25,13 +25,6 @@
   "Various sorts of MH Calender."
   :group 'mail)
 
-(defcustom mhc-mailer-package 'mua
-  "*Variable to set your favorite mailer."
-  :group 'mhc
-  :type '(radio (const :tag "Mew" mew)
-                (const :tag "Wanderlust" wl)
-                (const :tag "Gnus" gnus)))
-
 (defcustom mhc-start-day-of-week 0
   "*Day of the week as the start of the week."
   :group 'mhc

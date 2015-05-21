@@ -248,13 +248,6 @@ PROP-VALUE is the property value correspond to PROP-TYPE.
 
 ;;; MUA Backend Functions:
 
-;; (defun mhc-summary-mailer-type ()
-;;   "Return mailer backend symbol using currently."
-;;   (or (cdr (assq major-mode mhc-summary-major-mode-alist))
-;;       (intern (concat "mhc-" (symbol-name mhc-mailer-package)))))
-
-(defun mhc-summary-mailer-type () 'mhc-mua)
-
 (defun mhc-summary/true (&rest args)
   "This is the dummy backend function, which always returns t."
   t)

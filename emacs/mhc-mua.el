@@ -14,7 +14,6 @@
 ;;;###autoload
 (defun mhc-mua-setup ()
   (require 'mhc)
-  (setq mhc-mailer-package 'mua)
   (mhc-setup)
   (add-hook 'mhc-summary-mode-hook 'mhc-mode))
 

@@ -382,7 +382,7 @@ If HIDE-PRIVATE, priavate schedules are suppressed."
         (not current-prefix-arg)
       current-prefix-arg)))
   (mhc-scan-month date
-                  (mhc-summary-mailer-type)
+                  'mhc-mua
                   mhc-default-category-predicate-sexp
                   hide-private))
 
@@ -484,7 +484,7 @@ If HIDE-PRIVATE, private schedules are suppressed."
   (let ((line (+ (count-lines (point-min) (point))
                  (if (= (current-column) 0) 1 0))))
     (mhc-scan-month (or (mhc-current-date-month) (mhc-date-now))
-                    (mhc-summary-mailer-type)
+                    'mhc-mua
                     mhc-default-category-predicate-sexp
                     hide-private)
     (goto-char (point-min))
