@@ -71,15 +71,9 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 
 ;;; for mhc-calendar
 
-(defun mhc-mua-goto-message (&optional view)
-  "Go to a view position on summary buffer."
-  (when view
-    (mhc-summary-display)))
-
 (provide 'mhc-mua)
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
-(put 'mhc-mua 'goto-message            'mhc-mua-goto-message)
 
 ;;; Copyright Notice:
 

@@ -559,7 +559,7 @@ ww-japanese-long => \"土曜日\"
             (setq pos cpos)
             (throw 'detect t))))
       (goto-char pos)
-      (funcall (mhc-get-function 'goto-message) view))
+      (when view (mhc-summary-display)))
      (t
       (unless (mhc-calendar-mouse-icon-function event)
         (setq func (or (lookup-key (current-local-map) (this-command-keys))
