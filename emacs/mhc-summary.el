@@ -252,17 +252,6 @@ PROP-VALUE is the property value correspond to PROP-TYPE.
   "This is the dummy backend function, which always returns t."
   t)
 
-(defsubst mhc-summary-get-function (operation &optional mailer)
-  "Return appropriate function to do OPERATION for MAILER."
-  (or (get (require (or mailer (mhc-summary-mailer-type))) operation)
-      'mhc-summary/true))
-
-(defsubst mhc-get-function  (operation)
-  "Return appropriate function to do OPERATION."
-  (or (get (require (intern (concat "mhc-" (symbol-name mhc-mailer-package))))
-           operation)
-      'mhc-summary/true))
-
 (defsubst mhc-highlight-message (&optional for-draft)
   "Hilight message in the current buffer.
 If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
