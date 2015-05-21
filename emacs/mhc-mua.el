@@ -22,47 +22,6 @@
 
 ;;; for mhc-summary
 
-(defvar mhc-message-eof-marker-face 'mhc-message-eof-marker-face)
-(defvar mhc-message-subject-face 'mhc-message-subject-face)
-
-(defface mhc-message-eof-marker-face
-  '((((class color)
-      (background dark))
-     (:background "aquamarine2"))
-    (((class color)
-      (background light))
-     (:background "aquamarine2"))
-    (t
-     ()))
-  "*Face used by mhc-message-eof-marker."
-  :group 'mhc-faces)
-
-(defface mhc-message-subject-face
-  '((((class color)
-      (background dark))
-     (:foreground "OrangeRed" :bold t))
-    (((class color)
-      (background light))
-     (:foreground "Firebrick" :bold t))
-    (t
-     ()))
-  "*Face used by mhc-message-subject."
-  :group 'mhc-faces)
-
-(defvar mhc-message-font-lock-keywords
-  '(("\\([12][0-9][0-9][0-9]\\)\\([0-1][0-9]\\)\\([0-3][0-9]\\)"
-     (1 font-lock-type-face)
-     (2 font-lock-comment-face)
-     (3 font-lock-builtin-face))
-    ("\\(X-SC-\\(Subject\\|Location\\|Day\\|Time\\|Category\\|Priority\\|Recurrence-Tag\\|Mission-Tag:\\|Cond\\|Duration\\|Alarm\\|Record-Id\\|Sequence\\):\\)"
-     (1 font-lock-keyword-face))
-    ("\\(\\[End of message\\]\\)"
-     (1 mhc-message-eof-marker-face))
-    ("\\(X-SC-Subject:\\) *\\(.*\\)"
-     (1 font-lock-keyword-face)
-     (2 mhc-message-subject-face))
-    ))
-
 ;;; for mhc-calendar
 
 (provide 'mhc-mua)
