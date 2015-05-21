@@ -9,9 +9,6 @@
 
 ;;; Code:
 
-(defconst mhc-mua/summary-filename-regex
-  ".*\r *\\+\\([^ \t]+\\)[ \t]+\\([^ \t\n]+\\)")
-
 ;; Setup function:
 
 (eval-and-compile
@@ -33,17 +30,9 @@
 
 ;;; for mhc-summary
 
-(defun mhc-mua-summary-filename ()
-  (let (folder number)
-    (save-excursion
-      (beginning-of-line)
-      (if (not (looking-at mhc-mua/summary-filename-regex))
-          ()
-        (buffer-substring (match-beginning 2) (match-end 2))))))
-
 (defun mhc-mua-summary-display-article ()
   "Display the current article pointed in summary."
-  (let ((file (mhc-mua-summary-filename)))
+  (let ((file (mhc-summary-filename)))
     (if (not (and (stringp file) (file-exists-p file)))
         (message "File does not exist.")
       (mhc-window-push)
@@ -176,7 +165,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
     (mhc-summary-display)))
 
 (provide 'mhc-mua)
-(put 'mhc-mua 'summary-filename        'mhc-mua-summary-filename)
 (put 'mhc-mua 'summary-display-article 'mhc-mua-summary-display-article)
 (put 'mhc-mua 'get-import-buffer       'mhc-mua-get-import-buffer)
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)

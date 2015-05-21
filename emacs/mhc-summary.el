@@ -320,9 +320,17 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
   "Decode encoded header."
   (funcall (mhc-get-function 'decode-header)))
 
-(defsubst mhc-summary-filename (&optional mailer)
+(defconst mhc-summary-filename-regex
+  ".*\r *\\+\\([^ \t]+\\)[ \t]+\\([^ \t\n]+\\)")
+
+(defsubst mhc-summary-filename ()
   "Return file name of article on current line."
-  (funcall (mhc-summary-get-function 'summary-filename mailer)))
+  (let (folder number)
+    (save-excursion
+      (beginning-of-line)
+      (if (not (looking-at mhc-summary-filename-regex))
+          ()
+        (buffer-substring (match-beginning 2) (match-end 2))))))
 
 (defsubst mhc-summary-display-article (&optional mailer)
   "Display article on current line."
@@ -363,7 +371,7 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
 
 (defun mhc-summary-record (&optional mailer)
   "Return record on current line."
-  (let ((filename (mhc-summary-filename mailer)))
+  (let ((filename (mhc-summary-filename)))
     (if filename
         (mhc-parse-file filename))))
 
