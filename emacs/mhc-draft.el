@@ -9,21 +9,6 @@
 
 ;; This file is a part of MHC, includes functions for draft.
 
-;;; About MUA Backend:
-
-;; In order to define new MUA backend, it is required to define these
-;; methods.
-;;
-;;     (mhc-foo-draft-setup-new)
-;;         Setup new draft (Insert header separator).
-;;
-;;
-;; Define these methods appropriately, and put definitions as follows:
-;;
-;;    (put 'mhc-foo 'draft-setup-new 'mhc-foo-draft-setup-new)
-;;    (put 'mhc-foo 'draft-reedit-buffer 'mhc-foo-draft-reedit-buffer)
-;;    (put 'mhc-foo 'draft-reedit-file 'mhc-foo-draft-reedit-file)
-
 ;;; Code:
 
 (require 'mhc-summary)

@@ -168,8 +168,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
     (mhc-header-narrowing
       (rfc2047-decode-region (point-min) (point-max)))))
 
-;;; for mhc-draft
-
 ;;; for mhc-calendar
 
 (defun mhc-mua-goto-message (&optional view)
@@ -182,12 +180,10 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 (put 'mhc-mua 'summary-display-article 'mhc-mua-summary-display-article)
 (put 'mhc-mua 'get-import-buffer       'mhc-mua-get-import-buffer)
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
-(put 'mhc-mua 'draft-mode              'mhc-mua-draft-mode)
 (put 'mhc-mua 'generate-summary-buffer 'mhc-mua-generate-summary-buffer)
 (put 'mhc-mua 'insert-summary-contents 'mhc-mua-insert-summary-contents)
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
 (put 'mhc-mua 'summary-mode-setup      'mhc-mua-summary-mode-setup)
-(put 'mhc-mua 'draft-setup-new         'mhc-mua-draft-setup-new)
 (put 'mhc-mua 'eword-decode-string     'mhc-mua-eword-decode-string)
 (put 'mhc-mua 'decode-header           'mhc-mua-decode-header)
 (put 'mhc-mua 'goto-message            'mhc-mua-goto-message)
