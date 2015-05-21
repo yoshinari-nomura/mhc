@@ -134,10 +134,9 @@
       #+BEGIN_SRC emacs-lisp
         (setq load-path
               (cons "~/src/mhc/emacs" load-path))
-        (autoload 'mhc-mua-setup "mhc-mua")
-        (mhc-mua-setup)
+        (autoload 'mhc "mhc" "Message Harmonized Calendar system." t)
 
-        ;; M-x mhc-goto-this-month
+        ;; M-x mhc
       #+END_SRC
 
    9) Check if TODAY is good.

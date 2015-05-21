@@ -9,22 +9,16 @@
 ;;; Commentary:
 ;;;
 
-;; Mhc is the personal schedule management package cooperating
-;;  with Mew, Wanderlust or Gnus.
+;; Mhc is the personal schedule management package.
+;; Please visit http://www.quickhack.net/mhc for details.
 ;;
 ;; Minimum setup:
 ;;
-;; for Mew user:
-;;   (autoload 'mhc-mew-setup "mhc-mew")
-;;   (add-hook 'mew-init-hook 'mhc-mew-setup)
+;;  (setq load-path
+;;        (cons "~/src/mhc/emacs" load-path))
+;;  (autoload 'mhc "mhc")
 ;;
-;; for Wanderlust user:
-;;   (autoload 'mhc-wl-setup "mhc-wl")
-;;   (add-hook 'wl-init-hook 'mhc-wl-setup)
-;;
-;; for Gnus user:
-;;   (autoload 'mhc-gnus-setup "mhc-gnus")
-;;   (add-hook 'gnus-startup-hook 'mhc-gnus-setup)
+;; and M-x mhc
 
 ;;; Code:
 
@@ -417,6 +411,7 @@ If HIDE-PRIVATE, private schedules are suppressed."
         (if (not (pos-visible-in-window-p (point)))
             (recenter)))))
 
+;;;###autoload
 (defun mhc-goto-this-month (&optional hide-private)
   "*Show schedules of this month.
 If HIDE-PRIVATE, private schedules are suppressed."
@@ -425,6 +420,7 @@ If HIDE-PRIVATE, private schedules are suppressed."
     (if mhc-default-hide-private-schedules
         (not current-prefix-arg)
       current-prefix-arg)))
+  (mhc-setup)
   (mhc-goto-month (mhc-date-now) hide-private))
 
 (defun mhc-goto-next-month (&optional arg)
@@ -1078,9 +1074,13 @@ the default action of this command is changed to the latter."
     (run-hooks 'mhc-setup-hook)))
 
 ;;;###autoload
-(defun mhc-mua-setup ()
+(defun mhc ()
+  "Show schedules of this month."
+  (interactive)
   (mhc-setup)
-  (add-hook 'mhc-summary-mode-hook 'mhc-mode))
+  (mhc-goto-this-month))
+
+(defalias 'mhc-mua-setup 'mhc-setup)
 
 (defun mhc-reset ()
   "Reset MHC."
