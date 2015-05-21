@@ -135,6 +135,14 @@ If REGEXP, HEADER is a regular expression."
         (delete-region (match-beginning 0) (match-end 0)))))
 
 
+(eval-and-compile
+  (autoload 'rfc2047-decode-region "rfc2047"))
+
+(defsubst mhc-header-decode-ewords ()
+  "Decode rfc2047 encoded header."
+  (save-restriction
+    (mhc-header-narrowing
+      (rfc2047-decode-region (point-min) (point-max)))))
 
 (provide 'mhc-header)
 

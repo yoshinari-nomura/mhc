@@ -883,7 +883,7 @@ the default action of this command is changed to the latter."
     (if (and (stringp file) (file-exists-p file))
         (with-temp-buffer
           (insert-file-contents file)
-          (mhc-decode-header)
+          (mhc-header-decode-ewords)
           (mhc-draft-store-template
            (buffer-substring-no-properties (point-min) (point-max)))
           (message "%s is copied." (mhc-record-subject-as-string record)))

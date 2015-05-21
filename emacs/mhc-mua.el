@@ -11,14 +11,6 @@
 
 ;; Setup function:
 
-(eval-and-compile
-  (autoload 'rfc2047-decode-region "rfc2047")
-  (autoload 'rfc2047-decode-string "rfc2047")
-  ;; (autoload 'eword-encode-string "eword-encode")
-  ;; (autoload 'rfc2047-encode-message-header "rfc2047")
-  ;; (autoload 'rfc2047-encode-string "rfc2047")
-  )
-
 ;;;###autoload
 (defun mhc-mua-setup ()
   (require 'mhc)
@@ -77,13 +69,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
   (set (make-local-variable 'font-lock-defaults)
        '(mhc-message-font-lock-keywords t)))
 
-(defalias 'mhc-mua-eword-decode-string 'rfc2047-decode-string)
-
-(defun mhc-mua-decode-header ()
-  (save-restriction
-    (mhc-header-narrowing
-      (rfc2047-decode-region (point-min) (point-max)))))
-
 ;;; for mhc-calendar
 
 (defun mhc-mua-goto-message (&optional view)
@@ -94,8 +79,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 (provide 'mhc-mua)
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
-(put 'mhc-mua 'eword-decode-string     'mhc-mua-eword-decode-string)
-(put 'mhc-mua 'decode-header           'mhc-mua-decode-header)
 (put 'mhc-mua 'goto-message            'mhc-mua-goto-message)
 
 ;;; Copyright Notice:

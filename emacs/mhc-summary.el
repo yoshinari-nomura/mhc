@@ -28,19 +28,11 @@
 ;;         Hilight message in the current buffer.
 ;;         If FOR-DRAFT is non-nil, Hilight message as draft message."
 ;;
-;;     (mhc-foo-eword-decode-string STRING)
-;;         Decode encoded STRING.
-;;
-;;     (mhc-foo-decode-header)
-;;         Decode encoded header.
-;;
 ;; Define these methods appropriately, and put definitions as follows:
 ;;
 ;;    (provide 'mhc-foo)
 ;;    (put 'mhc-foo 'summary-filename        'mhc-foo-summary-filename)
 ;;    (put 'mhc-foo 'highlight-message       'mhc-foo-highlight-message)
-;;    (put 'mhc-foo 'eword-decode-string     'mhc-foo-eword-decode-string)
-;;    (put 'mhc-foo 'decode-header           'mhc-foo-decode-header)
 
 ;;; Code:
 
@@ -287,14 +279,6 @@ PROP-VALUE is the property value correspond to PROP-TYPE.
   "Hilight message in the current buffer.
 If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
   (funcall (mhc-get-function 'highlight-message) for-draft))
-
-(defsubst mhc-eword-decode-string (string)
-  "Decode encoded STRING."
-  (funcall (mhc-get-function 'eword-decode-string) string))
-
-(defsubst mhc-decode-header ()
-  "Decode encoded header."
-  (funcall (mhc-get-function 'decode-header)))
 
 (defconst mhc-summary-filename-regex
   ".*\r *\\+\\([^ \t]+\\)[ \t]+\\([^ \t\n]+\\)")

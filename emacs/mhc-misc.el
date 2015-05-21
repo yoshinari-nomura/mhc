@@ -212,6 +212,10 @@
         (sit-for 0)
         pass))))
 
+(eval-and-compile
+  (autoload 'rfc2047-decode-string "rfc2047"))
+(defalias 'mhc-misc-decode-eword-string 'rfc2047-decode-string)
+
 (provide 'mhc-misc)
 
 ;;; Copyright Notice:

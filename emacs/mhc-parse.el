@@ -17,6 +17,7 @@
 (require 'mhc-logic)
 (require 'mhc-record)
 (require 'mhc-header)
+(require 'mhc-misc)
 
 (defvar mhc-parse/strict nil)
 
@@ -65,13 +66,13 @@
 (defun mhc-parse/subject (record schedule)
   (mhc-schedule/set-subject
    schedule
-   (mhc-eword-decode-string (mhc-parse/continuous-lines)))
+   (mhc-misc-decode-eword-string (mhc-parse/continuous-lines)))
   schedule)
 
 (defun mhc-parse/location (record schedule)
   (mhc-schedule/set-location
    schedule
-   (mhc-eword-decode-string (mhc-parse/continuous-lines)))
+   (mhc-misc-decode-eword-string (mhc-parse/continuous-lines)))
   schedule)
 
 (defconst mhc-parse/time-regexp "\\([012][0-9]\\):\\([0-5][0-9]\\)")
@@ -121,7 +122,7 @@
                    (lambda (str)
                      (and (stringp str) (downcase str)))
                    (mhc-misc-split
-                    (mhc-eword-decode-string category)
+                    (mhc-misc-decode-eword-string category)
                     "[ \t]+")))
             (mhc-schedule-categories schedule))))
   (mhc-logic/set-todo (mhc-schedule-condition schedule)
@@ -132,7 +133,7 @@
 (defun mhc-parse/recurrence-tag (record schedule)
   (mhc-schedule/set-recurrence-tag
    schedule
-   (mhc-eword-decode-string (mhc-parse/continuous-lines)))
+   (mhc-misc-decode-eword-string (mhc-parse/continuous-lines)))
   schedule)
 
 (defun mhc-parse/sequence (record schedule)

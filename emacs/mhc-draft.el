@@ -13,10 +13,6 @@
 
 (require 'mhc-summary)
 
-(eval-and-compile
-  (autoload 'rfc2047-decode-region "rfc2047")
-  (autoload 'rfc2047-decode-string "rfc2047"))
-
 ;; Global Variable:
 
 (defconst mhc-draft-buffer-name "*mhc draft*")
@@ -96,8 +92,8 @@ If optional argument ORIGINAL is non-nil, BUFFER is raw buffer."
     (insert-buffer-substring buffer))
   (mhc-header-narrowing
     (mhc-header-delete-header
-     "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp)
-    (rfc2047-decode-region (point-min) (point-max)))
+     "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp))
+  (mhc-header-decode-ewords)
   (goto-char (point-min))
   (when (re-search-forward "^\r?$" nil t)
     (insert mail-header-separator)))

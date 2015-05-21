@@ -853,7 +853,7 @@ The keys that are defined for mhc-calendar-mode are:
 (defun mhc-calendar/view-file-decode-header ()
   (let ((buffer-read-only nil))
     (goto-char (point-min))
-    (mhc-decode-header)
+    (mhc-header-decode-ewords)
     (mhc-highlight-message)))
 
 ;; insert function
@@ -1529,7 +1529,7 @@ The keys that are defined for mhc-calendar-mode are:
               (setq lst (cdr lst))))
           (with-temp-buffer
             (insert-file-contents mhcfile)
-            (mhc-decode-header)
+            (mhc-header-decode-ewords)
             (mhc-header-narrowing
               (setq cats (mhc-header-get-value "x-sc-category"))
               (setq subj (mhc-header-get-value "x-sc-subject"))

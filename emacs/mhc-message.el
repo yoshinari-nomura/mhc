@@ -35,7 +35,7 @@
   "MHC-Msg"
   "Major mode for viewing schdule files of MHC."
   (save-excursion
-    (mhc-decode-header)
+    (mhc-header-decode-ewords)
     (goto-char (point-max))
     (unless (re-search-backward
              (regexp-quote mhc-message-end-of-messge-marker)
