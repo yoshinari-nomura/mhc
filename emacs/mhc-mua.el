@@ -63,16 +63,9 @@
      (2 mhc-message-subject-face))
     ))
 
-(defun mhc-mua-highlight-message (&optional for-draft)
-  "Hilight message in the current buffer.
-If FOR-DRAFT is non-nil, Hilight message as draft message."
-  (set (make-local-variable 'font-lock-defaults)
-       '(mhc-message-font-lock-keywords t)))
-
 ;;; for mhc-calendar
 
 (provide 'mhc-mua)
-(put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
 
 ;;; Copyright Notice:

@@ -24,15 +24,10 @@
 ;;         Return the file name of the article on the current line in
 ;;         this summary buffer.
 ;;
-;;     (mhc-foo-highlight-message FOR-DRAFT)
-;;         Hilight message in the current buffer.
-;;         If FOR-DRAFT is non-nil, Hilight message as draft message."
-;;
 ;; Define these methods appropriately, and put definitions as follows:
 ;;
 ;;    (provide 'mhc-foo)
 ;;    (put 'mhc-foo 'summary-filename        'mhc-foo-summary-filename)
-;;    (put 'mhc-foo 'highlight-message       'mhc-foo-highlight-message)
 
 ;;; Code:
 
@@ -278,7 +273,8 @@ PROP-VALUE is the property value correspond to PROP-TYPE.
 (defsubst mhc-highlight-message (&optional for-draft)
   "Hilight message in the current buffer.
 If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
-  (funcall (mhc-get-function 'highlight-message) for-draft))
+  (set (make-local-variable 'font-lock-defaults)
+       '(mhc-message-font-lock-keywords t)))
 
 (defconst mhc-summary-filename-regex
   ".*\r *\\+\\([^ \t]+\\)[ \t]+\\([^ \t\n]+\\)")
