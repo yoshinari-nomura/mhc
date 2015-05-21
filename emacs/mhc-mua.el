@@ -30,24 +30,6 @@
 
 ;;; for mhc-summary
 
-(defun mhc-mua-get-import-buffer (&optional get-raw)
-  "Return a buffer visiting import article.
-If GET-RAW is non-nil, return a cons of buffer: car keeps a raw
-message and cdr keeps a visible message."
-  (let ((buffer
-         (or
-          (save-window-excursion
-            (let ((mode (progn (other-window 1) major-mode)))
-              (if (or
-                   (eq mode 'mew-message-mode)
-                   (eq mode 'mhc-message-mode))
-                  (current-buffer))))
-          (current-buffer))))
-    ;; XXX get-raw is gone soon
-    (if get-raw
-        (cons buffer buffer)
-      buffer)))
-
 (defun mhc-mua-generate-summary-buffer (name-or-date)
   "Generate a summary buffer for DATE-OR-DATE, and change current buffer to it."
   (switch-to-buffer
@@ -137,7 +119,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
     (mhc-summary-display)))
 
 (provide 'mhc-mua)
-(put 'mhc-mua 'get-import-buffer       'mhc-mua-get-import-buffer)
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
 (put 'mhc-mua 'generate-summary-buffer 'mhc-mua-generate-summary-buffer)
 (put 'mhc-mua 'insert-summary-contents 'mhc-mua-insert-summary-contents)

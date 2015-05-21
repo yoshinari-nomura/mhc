@@ -24,10 +24,6 @@
 ;;         Return the file name of the article on the current line in
 ;;         this summary buffer.
 ;;
-;;     (mhc-foo-get-import-buffer GET-ORIGINAL)
-;;         Return buffer visiting import article.  If GET-ORIGINAL,
-;;         return it without MIME decode.
-;;
 ;;     (mhc-foo-generate-summary-buffer DATE)
 ;;         Generate summary buffer of mailer, and change current
 ;;         buffer to it.  This function will be called at the top of
@@ -54,7 +50,6 @@
 ;;
 ;;    (provide 'mhc-foo)
 ;;    (put 'mhc-foo 'summary-filename        'mhc-foo-summary-filename)
-;;    (put 'mhc-foo 'get-import-buffer       'mhc-foo-get-import-buffer)
 ;;    (put 'mhc-foo 'generate-summary-buffer 'mhc-foo-generate-summary-buffer)
 ;;    (put 'mhc-foo 'insert-summary-contents 'mhc-foo-insert-summary-contents)
 ;;    (put 'mhc-foo 'summary-mode-setup      'mhc-foo-summary-mode-setup)
@@ -357,9 +352,24 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
       )))
 
 
-(defsubst mhc-summary-get-import-buffer (&optional get-original mailer)
-  "Return buffer to import article."
-  (funcall (mhc-summary-get-function 'get-import-buffer mailer) get-original))
+(defun mhc-summary-get-import-buffer (&optional get-original)
+  "Return a buffer visiting import article.
+If GET-ORIGINAL is non-nil, return a cons of buffer: car keeps a raw
+message and cdr keeps a visible message."
+  (let ((buffer
+         (or
+          (save-window-excursion
+            (let ((mode (progn (other-window 1) major-mode)))
+              (if (or
+                   (eq mode 'mew-message-mode)
+                   (eq mode 'mhc-message-mode))
+                  (current-buffer))))
+          (current-buffer))))
+    ;; XXX get-original is not effective now. gone soon.
+    (if get-original
+        (cons buffer buffer)
+      buffer)))
+
 
 (defsubst mhc-summary-generate-buffer (date &optional mailer)
   "Generate buffer with summary mode of MAILER."
