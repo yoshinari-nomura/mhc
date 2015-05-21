@@ -17,13 +17,6 @@
 ;;     (mhc-foo-draft-setup-new)
 ;;         Setup new draft (Insert header separator).
 ;;
-;;     (mhc-foo-draft-reedit-buffer BUFFER ORIGINAL)
-;;         Restore content of BUFFER as draft in the current buffer.
-;;         If ORIGINAL is non-nil, use BUFFER as raw buffer.
-;;
-;;     (mhc-foo-draft-reedit-file FILENAME)
-;;         Restore contents of file FILENAME as draft in the current buffer.
-;;
 ;;     (mhc-foo-draft-translate)
 ;;         Translate current buffer to raw buffer.
 ;;
@@ -37,6 +30,10 @@
 ;;; Code:
 
 (require 'mhc-summary)
+
+(eval-and-compile
+  (autoload 'rfc2047-decode-region "rfc2047")
+  (autoload 'rfc2047-decode-string "rfc2047"))
 
 ;; Global Variable:
 
@@ -112,12 +109,22 @@ these fields are set to the draft after import TEMPLATE."
 (defsubst mhc-draft-reedit-buffer (buffer &optional original)
   "Restore contents of BUFFER as draft in the current buffer.
 If optional argument ORIGINAL is non-nil, BUFFER is raw buffer."
-  (funcall (mhc-get-function 'draft-reedit-buffer) buffer original))
-
+  (unless (eq (current-buffer) buffer)
+    (erase-buffer)
+    (insert-buffer-substring buffer))
+  (mhc-header-narrowing
+    (mhc-header-delete-header
+     "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp)
+    (rfc2047-decode-region (point-min) (point-max)))
+  (goto-char (point-min))
+  (when (re-search-forward "^\r?$" nil t)
+    (insert mail-header-separator)))
 
 (defsubst mhc-draft-reedit-file (filename)
   "Restore contents of file FILENAME as draft in the current buffer."
-  (funcall (mhc-get-function 'draft-reedit-file) filename))
+  (erase-buffer)
+  (insert-file-contents filename)
+  (mhc-draft-reedit-buffer (current-buffer) 'original))
 
 
 (defsubst mhc-draft-translate ()

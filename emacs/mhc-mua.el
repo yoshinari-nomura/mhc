@@ -170,24 +170,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 
 ;;; for mhc-draft
 
-(defun mhc-mua-draft-reedit-buffer (buffer original)
-  ;; If current buffer is specified as buffer, no need to replace.
-  (unless (eq (current-buffer) buffer)
-    (erase-buffer)
-    (insert-buffer-substring buffer))
-  (mhc-header-narrowing
-    (mhc-header-delete-header
-     "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp)
-    (rfc2047-decode-region (point-min) (point-max)))
-  (goto-char (point-min))
-  (when (re-search-forward "^\r?$" nil t)
-    (insert mail-header-separator)))
-
-(defun mhc-mua-draft-reedit-file (file)
-  (erase-buffer)
-  (insert-file-contents file)
-  (mhc-mua-draft-reedit-buffer (current-buffer) 'original))
-
 (defun mhc-mua-draft-translate ()
   "Convert an article in the current buffer to an ENCODED one.
 ENCODED article should be valid for storeing to a mhc file.
@@ -216,8 +198,6 @@ the old mhc was supposed to encode the article into MIME message."
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
 (put 'mhc-mua 'summary-mode-setup      'mhc-mua-summary-mode-setup)
 (put 'mhc-mua 'draft-setup-new         'mhc-mua-draft-setup-new)
-(put 'mhc-mua 'draft-reedit-buffer     'mhc-mua-draft-reedit-buffer)
-(put 'mhc-mua 'draft-reedit-file       'mhc-mua-draft-reedit-file)
 (put 'mhc-mua 'draft-translate         'mhc-mua-draft-translate)
 (put 'mhc-mua 'eword-decode-string     'mhc-mua-eword-decode-string)
 (put 'mhc-mua 'decode-header           'mhc-mua-decode-header)
