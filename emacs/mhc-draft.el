@@ -17,15 +17,12 @@
 ;;     (mhc-foo-draft-setup-new)
 ;;         Setup new draft (Insert header separator).
 ;;
-;;     (mhc-foo-draft-translate)
-;;         Translate current buffer to raw buffer.
 ;;
 ;; Define these methods appropriately, and put definitions as follows:
 ;;
 ;;    (put 'mhc-foo 'draft-setup-new 'mhc-foo-draft-setup-new)
 ;;    (put 'mhc-foo 'draft-reedit-buffer 'mhc-foo-draft-reedit-buffer)
 ;;    (put 'mhc-foo 'draft-reedit-file 'mhc-foo-draft-reedit-file)
-;;    (put 'mhc-foo 'draft-translate 'mhc-foo-draft-translate)
 
 ;;; Code:
 
@@ -128,8 +125,12 @@ If optional argument ORIGINAL is non-nil, BUFFER is raw buffer."
 
 
 (defsubst mhc-draft-translate ()
-  "Translate current buffer to raw buffer."
-  (funcall (mhc-get-function 'draft-translate)))
+  "Convert an article in the current buffer to an ENCODED one.
+ENCODED article should be valid for storeing to a mhc file."
+  (save-excursion
+    (goto-char (point-min))
+    (when (search-forward (concat "\n" mail-header-separator "\n") nil t)
+      (replace-match "\n\n"))))
 
 
 (define-derived-mode mhc-draft-mode

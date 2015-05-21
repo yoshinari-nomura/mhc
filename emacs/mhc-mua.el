@@ -170,16 +170,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 
 ;;; for mhc-draft
 
-(defun mhc-mua-draft-translate ()
-  "Convert an article in the current buffer to an ENCODED one.
-ENCODED article should be valid for storeing to a mhc file.
-This function can be empty for the current mhc, whereas
-the old mhc was supposed to encode the article into MIME message."
-  (save-excursion
-    (goto-char (point-min))
-    (when (search-forward (concat "\n" mail-header-separator "\n") nil t)
-      (replace-match "\n\n"))))
-
 ;;; for mhc-calendar
 
 (defun mhc-mua-goto-message (&optional view)
@@ -198,7 +188,6 @@ the old mhc was supposed to encode the article into MIME message."
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
 (put 'mhc-mua 'summary-mode-setup      'mhc-mua-summary-mode-setup)
 (put 'mhc-mua 'draft-setup-new         'mhc-mua-draft-setup-new)
-(put 'mhc-mua 'draft-translate         'mhc-mua-draft-translate)
 (put 'mhc-mua 'eword-decode-string     'mhc-mua-eword-decode-string)
 (put 'mhc-mua 'decode-header           'mhc-mua-decode-header)
 (put 'mhc-mua 'goto-message            'mhc-mua-goto-message)
