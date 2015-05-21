@@ -567,7 +567,7 @@ listed in ``mhc-category-as-private''."
          (- (mhc-misc-get-width) mhc-calendar-width)
          mhc-vertical-calendar-length
          dayinfo-list))
-      (mhc-summary-mode-setup date mailer)
+      (mhc-summary-mode)
       (mhc-mode 1)
       (setq mhc-summary-buffer-current-date-month
             (mhc-date-mm-first date))

@@ -27,10 +27,6 @@
 ;;     (mhc-foo-insert-summary-contents INSERTER)
 ;;         Insert schedule with INSERTER.
 ;;
-;;     (mhc-foo-summary-mode-setup DATE)
-;;         Setup buffer as summary of mailer.  This function will be
-;;         called at the end of mhc-scan-month.
-;;
 ;;     (mhc-foo-highlight-message FOR-DRAFT)
 ;;         Hilight message in the current buffer.
 ;;         If FOR-DRAFT is non-nil, Hilight message as draft message."
@@ -46,7 +42,6 @@
 ;;    (provide 'mhc-foo)
 ;;    (put 'mhc-foo 'summary-filename        'mhc-foo-summary-filename)
 ;;    (put 'mhc-foo 'insert-summary-contents 'mhc-foo-insert-summary-contents)
-;;    (put 'mhc-foo 'summary-mode-setup      'mhc-foo-summary-mode-setup)
 ;;    (put 'mhc-foo 'highlight-message       'mhc-foo-highlight-message)
 ;;    (put 'mhc-foo 'eword-decode-string     'mhc-foo-eword-decode-string)
 ;;    (put 'mhc-foo 'decode-header           'mhc-foo-decode-header)
@@ -402,10 +397,6 @@ message and cdr keeps a visible message."
                                 (get-text-property (point) 'mhc-dayinfo)))
                     (not (eq (mhc-day-date dayinfo) date))))
       (goto-char (next-single-property-change (point) 'mhc-dayinfo)))))
-
-(defsubst mhc-summary-mode-setup (date &optional mailer)
-  "Setup buffer as summary mode of MAILER."
-  (funcall (mhc-summary-get-function 'summary-mode-setup mailer) date))
 
 (defun mhc-summary-record (&optional mailer)
   "Return record on current line."

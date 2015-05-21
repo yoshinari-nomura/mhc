@@ -37,10 +37,6 @@
   (funcall inserter)
   (insert (mhc-mua/schedule-foldermsg mhc-tmp-schedule) "\n"))
 
-(defun mhc-mua-summary-mode-setup (date)
-  (mhc-summary-mode))
-
-
 (defvar mhc-message-eof-marker-face 'mhc-message-eof-marker-face)
 (defvar mhc-message-subject-face 'mhc-message-subject-face)
 
@@ -106,7 +102,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
 (put 'mhc-mua 'insert-summary-contents 'mhc-mua-insert-summary-contents)
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
-(put 'mhc-mua 'summary-mode-setup      'mhc-mua-summary-mode-setup)
 (put 'mhc-mua 'eword-decode-string     'mhc-mua-eword-decode-string)
 (put 'mhc-mua 'decode-header           'mhc-mua-decode-header)
 (put 'mhc-mua 'goto-message            'mhc-mua-goto-message)
