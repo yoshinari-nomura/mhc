@@ -24,9 +24,6 @@
 ;;         Return the file name of the article on the current line in
 ;;         this summary buffer.
 ;;
-;;     (mhc-foo-insert-summary-contents INSERTER)
-;;         Insert schedule with INSERTER.
-;;
 ;;     (mhc-foo-highlight-message FOR-DRAFT)
 ;;         Hilight message in the current buffer.
 ;;         If FOR-DRAFT is non-nil, Hilight message as draft message."
@@ -41,7 +38,6 @@
 ;;
 ;;    (provide 'mhc-foo)
 ;;    (put 'mhc-foo 'summary-filename        'mhc-foo-summary-filename)
-;;    (put 'mhc-foo 'insert-summary-contents 'mhc-foo-insert-summary-contents)
 ;;    (put 'mhc-foo 'highlight-message       'mhc-foo-highlight-message)
 ;;    (put 'mhc-foo 'eword-decode-string     'mhc-foo-eword-decode-string)
 ;;    (put 'mhc-foo 'decode-header           'mhc-foo-decode-header)
@@ -376,6 +372,8 @@ message and cdr keeps a visible message."
   (widen)
   (delete-region (point-min) (point-max)))
 
+(defun mhc-summary-schedule-foldermsg (schedule)
+  (concat "\r +MHC " (mhc-record-name (mhc-schedule-record schedule))))
 
 (defsubst mhc-summary-insert-contents (mhc-tmp-schedule
                                        mhc-tmp-private
@@ -385,8 +383,9 @@ message and cdr keeps a visible message."
       (let ((mhc-use-icon nil))
         (mhc-summary-line-insert)
         (insert "\n"))
-    (funcall (mhc-summary-get-function 'insert-summary-contents mailer)
-             inserter)))
+    (funcall inserter)
+    (insert (mhc-summary-schedule-foldermsg mhc-tmp-schedule) "\n")
+    ))
 
 (defsubst mhc-summary-search-date (date)
   "Search day in the current buffer."

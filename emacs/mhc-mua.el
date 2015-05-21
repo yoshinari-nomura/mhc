@@ -30,13 +30,6 @@
 
 ;;; for mhc-summary
 
-(defun mhc-mua/schedule-foldermsg (schedule)
-  (concat "\r +MHC " (mhc-record-name (mhc-schedule-record schedule))))
-
-(defun mhc-mua-insert-summary-contents (inserter)
-  (funcall inserter)
-  (insert (mhc-mua/schedule-foldermsg mhc-tmp-schedule) "\n"))
-
 (defvar mhc-message-eof-marker-face 'mhc-message-eof-marker-face)
 (defvar mhc-message-subject-face 'mhc-message-subject-face)
 
@@ -100,7 +93,6 @@ If FOR-DRAFT is non-nil, Hilight message as draft message."
 
 (provide 'mhc-mua)
 (put 'mhc-mua 'highlight-message       'mhc-mua-highlight-message)
-(put 'mhc-mua 'insert-summary-contents 'mhc-mua-insert-summary-contents)
 (put 'mhc-mua 'summary-search-date     'mhc-mua-summary-search-date)
 (put 'mhc-mua 'eword-decode-string     'mhc-mua-eword-decode-string)
 (put 'mhc-mua 'decode-header           'mhc-mua-decode-header)
