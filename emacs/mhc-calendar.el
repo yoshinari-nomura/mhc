@@ -230,10 +230,10 @@ ww-japanese-long => \"土曜日\"
 
 ;; Avoid warning of byte-compiler.
 (eval-when-compile
-  (defvar mhc-yy)
-  (defvar mhc-mm)
-  (defvar mhc-dd)
-  (defvar mhc-ww)
+  (defvar yy)
+  (defvar mm)
+  (defvar dd)
+  (defvar ww)
   (defvar hnf-diary-dir)
   (defvar hnf-diary-year-directory-flag)
   (defvar view-exit-action)
@@ -1065,53 +1065,53 @@ The keys that are defined for mhc-calendar-mode are:
       (and func (funcall func))))))
 
 (defun mhc-calendar/inserter-yy ()
-  (format "%4d" mhc-yy))
+  (format "%4d" yy))
 
 (defun mhc-calendar/inserter-nengo ()
-  (if (> mhc-yy 1987)
-      (format "平成%2d年" (- mhc-yy 1988))
-    (if (> mhc-yy 1924)
-        (format "昭和%2d年" (- mhc-yy 1925))
+  (if (> yy 1987)
+      (format "平成%2d年" (- yy 1988))
+    (if (> yy 1924)
+        (format "昭和%2d年" (- yy 1925))
       "昔々")))
 
 (defun mhc-calendar/inserter-mm ()
-  (format "%d" mhc-mm))
+  (format "%d" mm))
 
 (defun mhc-calendar/inserter-mm02 ()
-  (format "%02d" mhc-mm))
+  (format "%02d" mm))
 
 (defun mhc-calendar/inserter-mm2 ()
-  (format "%2d" mhc-mm))
+  (format "%2d" mm))
 
 (defun mhc-calendar/inserter-mm-string ()
-  (mhc-date-digit-to-mm-string mhc-mm))
+  (mhc-date-digit-to-mm-string mm))
 
 (defun mhc-calendar/inserter-mm-string-long ()
-  (mhc-date-digit-to-mm-string mhc-mm t))
+  (mhc-date-digit-to-mm-string mm t))
 
 (defun mhc-calendar/inserter-dd ()
-  (format "%d" mhc-dd))
+  (format "%d" dd))
 
 (defun mhc-calendar/inserter-dd02 ()
-  (format "%02d" mhc-dd))
+  (format "%02d" dd))
 
 (defun mhc-calendar/inserter-dd2 ()
-  (format "%2d" mhc-dd))
+  (format "%2d" dd))
 
 (defun mhc-calendar/inserter-ww ()
-  (format "%d" mhc-ww))
+  (format "%d" ww))
 
 (defun mhc-calendar/inserter-ww-string ()
-  (mhc-date-digit-to-ww-string mhc-ww))
+  (mhc-date-digit-to-ww-string ww))
 
 (defun mhc-calendar/inserter-ww-string-long ()
-  (mhc-date-digit-to-ww-string mhc-ww t))
+  (mhc-date-digit-to-ww-string ww t))
 
 (defun mhc-calendar/inserter-ww-japanese ()
-  (mhc-date-digit-to-ww-japanese-string mhc-ww))
+  (mhc-date-digit-to-ww-japanese-string ww))
 
 (defun mhc-calendar/inserter-ww-japanese-long ()
-  (mhc-date-digit-to-ww-japanese-string mhc-ww t))
+  (mhc-date-digit-to-ww-japanese-string ww t))
 
 (defun mhc-calendar/get-day-list (date &optional datelst dateend)
   (let (lst-org formlst retlst retlst2 ret con)
