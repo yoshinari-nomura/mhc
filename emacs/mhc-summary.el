@@ -258,17 +258,15 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
   (set (make-local-variable 'font-lock-defaults)
        '(mhc-message-font-lock-keywords t)))
 
-(defconst mhc-summary-filename-regex
-  ".*\r *\\+\\([^ \t]+\\)[ \t]+\\([^ \t\n]+\\)")
-
-(defsubst mhc-summary-filename ()
-  "Return file name of article on current line."
-  (let (folder number)
-    (save-excursion
-      (beginning-of-line)
-      (if (not (looking-at mhc-summary-filename-regex))
-          ()
-        (buffer-substring (match-beginning 2) (match-end 2))))))
+(defun mhc-summary-filename ()
+  (let ((schedule) (filename))
+    (if (and (setq schedule (get-text-property (point) 'mhc-schedule))
+             (setq filename (mhc-record-name
+                             (mhc-schedule-record schedule)))
+             (file-exists-p filename)
+             (not (file-directory-p filename)))
+        filename
+      nil)))
 
 (defun mhc-summary-display-article ()
   "Display the current article pointed in summary."
@@ -328,26 +326,23 @@ message and cdr keeps a visible message."
        (mhc-date-format name-or-date "%04d-%02d" yy mm)))))
   (setq inhibit-read-only t
         buffer-read-only nil
-        selective-display t
-        selective-display-ellipses nil
         indent-tabs-mode nil)
   (widen)
   (delete-region (point-min) (point-max)))
 
-(defun mhc-summary-schedule-foldermsg (schedule)
-  (concat "\r +MHC " (mhc-record-name (mhc-schedule-record schedule))))
-
-(defsubst mhc-summary-insert-contents (mhc-tmp-schedule
+(defun mhc-summary-insert-contents (mhc-tmp-schedule
                                        mhc-tmp-private
                                        inserter
                                        &optional mailer)
-  (if (eq 'direct mailer)
-      (let ((mhc-use-icon nil))
-        (mhc-summary-line-insert)
-        (insert "\n"))
-    (funcall inserter)
-    (insert (mhc-summary-schedule-foldermsg mhc-tmp-schedule) "\n")
-    ))
+  (let ((beg (point)))
+    (if (eq 'direct mailer)
+        (let ((mhc-use-icon nil))
+          (mhc-summary-line-insert)
+          (insert "\n"))
+      (funcall inserter)
+      (put-text-property beg (point) 'mhc-schedule mhc-tmp-schedule)
+      (insert "\n")
+      )))
 
 (defsubst mhc-summary-search-date (date)
   "Search day in the current buffer."
