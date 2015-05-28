@@ -69,7 +69,7 @@ class MhcCLI < Thor
   register_option :repository, :desc => "Set MHC top directory", :banner => "DIRECTORY"
   register_option :calendar,   :desc => "Set source CALENDAR"
   register_option :category,   :desc => "Pick items only in CATEGORY"
-  register_option :format,     :desc => "Set printing format", :enum => %w(text mail orgtable emacs icalendar calfw howm)
+  register_option :format,     :desc => "Set printing format", :enum => %w(text mail orgtable emacs icalendar calfw howm json)
   register_option :search,     :desc => "Search items by complex expression"
   register_option :dry_run,    :desc => "Perform a trial run with no changes made", :type => :boolean
 

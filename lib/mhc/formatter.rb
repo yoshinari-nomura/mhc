@@ -20,6 +20,8 @@ module Mhc
         SymbolicExpression.new(date_range: date_range, options:options)
       when :howm
         Howm.new(date_range: date_range, options:options)
+      when :json
+        FullCalendar.new(date_range: date_range, options:options)
       else
         raise FormatterNameError.new("Unknown format: #{formatter} (#{formatter.class})")
       end
@@ -307,6 +309,32 @@ module Mhc
         end
       end
     end # class Howm
+
+    class FullCalendar < Base
+      require "json"
+
+      def format_body(context)
+        events = []
+        @occurrences.each do |oc|
+          if oc.categories.map{|c| c.to_s.downcase}.include?('holiday')
+            color = "red"
+          elsif oc.allday?
+            color = "green"
+          else
+            color = ""
+          end
+          events << {
+            id:    oc.record_id,
+            allDay: oc.allday?,
+            title: oc.subject,
+            start: oc.dtstart.iso8601,
+            end:   oc.dtend.iso8601,
+            color: color
+          }
+        end
+        return events.to_json
+      end
+    end # class FullCalendar
 
   end # module Formatter
 end # module Mhc
