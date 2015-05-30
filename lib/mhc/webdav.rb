@@ -4,6 +4,7 @@ require "net/https"
 require "uri"
 require "rexml/document"
 require "fileutils"
+require "pathname"
 
 module Mhc
   class WebDav

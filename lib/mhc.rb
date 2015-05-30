@@ -100,5 +100,6 @@ module Mhc # :nodoc:
   autoload :PropertyValue,        "#{dir}/property_value.rb"
   autoload :Query,                "#{dir}/query.rb"
   autoload :Sync,                 "#{dir}/sync.rb"
-  autoload :Version,              "#{dir}/version.rb"
+  autoload :VERSION,              "#{dir}/version.rb"
+  autoload :PRODID,               "#{dir}/version.rb"
 end
