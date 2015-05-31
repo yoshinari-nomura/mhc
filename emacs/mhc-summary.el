@@ -280,7 +280,8 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
       (let ((buffer-read-only nil))
         (goto-char (point-min))
         (erase-buffer)
-        (insert-file-contents file)
+	(mhc-insert-file-contents-as-coding-system
+	 mhc-default-coding-system file)
         (mhc-header-narrowing
           (mhc-header-delete-header
            "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp))
