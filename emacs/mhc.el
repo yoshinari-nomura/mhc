@@ -95,13 +95,7 @@
         ["Reset"        mhc-reset (mhc-summary-buffer-p)]
         ("Network"
          ["Online" mhc-file-toggle-offline mhc-file/offline]
-         ["Offline" mhc-file-toggle-offline (not mhc-file/offline)]
-         ["Sync" mhc-file-sync (and (not (and mhc-file/offline
-                                              (not mhc-file-sync-enable-offline)))
-                                    (if (eq mhc-file-method 'mhc-sync)
-                                        (and (stringp mhc-sync-remote)
-                                             (stringp mhc-sync-id))
-                                      mhc-file-method))])
+         ["Offline" mhc-file-toggle-offline (not mhc-file/offline)])
         "----"
         ("PostScript"
          ["PostScript" mhc-ps t]
@@ -138,7 +132,6 @@
   (define-key mhc-prefix-map "?" 'mhc-calendar)
   (define-key mhc-prefix-map "t" 'mhc-calendar-toggle-insert-rectangle)
   (define-key mhc-prefix-map "T" 'mhc-file-toggle-offline)
-  (define-key mhc-prefix-map "S" 'mhc-file-sync)
   (define-key mhc-prefix-map "R" 'mhc-reset)
   (define-key mhc-mode-map mhc-prefix-key mhc-prefix-map)
   (cond
