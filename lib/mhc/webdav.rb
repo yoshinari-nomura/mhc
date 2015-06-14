@@ -19,7 +19,7 @@ module Mhc
         @top_directory = uri.path
         @http = Net::HTTP.new(uri.host, uri.port, proxy_host, proxy_port)
         @http.use_ssl = true if uri.scheme == "https"
-        @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        @http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       end
 
       def set_basic_auth(user, password)
