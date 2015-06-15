@@ -1530,7 +1530,8 @@ The keys that are defined for mhc-calendar-mode are:
                           mhc-calendar/hnf-ignore-categories))
               (setq lst (cdr lst))))
           (with-temp-buffer
-            (insert-file-contents mhcfile)
+            (insert-file-contents-as-coding-system
+	     mhc-default-coding-system mhcfile)
             (mhc-header-decode-ewords)
             (mhc-header-narrowing
               (setq cats (mhc-header-get-value "x-sc-category"))
