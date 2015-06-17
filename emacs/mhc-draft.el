@@ -101,7 +101,8 @@ If optional argument ORIGINAL is non-nil, BUFFER is raw buffer."
 (defsubst mhc-draft-reedit-file (filename)
   "Restore contents of file FILENAME as draft in the current buffer."
   (erase-buffer)
-  (insert-file-contents filename)
+  (mhc-insert-file-contents-as-coding-system
+   mhc-default-coding-system filename)
   (mhc-draft-reedit-buffer (current-buffer) 'original))
 
 

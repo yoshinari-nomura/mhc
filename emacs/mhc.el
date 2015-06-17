@@ -871,7 +871,8 @@ the default action of this command is changed to the latter."
         (record (mhc-summary-record)))
     (if (and (stringp file) (file-exists-p file))
         (with-temp-buffer
-          (insert-file-contents file)
+	  (mhc-insert-file-contents-as-coding-system
+	   mhc-default-coding-system file)
           (mhc-header-decode-ewords)
           (mhc-draft-store-template
            (buffer-substring-no-properties (point-min) (point-max)))
@@ -894,7 +895,8 @@ the default action of this command is changed to the latter."
   (let ((filename (mhc-summary-filename))
         url)
     (with-temp-buffer
-      (insert-file-contents filename)
+      (mhc-insert-file-contents-as-coding-system
+       mhc-default-coding-system filename)
       (if (setq url (mhc-header-narrowing
                       (or (mhc-header-get-value "x-uri")
                           (mhc-header-get-value "x-url"))))
