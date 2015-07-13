@@ -18,11 +18,14 @@ task :build => :check_version
 # Emacs stuffs must have the same version numbers
 # with Mhc::VERSION.
 task :check_version do
-  for file in %w(mhc-vars.el Cask)
+  for file in %w(mhc.el mhc-vars.el Cask)
     path = File.expand_path("../emacs/#{file}", __FILE__)
     raise "File not found #{path}" unless File.exists?(path)
 
-    if /(\d+\.\d+\.\d+).*MHC_VERSION/ !~ File.open(path).read || Mhc::VERSION != $1
+    content = File.open(path).read
+    unless (/^;; Version: (\d+\.\d+\.\d+)$/ =~ content ||
+            /(\d+\.\d+\.\d+).*MHC_VERSION$/ =~ content) &&
+           Mhc::VERSION == $1
       raise "#{path} does not have valid version number (#{$1})."
     end
   end
