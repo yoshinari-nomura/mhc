@@ -49,6 +49,25 @@
 * SYSTEM REQUIREMENTS
   + Ruby 2.1 or newer
   + Emacs 24 or newer
+* Install
+** Ruby stuff
+   mhc CLI command can be installed from rubygems.org:
+   #+BEGIN_SRC shell-script
+     $ gem install mhc
+   #+END_SRC
+
+   Or, if you want to install in a sandbox (recommend):
+   #+BEGIN_SRC shell-script
+     $ mkdir /path/to/install/mhc
+     $ cd /path/to/install/mhc
+     $ bunlde init
+     $ echo 'gem "mhc"' >> Gemfile
+     $ bundle install --path=vendor/bundle --binstubs=bin
+     $ export PATH=/path/to/install/mhc/bin:$PATH
+   #+END_SRC
+
+** Emacs stuff
+   To be available in MALPA soon...
 
 * Information for Developers
 ** INSTALL for developers:
