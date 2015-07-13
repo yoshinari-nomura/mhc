@@ -113,7 +113,7 @@
     (if schedule
         (cfw:details-popup
          (with-temp-buffer
-           (insert-file-contents-as-coding-system
+           (mhc-insert-file-contents-as-coding-system
 	    mhc-default-coding-system
             (mhc-record-name (mhc-schedule-record schedule)))
            (mhc-calendar/view-file-decode-header)
