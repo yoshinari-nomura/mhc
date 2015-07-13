@@ -490,10 +490,6 @@ If HIDE-PRIVATE, private schedules are suppressed."
 
 (defvar mhc-face-week-color-paint-thick nil)
 
-(defvar mhc-summary-buffer-current-date-month nil
-  "Indicate summary buffer's month. It is also used by mhc-summary-buffer-p")
-(make-variable-buffer-local 'mhc-summary-buffer-current-date-month)
-
 (defun mhc-expand-date-scope-backward (date scope)
   "Expand date scope backward involving the whole first week of month.
 DATE can be any date of the target month.
@@ -610,7 +606,7 @@ Returns t if the importation was succeeded."
        (list (get-buffer (read-buffer "Import buffer: "
                                       (current-buffer))))))
   (let ((draft-buffer (generate-new-buffer mhc-draft-buffer-name))
-        (current-date (or (mhc-current-date) (mhc-calendar-get-date) (mhc-date-now)))
+        (current-date (or (mhc-summary-current-date) (mhc-calendar-get-date) (mhc-date-now)))
         (succeed t)
         msgp date time subject location category recurrence-tag priority alarm)
     (and (called-interactively-p 'interactive)
@@ -845,7 +841,7 @@ the default action of this command is changed to the latter."
                   (mhc-record-subject-as-string record)))))
           (mhc-db-add-exception-rule
            record
-           (or (mhc-current-date)
+           (or (mhc-summary-current-date)
                (mhc-calendar-view-date)))
         (mhc-db-delete-file record))
       (or (and (mhc-summary-buffer-p)
@@ -859,7 +855,7 @@ the default action of this command is changed to the latter."
   (let ((date-list (mapconcat
                     (lambda (day)
                       (mhc-date-format day "%04d%02d%02d" yy mm dd))
-                    (mhc-input-day "Date: " (mhc-current-date))
+                    (mhc-input-day "Date: " (mhc-summary-current-date))
                     " ")))
     (mhc-window-push)
     (mhc-draft-new (mhc-draft-template)
@@ -951,31 +947,6 @@ the default action of this command is changed to the latter."
 ;;
 ;; (Category . (parent-face fg bg))
 ;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; manipulate data from mhc-summary-buffer.
-
-(defconst mhc-summary-day-regex  "\\([^|]+| +\\)?[0-9]+/\\([0-9]+\\)")
-
-(defun mhc-summary-buffer-p (&optional buffer)
-  (if buffer
-      (set-buffer buffer))
-  mhc-summary-buffer-current-date-month)
-
-(defun mhc-current-date ()
-  (when (mhc-summary-buffer-p)
-    (let ((dayinfo (get-text-property (point) 'mhc-dayinfo)))
-      (or (and dayinfo (mhc-day-date dayinfo))
-          (save-excursion
-            (end-of-line)
-            (while (and (not (bobp))
-                        (null dayinfo))
-              (or (setq dayinfo (get-text-property (point) 'mhc-dayinfo))
-                  (forward-char -1)))
-            (and dayinfo (mhc-day-date dayinfo)))))))
-
-(defun mhc-current-date-month ()
-  mhc-summary-buffer-current-date-month)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; misc.

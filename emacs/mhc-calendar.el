@@ -635,7 +635,7 @@ The keys that are defined for mhc-calendar-mode are:
 (defun mhc-calendar (&optional date)
   "Display 3-month mini calendar."
   (interactive)
-  (setq date (or date (mhc-current-date) (mhc-calendar-get-date)))
+  (setq date (or date (mhc-summary-current-date) (mhc-calendar-get-date)))
   (when (and (get-buffer mhc-calendar/buffer) (set-buffer mhc-calendar/buffer))
     (setq date (or date mhc-calendar-view-date))
     (unless (mhc-date-yymm= date mhc-calendar-date)

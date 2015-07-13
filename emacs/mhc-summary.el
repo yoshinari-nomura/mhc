@@ -658,6 +658,32 @@ If BANNER is set, it is printed on the horizontal line."
   (use-local-map mhc-summary-mode-map)
   (run-hooks 'mhc-summary-mode-hook))
 
+(defun mhc-summary-buffer-p (&optional buffer)
+  (if buffer
+      (set-buffer buffer))
+  mhc-summary-buffer-current-date-month)
+
+(defun mhc-summary-current-date ()
+  (when (mhc-summary-buffer-p)
+    (let ((dayinfo (get-text-property (point) 'mhc-dayinfo)))
+      (or (and dayinfo (mhc-day-date dayinfo))
+          (save-excursion
+            (end-of-line)
+            (while (and (not (bobp))
+                        (null dayinfo))
+              (or (setq dayinfo (get-text-property (point) 'mhc-dayinfo))
+                  (forward-char -1)))
+            (and dayinfo (mhc-day-date dayinfo)))))))
+
+(defvar mhc-summary-buffer-current-date-month nil
+  "Indicate summary buffer's month. It is also used by mhc-summary-buffer-p")
+(make-variable-buffer-local 'mhc-summary-buffer-current-date-month)
+
+(defun mhc-summary-current-date-month ()
+  mhc-summary-buffer-current-date-month)
+(defalias 'mhc-current-date-month 'mhc-summary-current-date-month)
+
+
 (defun mhc-summary-display-message ()
   (interactive)
   (save-selected-window
