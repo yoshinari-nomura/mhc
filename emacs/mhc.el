@@ -1,9 +1,12 @@
-;;; mhc.el --- MH Calendar.
+;;; mhc.el --- Message Harmonized Calendaring system.
 
+;; Description: Message Harmonized Calendaring system.
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>
-;;
-;; Created: 1994/07/04
-;; Revised: $Date: 2009/05/31 12:54:50 $
+;; Created: 1994-07-04
+;; Version: 1.0.3
+;; Keywords: calendar
+;; URL: http://www.quickhack.net/mhc
+;; Package-Requires: ((calfw "20150703"))
 
 ;;;
 ;;; Commentary:
