@@ -280,8 +280,8 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
       (let ((buffer-read-only nil))
         (goto-char (point-min))
         (erase-buffer)
-	(mhc-insert-file-contents-as-coding-system
-	 mhc-default-coding-system file)
+        (mhc-insert-file-contents-as-coding-system
+         mhc-default-coding-system file)
         (mhc-header-narrowing
           (mhc-header-delete-header
            "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp))
@@ -559,8 +559,8 @@ If BANNER is set, it is printed on the horizontal line."
 (defmacro mhc-line-inserter-setup (inserter format alist)
   `(let (byte-compile-warnings)
      (setq ,inserter
-	   (byte-compile
-	    (list 'lambda ()
+           (byte-compile
+            (list 'lambda ()
 		  (mhc-line-parse-format ,format ,alist))))
      (when (get-buffer "*Compile-Log*")
        (bury-buffer "*Compile-Log*"))

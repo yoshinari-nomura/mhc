@@ -1531,7 +1531,7 @@ The keys that are defined for mhc-calendar-mode are:
               (setq lst (cdr lst))))
           (with-temp-buffer
             (mhc-insert-file-contents-as-coding-system
-	     mhc-default-coding-system mhcfile)
+             mhc-default-coding-system mhcfile)
             (mhc-header-decode-ewords)
             (mhc-header-narrowing
               (setq cats (mhc-header-get-value "x-sc-category"))
