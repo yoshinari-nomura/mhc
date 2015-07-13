@@ -632,7 +632,7 @@ Returns t if the importation was succeeded."
     (condition-case ()
         (if import-buffer
             (progn
-              (delete-other-windows)
+              (delete-other-windows-vertically)
               (goto-char (point-min))
               (if (y-or-n-p "Do you want to import this article? ")
                   (let* ((original (with-current-buffer
