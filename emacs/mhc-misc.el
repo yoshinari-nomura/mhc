@@ -212,6 +212,26 @@
         (sit-for 0)
         pass))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Window stack
+
+(defvar mhc-misc-window-stack nil)
+
+(defun mhc-misc-window-push ()
+  (interactive)
+  (setq mhc-misc-window-stack
+        (cons (current-window-configuration) mhc-misc-window-stack)))
+
+(defun mhc-misc-window-pop ()
+  (interactive)
+  (if mhc-misc-window-stack
+      (set-window-configuration (car-safe mhc-misc-window-stack)))
+  (setq mhc-misc-window-stack (cdr-safe mhc-misc-window-stack)))
+
+(defalias 'mhc-window-push 'mhc-misc-window-push)
+(defalias 'mhc-window-pop  'mhc-misc-window-pop)
+
+
 (eval-and-compile
   (autoload 'rfc2047-decode-string "rfc2047"))
 (defalias 'mhc-misc-decode-eword-string 'rfc2047-decode-string)

@@ -927,24 +927,6 @@ the default action of this command is changed to the latter."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; Window stack
-;;
-
-(defvar mhc-window-stack       nil)
-
-(defun mhc-window-push ()
-  (interactive)
-  (setq mhc-window-stack
-        (cons (current-window-configuration) mhc-window-stack)))
-
-(defun mhc-window-pop ()
-  (interactive)
-  (if mhc-window-stack
-      (set-window-configuration (car-safe mhc-window-stack)))
-  (setq mhc-window-stack (cdr-safe mhc-window-stack)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
 ;; (Category . (parent-face fg bg))
 ;;
 
