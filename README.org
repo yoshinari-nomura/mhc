@@ -27,8 +27,8 @@
 [[http://melpa.org/#/mhc][file:http://melpa.org/packages/mhc-badge.svg]]
 
 * DESCRIPTION
-  MHC is designed to help those who receive most appointments via email.
-  Using MHC, you can easily import schedule articles from emails.
+  MHC is a simple and powerful calendar tool, which consists of
+  a CLI tool written in Ruby (mhc) with an nifty Emacs frontend UI (mhc.el).
 
   You can get the latest version from:
   + https://github.com/yoshinari-nomura/mhc
@@ -36,41 +36,105 @@
 
   MHC has following features:
 
-  + Easy import your schedule from existing buffers.
-    For example, using with Mew/Gnus/Wanderlust (MUAs on Emacs),
+  + Easy import your schedule from existing Emacs buffers.
+
+    For example, using MHC with Mew/Gnus/Wanderlust (MUAs on Emacs),
     you can easily compose your schedule items from
     appoint-emails. MHC will guess the title,
     date, time and description by scanning the email.
-  + Simple data structure allows you to manipulate stored data in many ways.
-  + Appointments can be made to repeat in flexible ways.
-  + powerful but simple expression of appointments.
 
-  MHC stores schedule articles in the same form of MH; you can manipulate
-  these messages not only by above tools but also by many other MUAs,
+  + Simple plain-text data format allows you to manipulate stored data in many ways.
+
+  + Appointments can be made to repeat in flexible ways.
+
+  + Selective export to Google Calendar  with flexible filters and modifiers.
+
+    MHC can export custom-filtered (decorated) calendars to Google (CalDaV) calendars.
+    I have three filtered calendars in Google Calendar derived from my single mhc calendar;
+    for my family, colleagues, and friends. Check the sample [[https://github.com/yoshinari-nomura/mhc/blob/master/samples/DOT.mhc-config.yml][mhc-config.yml]] for details.
+
+  + Flexible Output format.
+
+    mhc CLI can output its calendar data in various formats:
+    + plain-text: default
+    + iCalendar: Exportable to iCal, Google Calendar or other standard calendar tools.
+    + S-formula: mhc.el, calfw
+    + Markup: org-mode table, howm
+    + JSON: jQuery [[http://fullcalendar.io/][full-calendar]]
+
+  MHC stores schedule articles in similar form to MH (email); you can manipulate
+  these messages not only by above tools but also by many other text-manipulation tools,
   editors, UNIX commandline tools or your own scripts.
 
 * SYSTEM REQUIREMENTS
   + Ruby 2.1 or newer
   + Emacs 24 or newer
-* Install
-** Ruby stuff
-   mhc CLI command can be installed from rubygems.org:
-   #+BEGIN_SRC shell-script
-     $ gem install mhc
-   #+END_SRC
 
-   Or, if you want to install in a sandbox (recommend):
-   #+BEGIN_SRC shell-script
-     $ mkdir /path/to/install/mhc
-     $ cd /path/to/install/mhc
-     $ bundle init
-     $ echo 'gem "mhc"' >> Gemfile
-     $ bundle install --path=vendor/bundle --binstubs=bin
-     $ export PATH=/path/to/install/mhc/bin:$PATH
-   #+END_SRC
+* Install and Setup
 
-** Emacs stuff
-   To be available in MALPA soon...
+** Ruby CLI (mhc)
+
+   1) Install mhc:
+
+      mhc CLI command can be installed from rubygems.org:
+      #+BEGIN_SRC shell-script
+        $ gem install mhc
+      #+END_SRC
+
+      Or, if you want to install in a sandbox (recommend):
+      #+BEGIN_SRC shell-script
+        $ mkdir /path/to/install/mhc
+        $ cd /path/to/install/mhc
+        $ bundle init
+        $ echo 'gem "mhc"' >> Gemfile
+        $ bundle install --path=vendor/bundle --binstubs=bin
+        $ export PATH=/path/to/install/mhc/bin:$PATH
+      #+END_SRC
+
+   2) Initialize config file and spool directory:
+      #+BEGIN_SRC shell-script
+        $ mhc init ~/mhc
+
+        Guessing current local timezone ...
+                  ok  guess timezone ... Asia/Tokyo
+        Making directries under ~/mhc ...
+              create  ~/mhc/draft
+              create  ~/mhc/inbox
+              create  ~/mhc/presets
+              create  ~/mhc/spool
+              create  ~/mhc/trash
+              create  ~/mhc/status/cache
+              create  ~/mhc/status/log
+              create  ~/mhc/status/sync_channels
+        Copying config file(s) into ~/.config/mhc/config.yml ...
+                  ok  copy ~/.config/mhc/config.yml
+        Done.
+
+        # Read comments in config.yml carefully
+        $ vi ~/.config/mhc/config.yml
+
+        # Add Japanese Holidays if needed.
+        $ cp samples/japanese-holidays.mhcc ~/mhc/presets/
+      #+END_SRC
+
+   3) Check if mhc is working correctly:
+      #+BEGIN_SRC shell-script
+        $ mhc scan thismonth
+      #+END_SRC
+
+** Emacs UI (mhc.el)
+
+   Emacs UI (mhc.el) needs Ruby CLI mhc as backend.
+   You should install Ruby CLI before install mhc.el
+
+   1) Install mhc.el
+      MHC is now available on [[http://melpa.org/][MELPA]].
+      To use the MELPA, you have to setup =package.el=. Check [[https://github.com/milkypostman/melpa#usage][MELPA usage]] for details.
+
+      If you set up packaging system correctly,
+      You can install mhc with package.el (=M-x= =package-install= =mhc=).
+
+      And then, =M-x mhc=  will show up the monthly calendar.
 
 * Information for Developers
 ** INSTALL for developers:
