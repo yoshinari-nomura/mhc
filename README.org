@@ -23,6 +23,9 @@
 # #+LATEX_HEADER: \pagestyle{empty}
 # #+LaTeX: \thispagestyle{empty}
 
+[[file:https://badge.fury.io/rb/mhc.svg]]
+[[http://melpa.org/#/mhc][file:http://melpa.org/packages/mhc-badge.svg]]
+
 * DESCRIPTION
   MHC is designed to help those who receive most appointments via email.
   Using MHC, you can easily import schedule articles from emails.
