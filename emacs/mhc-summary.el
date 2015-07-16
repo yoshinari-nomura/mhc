@@ -622,7 +622,7 @@ If BANNER is set, it is printed on the horizontal line."
   (define-key mhc-summary-mode-map "P" 'mhc-goto-prev-year)
 
   (define-key mhc-summary-mode-map "s" 'mhc-rescan-month)
-  (define-key mhc-summary-mode-map "d" 'mhc-delete)
+  (define-key mhc-summary-mode-map "D" 'mhc-delete)
   (define-key mhc-summary-mode-map "c" 'mhc-set-default-category)
   (define-key mhc-summary-mode-map "?" 'mhc-calendar)
   (define-key mhc-summary-mode-map "t" 'mhc-calendar-toggle-insert-rectangle)
