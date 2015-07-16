@@ -28,7 +28,7 @@
 
 * DESCRIPTION
   MHC is a simple and powerful calendar tool, which consists of
-  a CLI tool written in Ruby (mhc) with an nifty Emacs frontend UI (mhc.el).
+  a CLI tool written in Ruby (mhc) and a nifty Emacs frontend UI (mhc.el).
 
   You can get the latest version from:
   + https://github.com/yoshinari-nomura/mhc
@@ -36,107 +36,212 @@
 
   MHC has following features:
 
-  + Easy import your schedule from existing Emacs buffers.
+  + Easy import from existing Emacs buffers
+    + MHC will guess the title, date, time and description from the content of buffer.
 
-    For example, using MHC with Mew/Gnus/Wanderlust (MUAs on Emacs),
-    you can easily compose your schedule items from
-    appoint-emails. MHC will guess the title,
-    date, time and description by scanning the email.
+  + Simple plain-text data format
+    + MHC stores articles in similar format to MH (email); you can manipulate them
+      by many other text-manipulation tools, editors, UNIX command-line tools or your own scripts.
 
-  + Simple plain-text data format allows you to manipulate stored data in many ways.
-
-  + Appointments can be made to repeat in flexible ways.
+  + Flexible output format
+    + Currently plain-text, iCalendar, S-formula (mhc.el, calfw), org-table, howm, JSON: ([[http://fullcalendar.io/][full-calendar]]) are supported.
 
   + Selective export to Google Calendar  with flexible filters and modifiers.
-
-    MHC can export custom-filtered (decorated) calendars to Google (CalDaV) calendars.
-    I have three filtered calendars in Google Calendar derived from my single mhc calendar;
-    for my family, colleagues, and friends. Check the sample [[https://github.com/yoshinari-nomura/mhc/blob/master/samples/DOT.mhc-config.yml][mhc-config.yml]] for details.
-
-  + Flexible Output format.
-
-    mhc CLI can output its calendar data in various formats:
-    + plain-text: default
-    + iCalendar: Exportable to iCal, Google Calendar or other standard calendar tools.
-    + S-formula: mhc.el, calfw
-    + Markup: org-mode table, howm
-    + JSON: jQuery [[http://fullcalendar.io/][full-calendar]]
-
-  MHC stores schedule articles in similar form to MH (email); you can manipulate
-  these messages not only by above tools but also by many other text-manipulation tools,
-  editors, UNIX commandline tools or your own scripts.
+    + MHC can export custom-filtered calendars to Google Calendar via CalDaV.
+      Check [[https://github.com/yoshinari-nomura/mhc/blob/master/samples/DOT.mhc-config.yml][mhc-config.yml]] for details.
 
 * SYSTEM REQUIREMENTS
   + Ruby 2.1 or newer
   + Emacs 24 or newer
 
-* Install and Setup
-
+* INSTALL AND SETUP
 ** Ruby CLI (mhc)
+   mhc CLI command can be installed from rubygems.org.
+   #+BEGIN_SRC shell-script
+     $ gem install mhc
+   #+END_SRC
 
-   1) Install mhc:
+   Or, if you want to install mhc in a sandbox (recommended),
+   Bunlder would help you:
+   #+BEGIN_SRC shell-script
+     $ gem install bundler
+     $ mkdir /path/to/install/mhc
+     $ cd /path/to/install/mhc
+     $ bundle init
+     $ echo 'gem "mhc"' >> Gemfile
+     $ bundle install --path=vendor/bundle --binstubs=bin
+     $ export PATH=/path/to/install/mhc/bin:$PATH
+   #+END_SRC
 
-      mhc CLI command can be installed from rubygems.org:
-      #+BEGIN_SRC shell-script
-        $ gem install mhc
-      #+END_SRC
+   Then, initialize config file and spool directory:
+   #+BEGIN_SRC shell-script
+     $ mhc init ~/mhc
 
-      Or, if you want to install in a sandbox (recommend):
-      #+BEGIN_SRC shell-script
-        $ mkdir /path/to/install/mhc
-        $ cd /path/to/install/mhc
-        $ bundle init
-        $ echo 'gem "mhc"' >> Gemfile
-        $ bundle install --path=vendor/bundle --binstubs=bin
-        $ export PATH=/path/to/install/mhc/bin:$PATH
-      #+END_SRC
+     # Read comments in config.yml carefully
+     $ vi ~/.config/mhc/config.yml
 
-   2) Initialize config file and spool directory:
-      #+BEGIN_SRC shell-script
-        $ mhc init ~/mhc
+     # Add Japanese Holidays if needed.
+     $ cp samples/japanese-holidays.mhcc ~/mhc/presets/
+   #+END_SRC
 
-        Guessing current local timezone ...
-                  ok  guess timezone ... Asia/Tokyo
-        Making directries under ~/mhc ...
-              create  ~/mhc/draft
-              create  ~/mhc/inbox
-              create  ~/mhc/presets
-              create  ~/mhc/spool
-              create  ~/mhc/trash
-              create  ~/mhc/status/cache
-              create  ~/mhc/status/log
-              create  ~/mhc/status/sync_channels
-        Copying config file(s) into ~/.config/mhc/config.yml ...
-                  ok  copy ~/.config/mhc/config.yml
-        Done.
-
-        # Read comments in config.yml carefully
-        $ vi ~/.config/mhc/config.yml
-
-        # Add Japanese Holidays if needed.
-        $ cp samples/japanese-holidays.mhcc ~/mhc/presets/
-      #+END_SRC
-
-   3) Check if mhc is working correctly:
-      #+BEGIN_SRC shell-script
-        $ mhc scan thismonth
-      #+END_SRC
+   Check if mhc is working correctly:
+   #+BEGIN_SRC shell-script
+     $ mhc scan thismonth
+   #+END_SRC
 
 ** Emacs UI (mhc.el)
+   *You have to install Ruby CLI before install mhc.el*
 
-   Emacs UI (mhc.el) needs Ruby CLI mhc as backend.
-   You should install Ruby CLI before install mhc.el
+   MHC is now available on [[http://melpa.org/][MELPA]]. If you set up packaging system correctly,
+   You can install mhc with package.el (=M-x= =package-install= =mhc=).
+   Check [[https://github.com/milkypostman/melpa#usage][MELPA usage]] for details.
 
-   1) Install mhc.el
-      MHC is now available on [[http://melpa.org/][MELPA]].
-      To use the MELPA, you have to setup =package.el=. Check [[https://github.com/milkypostman/melpa#usage][MELPA usage]] for details.
+   And then, =M-x mhc=  will show up the monthly calendar.
 
-      If you set up packaging system correctly,
-      You can install mhc with package.el (=M-x= =package-install= =mhc=).
+* USAGE
+** Ruby CLI (mhc)
+   : mhc help
 
-      And then, =M-x mhc=  will show up the monthly calendar.
+** Emacs UI (mhc.el)
+*** Keybind
+    1) Jump and Show
 
-* Information for Developers
+       =n/p=, =h/j/k/l= would work as expected.
+
+       | Key             | Function                   |
+       |-----------------+----------------------------|
+       | =<=             | Show previous month        |
+       | =P=             | Show previous year         |
+       | =>=             | Show next month            |
+       | =N=             | Show next year             |
+       | =g=             | Go to specific month       |
+       | =v=             | Toggle message window      |
+       | =RET/SPC/./DEL= | Show/scroll message buffer |
+       | =/=             | Search by keyword          |
+
+    2) Manipulate articles
+
+       | Key | Function                                       |
+       |-----+------------------------------------------------|
+       | =E= | Create a new article draft interactively       |
+       | =M= | Open pointed article to edit                   |
+       | =D= | Delete pointed article                         |
+       | =C= | Copy article temporally as a reusable template |
+       | =Y= | Same as =E= but use the template stored by =C= |
+
+    3) Draft Buffer
+
+       | Key      | Function                               |
+       |----------+----------------------------------------|
+       | =C-cC-c= | Finish editing and register to DB      |
+       | =C-cC-q= | Discard editing buffer w/o touching DB |
+
+* Article format
+** Example
+   MHC stores every article in the form of RFC822-like format.
+   Once you open a new article draft in Emacs by typing =E=,
+   You may feel the draft is very similar to email's one.
+   This is an example of MHC article:
+   #+BEGIN_EXAMPLE
+     X-SC-Subject: Home party
+     X-SC-Location: my second house
+     X-SC-Day: 20150715
+     X-SC-Time: 18:00-21:00
+     X-SC-Category: Private Party
+     X-SC-Cond:
+     X-SC-Duration:
+     X-SC-Record-Id: C34D89F5-27FA-4243-AC6C-168D8D243D9A
+     X-SC-Sequence: 0
+
+     This is a sample schedule article about a home party scheduled on
+     20150715 18:00-21:00. MHC schedule articles are similar to RFC822
+     style message like this.  In the header part, you can place any extra
+     headers you want.  if you import an article from existing email, you
+     may want to insert the original email headers such as Subject,
+     From, Date.
+   #+END_EXAMPLE
+
+** Time related headers
+   MHC has four types of headers to specify time/date-range or recurring conditions:
+   + =X-SC-Day=
+   + =X-SC-Time=
+   + =X-SC-Cond=
+   + =X-SC-Duration=
+
+*** X-SC-Day
+    =X-SC-Day:= specifies an enumeration of occurrence dates separated by white space:
+    #+BEGIN_EXAMPLE
+      X-SC-Day: 20150704          ... all-day event
+      X-SC-Day: 20150704-20150705 ... two-days long single event
+      X-SC-Day: 20150704 20150705 ... two all-day events
+    #+END_EXAMPLE
+
+    If =X-SC-Time:= is specified with =X-SC-Day:=,
+    =X-SC-Time:= acts on all enumerated dates in =X-SC-Day:=.
+    So, you cannot set multiple-days value (=20150704-20150705=) with =X-SC-Time:=.
+    You can also put =!= prefix to specify the exception days (See below about =X-SC-Cond:=)
+
+*** X-SC-Time
+    =X-SC-Time:= specifies a time range in a day or a point of time like:
+    #+BEGIN_EXAMPLE
+      X-SC-Time: 10:00-12:00
+      X-SC-Time: 10:00
+    #+END_EXAMPLE
+    You can leave it blank for all-day events.
+
+    With the combination of =X-SC-Day:=, you can specify some particular
+    time-range of a day. Currently, you cannot specify a time-range
+    across the multiple days.
+
+*** X-SC-Cond
+    =X-SC-Cond:= defines a rule of recurrence; weekly, monthly or yearly.
+    You can place these keywords in =X-SC-Cond:= separating by white spaces:
+    | Keyword                    | Purpose               |
+    |----------------------------+-----------------------|
+    | =00/02/.../31=             | Day of month          |
+    | =1st/2nd/3rd/4th/5th/Last= | Week order in a month |
+    | =Sun/Mon/.../Sat=          | Day of week           |
+    | =Jan/Feb/.../Dec=          | Name of month         |
+
+    Example:
+    #+BEGIN_EXAMPLE
+      X-SC-Cond: Fri         ... Every Friday
+      X-SC-Cond: Tue Fri     ... Every Tueday and Friday
+      X-SC-Cond: 31 Aug      ... August 31st every year
+      X-SC-Cond: 1           ... First day on every month
+      X-SC-Cond: 1st 3rd Fri ... First and Third Friday every month
+      X-SC-Cond: Fri 13      ... 13th on every month or every Friday (not Friday 13th)
+    #+END_EXAMPLE
+
+    Sometimes you may want to set a particular date as exception.
+    In such case, you can exclude a date by placing =!YYYYMMDD=
+    in =X-SC-Day:=. For example:
+    #+BEGIN_EXAMPLE
+      X-SC-Day: !20150715 20150716
+      X-SC-Cond: Wed
+      X-SC-Duration: 20150701-20150731
+
+      This article occurs every Wednesday in July 2015 with the exception
+      of 2015-07-15 (Wed) and inclusion of 2015-07-16 (Thu).
+    #+END_EXAMPLE
+
+*** X-SC-Duration
+    =X-SC-Duration:= acts on =X-SC-Cond:= to bounds the recurrence rule
+    in an inclusive manner.
+    Note that, =X-SC-Duration:=  itself does not define any concrete occurrences and
+    does not act on =X-SC-Day:=.
+
+    Example:
+    #+BEGIN_EXAMPLE
+      X-SC-Day: !20150715 20150801
+      X-SC-Cond: Wed
+      X-SC-Duration: 20150701-20150731
+
+      Every Wednesday in July 2015 with the exception
+      of 2015-07-15 (Wed) and inclusion of 2015-08-01 (Sat).
+    #+END_EXAMPLE
+
+* INFORMATION FOR DEVELOPERS
 ** INSTALL for developers:
    1) Install rbenv + ruby-build
       (see https://github.com/sstephenson/rbenv#basic-github-checkout for details)
@@ -272,7 +377,7 @@
       + sync_channels/* :: Sync records of MHC DB.
            If you remove any files under this directory,
            MHC Sync will be DAMAGED.
-* How to convert from the old MHC spool
+* HOW TO CONVERT FROM THE OLD MHC SPOOL
   [[https://gist.github.com/yoshinari-nomura/bb9a197e0e01ad81c883][update-uuid.sh]] would help you.
 
   New format is:
