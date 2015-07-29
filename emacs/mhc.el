@@ -571,6 +571,14 @@ If SUBJECT-ONLY is non-nil, it will search only on X-SC-Subject:"
         (message "No match")
       (mhc-scan match))))
 
+(defun mhc-search-recurrence (recurrence-tag)
+  "Search events by RECURRENCE-TAG."
+  (interactive "sSearch recurrence-tag: ")
+  (let* ((match (mhc-db-search :recurrence_tag recurrence-tag)))
+    (if (null match)
+        (message "No match")
+      (mhc-scan match))))
+
 (defun mhc-scan (events &optional insert-current-buffer clip-from clip-to)
   "Create mhc-summary buffer using EVENTS list.
 If INSERT-CURRENT-BUFFER is non-nil, insert contents in the current buffer.

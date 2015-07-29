@@ -32,7 +32,7 @@
 
 (defun mhc-db-search (&rest query)
   (let ((b (mhc-date-new 1970 1 1))
-        (e (mhc-date-yy++ (mhc-date-now))))
+        (e (mhc-date-yy+ (mhc-date-now) 10)))
     (mhc-db-scan b e nil nil (mhc-db/query-to-search-string query))))
 
 (defun mhc-db/quote-string (string)
@@ -42,7 +42,7 @@
   (format "%s" keyword))
 
 (defun mhc-db/query-to-search-string (query)
-  (let ((keywords '(:subject :body :category)) string)
+  (let ((keywords '(:subject :body :category :recurrence_tag)) string)
     (mapconcat 'identity
                (delq nil
                      (mapcar
