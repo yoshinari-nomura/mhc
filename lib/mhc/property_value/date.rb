@@ -44,6 +44,10 @@ module Mhc
 
       def self.parse_range(range_string)
         case range_string
+        # all
+        when /^all$/
+          return self.parse("19700101")..self.today + 365*10 # 10 years ahead
+
         # yyyymmdd-yyyymmdd
         when /^([^+-]+)-([^+-]+)$/
           return parse_relative($1)..parse_relative($2)
