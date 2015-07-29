@@ -198,7 +198,7 @@
     You can place these keywords in =X-SC-Cond:= separating by white spaces:
     | Keyword                    | Purpose               |
     |----------------------------+-----------------------|
-    | =00/02/.../31=             | Day of month          |
+    | =01/02/.../31=             | Day of month          |
     | =1st/2nd/3rd/4th/5th/Last= | Week order in a month |
     | =Sun/Mon/.../Sat=          | Day of week           |
     | =Jan/Feb/.../Dec=          | Name of month         |
