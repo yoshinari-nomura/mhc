@@ -68,8 +68,6 @@ these fields are set to the draft after import TEMPLATE."
           (mhc-draft-setup-new)
           (mhc-draft-delete-garbage-headers)
           (mhc-draft-setup-headers preset-fields)
-          ;; remove end of message marker
-          (mhc-draft-remove-tailers)
           (mhc-draft-mode)
         (switch-to-buffer draft-buffer t)
         (goto-char (point-min)))))

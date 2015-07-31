@@ -30,6 +30,23 @@
 
 (defvar mhc-message-end-of-messge-marker "[End of message]")
 
+(defun mhc-message/remove-overlay (overlay-property)
+  "Remove OVERLAY-PROPERTY from current buffer."
+  (dolist (ovl (overlays-in (point-max) (point-max)))
+    (if (overlay-get ovl overlay-property)
+        (delete-overlay ovl))))
+
+(defun mhc-message/insert-end-mark ()
+  "Insert end of message mark."
+  (let ((end-mark (make-overlay (point-max) (point-max) nil t t))
+        (end-text mhc-message-end-of-messge-marker))
+    ;; Delete any previous markers.
+    (mhc-message/remove-overlay 'mhc-eom-overlay)
+    ;; Add a new marker.
+    (mhc-face-put end-text 'mhc-message-face-eof-marker)
+    (overlay-put end-mark 'mhc-eom-overlay t)
+    (overlay-put end-mark 'after-string end-text)))
+
 (define-derived-mode mhc-message-mode
   text-mode
   "MHC-Msg"
@@ -37,12 +54,8 @@
   (save-excursion
     (mhc-header-decode-ewords)
     (goto-char (point-max))
-    (unless (re-search-backward
-             (regexp-quote mhc-message-end-of-messge-marker)
-             (- (point) (length mhc-message-end-of-messge-marker))
-             t)
-      (unless (bolp) (insert "\n"))
-      (insert mhc-message-end-of-messge-marker))
+    (unless (bolp) (insert "\n"))
+    (mhc-message/insert-end-mark)
     (mhc-highlight-message))
   ;; (setq mhc-message-mode-called-count (1+ mhc-message-mode-called-count))
   ;; (message "mhc-message-mode-called-count: %d" mhc-message-mode-called-count)
