@@ -769,13 +769,7 @@ Returns t if the importation was succeeded."
                      (mhc-date-format day "%04d%02d%02d" yy mm dd))
                    date " ")
                   "\nX-SC-Time: "
-                  (if time
-                      (let ((begin (car time))
-                            (end (nth 1 time)))
-                        (concat
-                         (if begin (mhc-time-to-string begin) "")
-                         (if end (concat "-" (mhc-time-to-string end)) "")))
-                    "")
+                  (mhc-time-range-to-string time)
                   "\nX-SC-Category: "
                   (mapconcat (function capitalize) category " ")
                   "\nX-SC-Priority: " (if priority
