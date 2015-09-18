@@ -89,6 +89,13 @@
 (defmacro mhc-time-to-string (time)
   `(mhc-time-let ,time (format "%02d:%02d" hh mm)))
 
+(defun mhc-time-range-to-string (time-range)
+  (let ((time1 (nth 0 time-range))
+        (time2 (nth 1 time-range)))
+    (concat
+     (if time1 (mhc-time-to-string time1))
+     (if time2 (concat "-" (mhc-time-to-string time2))))))
+
 (defsubst mhc-time-to-list (time)
   (list (mhc-time-HH time)
         (mhc-time-MM time)))
