@@ -859,7 +859,11 @@ the default action of this command is changed to the latter."
                       (mhc-date-format day "%04d%02d%02d" yy mm dd))
                     (mhc-input-day "Date: " (mhc-summary-current-date))
                     " "))
-        (time-list (mhc-time-range-to-string  (mhc-input-time))))
+        (time-list (mhc-time-range-to-string
+                    (mhc-input-time "Time: "
+                                    (mhc-schedule-time-as-string
+                                     (car (mhc-record-schedules
+                                           (mhc-parse-string (mhc-draft-template)))))))))
     (mhc-window-push)
     (mhc-draft-new (mhc-draft-template)
                    `(("x-sc-record-id" . ,(mhc-record-create-id))

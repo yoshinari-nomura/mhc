@@ -250,6 +250,13 @@
     (mhc-parse-buffer (mhc-record-new filename))))
 
 
+(defun mhc-parse-string (string)
+  "Parse schedules headers in the file, STRING."
+  (with-current-buffer
+      (mhc-get-buffer-create " *mhc-parse-file*")
+    (delete-region (point-min) (point-max))
+    (insert string)
+    (mhc-parse-buffer)))
 
 (provide 'mhc-parse)
 
