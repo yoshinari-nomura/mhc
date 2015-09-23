@@ -77,7 +77,7 @@ module Mhc
 
       def format_header(context); ""; end
       def format_footer(context); ""; end
-      def format_day_header(context, date); ""; end
+      def format_day_header(context, date, is_holiday); ""; end
       def format_day_footer(context, date); ""; end
 
       def format_body(context)
@@ -86,7 +86,7 @@ module Mhc
       end
 
       def format_day(context, date, items)
-        string = format_day_header(context, date)
+        string = format_day_header(context, date, items.any?{|e| e.holiday?})
 
         items = sort_items_in_day(items)
         items.each_with_index do |occurrence, count|
@@ -176,7 +176,7 @@ module Mhc
       def format_header(context);  "(";   end
       def format_footer(context);  "(periods #{@periods}))\n"; end
 
-      def format_day_header(context, date)
+      def format_day_header(context, date, is_holiday)
         date.strftime("((%2m %2d %Y) . (")
       end
 
@@ -218,9 +218,9 @@ module Mhc
       def format_header(context);  "(";   end
       def format_footer(context);  ")\n"; end
 
-      def format_day_header(context, date)
+      def format_day_header(context, date, is_holiday)
         # (DAYS_FROM_EPOC . [year month day wday holiday-p (
-        format("(%d . [%d %d %d %d nil (", date.absolute_from_epoch, date.year, date.month, date.day, date.wday)
+        format("(%d . [%d %d %d %d #{is_holiday ? 't' : 'nil'} (", date.absolute_from_epoch, date.year, date.month, date.day, date.wday)
       end
 
       def format_item(context, date, item)

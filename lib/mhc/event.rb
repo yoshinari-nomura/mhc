@@ -95,6 +95,14 @@ module Mhc
       return @categories = categories.parse(string)
     end
 
+    def holiday?
+      in_category?("holiday")
+    end
+
+    def in_category?(category)
+      categories.map{|c| c.to_s.downcase}.member?(category.downcase)
+    end
+
     ## description
     def description
       unless @description

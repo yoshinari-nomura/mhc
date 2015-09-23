@@ -19,7 +19,8 @@ module Mhc
     :time_range,
     :recurrence_tag,
     :mission_tag,
-    :allday?
+    :allday?,
+    :holiday?
 
     attr_reader :event
 

@@ -588,8 +588,8 @@ If BANNER is set, it is printed on the horizontal line."
 (defun mhc-summary-line-insert ()
   "Insert summary line."
   (let ((mhc-tmp-day-face (cond
-                           ((mhc-schedule-in-category-p
-                             mhc-tmp-schedule "holiday")
+                           ((mhc-day-holiday
+                             mhc-tmp-dayinfo)
                             'mhc-category-face-holiday)
                            ((eq (mhc-day-day-of-week
                                  mhc-tmp-dayinfo) 0)
