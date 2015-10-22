@@ -23,7 +23,7 @@ module Mhc
         items = count_sync_items(list_cache)
         if items > max_count
           STDERR.print "Too many (#{items}) articles to sync... abort\n"
-          return false
+          return false unless dry_run
         end
 
         list_cache.each do |uid|
