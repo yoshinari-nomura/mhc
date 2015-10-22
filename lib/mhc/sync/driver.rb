@@ -66,6 +66,10 @@ module Mhc
           copy(uid, @db1, @db2, :overwrite)
         when :overwrite2_to_1
           copy(uid, @db2, @db1, :overwrite)
+        when :move1_to_2
+          move(uid, @db1, @db2)
+        when :move2_to_1
+          move(uid, @db2, @db1)
         end
       end
 
@@ -101,6 +105,22 @@ module Mhc
           db2.syncinfo(uid).mark_synced(new_info.etag)
         else
           STDERR.print "COPY: failed.\n"
+        end
+      end
+
+      def move(uid, db1, db2)
+        ev = db1.get(uid)
+        info = db1.syncinfo(uid)
+
+        STDERR.print "MOVING: #{ev.uid}\n"
+
+        if new_info = db2.put(ev)
+          db2.syncinfo(uid).mark_synced(new_info.etag)
+
+          db1.delete(uid)
+          info.mark_synced(nil)
+        else
+          STDERR.print "MOVE: failed.\n"
         end
       end
     end # class Driver

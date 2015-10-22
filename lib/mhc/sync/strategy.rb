@@ -9,6 +9,8 @@ module Mhc
             return Mirror.new
           when :sync
             return Sync.new
+          when :import
+            return Import.new
           else
             raise NotImplementedError, "#{strategy} #{strategy.class}"
           end
@@ -227,6 +229,58 @@ module Mhc
           return actions[status_pair(side1, side2)]
         end
       end # class Mirror
+
+      # * Import from side1 to side2
+      #
+      #   Import newly created articles on side1 into side2
+      #   All articles in side1 will be deleted after imported into side2.
+      #
+      #                    Side 2
+      #   |---+---------+----------+------------+---------|
+      # S |   | M       | U        | N          | D       |
+      # i |---+---------+----------+------------+---------|
+      # d | M | ?? DEL1 | ?? DEL1  | MV 1->2    | ?? DEL1 |
+      # e | U | ?? DEL1 | ?? DEL1  | ?? DEL1    | ?? DEL1 |
+      # 1 | N | --      | --       | --         | --      |
+      #   | D | --      | --       | --         | --      |
+      #   |---+---------+----------+------------+---------|
+      #
+      #   + M :: Modified (or Created)
+      #   + U :: Unchanged
+      #   + N :: No Record
+      #   + D :: Deleted
+      #
+      #   + -- :: No operation (ignore)
+      #   + ?? :: Not occurred in normal cases
+      #   + MV :: Move
+      #   + DEL :: Delete
+      #
+      class Import < Base
+        def whatnow(side1, side2)
+          actions = {
+            "MM" => :delete1,
+            "MU" => :delete1,
+            "MN" => :move1_to_2,
+            "MD" => :delete1,
+
+            "UM" => :delete1,
+            "UU" => :delete1,
+            "UN" => :delete1,
+            "UD" => :delete1,
+
+            "NM" => :ignore,
+            "NU" => :ignore,
+            "NN" => :ignore,
+            "ND" => :ignore,
+
+            "DM" => :ignore,
+            "DU" => :ignore,
+            "DN" => :ignore,
+            "DD" => :ignore,
+          }
+          return actions[status_pair(side1, side2)]
+        end
+      end # class Import
 
     end # module Strategy
   end # module  Sync

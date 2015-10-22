@@ -31,9 +31,13 @@
 # make a new calendar on your Google Calendar,
 # and backup MHC folder ~/Mai/schedule.
 #
-# Currently, the type of STRATEGY in SYNC_CHANNELS allows only "mirror"
-# from MHC to Google Calendar. We are planning to support the
-# true two-way sync soon.
+# Currently, the type of STRATEGY in SYNC_CHANNELS allows:
+# + "mirror" :: mirrors MHC to Google Calendar.
+# + "import" :: imports newly created (non-recurring) articles
+#               on Google Calendar into MHC.
+#               All articles in Google will be deleted after the import.
+#
+# We are planning to support the true two-way sync "sync" soon.
 #
 ---
 ################################################################
@@ -60,6 +64,14 @@ SYNC_CHANNELS:
   CALENDAR1: business
   CALENDAR2: google_business
   STRATEGY: mirror
+
+# After create some articles into google_inbox with Android client,
+# doing ``mhc sync inbox'' on my Mac will import the articles into my MHC.
+# All articles in google_inbox will be deleted, after the import.
+- NAME: inbox
+  CALENDAR1: google_inbox
+  CALENDAR2: master
+  STRATEGY: import
 
 ################################################################
 CALENDARS:
@@ -113,4 +125,9 @@ CALENDARS:
 # Displayname: For Colleagues
 - <<: *google_default
   NAME: google_business
+  URL: https://calendar.google.com/calendar/dav/**************************@group.calendar.google.com/events/
+
+# Displayname: Android to create articles into:
+- <<: *google_default
+  NAME: google_inbox
   URL: https://calendar.google.com/calendar/dav/**************************@group.calendar.google.com/events/
