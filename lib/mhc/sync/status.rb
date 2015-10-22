@@ -29,7 +29,11 @@ module Mhc
       end
 
       def modified?
-        sync_status == :created or sync_status == :modified
+        sync_status == :modified
+      end
+
+      def created?
+        sync_status == :created
       end
 
       def unmodified?

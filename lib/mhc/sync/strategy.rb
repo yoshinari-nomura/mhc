@@ -110,7 +110,7 @@ module Mhc
         def status_signature(info)
           return "N" if info.nil?
 
-          return "M" if info.modified?
+          return "M" if info.modified? || info.created?
           return "U" if info.unmodified?
           return "N" if info.norecord?
           return "D" if info.deleted?
