@@ -3,7 +3,7 @@
 ;; Description: Message Harmonized Calendaring system.
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>
 ;; Created: 1994-07-04
-;; Version: 1.0.4
+;; Version: 1.1.0
 ;; Keywords: calendar
 ;; URL: http://www.quickhack.net/mhc
 ;; Package-Requires: ((calfw "20150703"))
