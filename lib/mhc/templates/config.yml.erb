@@ -28,9 +28,24 @@ SYNC_CHANNELS:
 ################################################################
 
 # Each sync channel binds two CALENDARS (see below) for
-# data-synchronization.  Currently, STRATEGY allows only "mirror",
-# CALENDAR1 must be a local MHC calendar, and CALENDAR2 must be a
-# Google Calendar.  True two-way sync is not yet implemented.
+# data-synchronization.  Currently, STRATEGY allows:
+#
+# + "mirror" :: mirrors CALENDAR1 to CALENDAR2.
+#               CALENDAR1 must be a local MHC calendar,
+#               and CALENDAR2 must be a Google Calendar.
+#               Note that articles between past 90 days and future 90
+#               days in MHC will be mirrored to the target Google
+#               Calendar.  90 is hard-coded in lib/mhc/calendar.rb for
+#               now. Other articles out of the range in Google
+#               Calendar will be DELETED.
+# + "import" :: imports newly created (non-recurring) articles
+#               on CALENDAR1 into CALENDAR2.
+#               CALENDAR1 must be a Google Calendar,
+#               and CALENDAR2 must be a local MHC calendar.
+#               All articles in CALENDAR1 will be DELETED after
+#               the import.
+#
+# True two-way sync is not yet implemented.
 
 - NAME: business
   CALENDAR1: business
@@ -41,6 +56,15 @@ SYNC_CHANNELS:
   CALENDAR1: family
   CALENDAR2: google_family
   STRATEGY: mirror
+
+# ``google_inbox'' is a spool-like calendar on Google Calendar.
+# After create some articles into google_inbox with Android client,
+# doing ``mhc sync inbox'' on your PC will import the articles into MHC.
+# All articles in google_inbox will be DELETED after the import.
+- NAME: inbox
+  CALENDAR1: google_inbox
+  CALENDAR2: master
+  STRATEGY: import
 
 ################################################################
 CALENDARS:
@@ -85,7 +109,7 @@ CALENDARS:
 ## Google Calendar
 
 # Currently, Google Calendar stuffs work only as destinations
-# to publish from local MHC calendars.
+# for sync with MHC calendars.
 #
 # Since MHC uses standard CalDAV protocol, I believe
 # it works with other CalDAV-based network calendars such as
@@ -113,12 +137,6 @@ CALENDARS:
 #
 # {sync_channel_name} must exist in the section of SYNC_CHANNELS:
 #
-# NOTE:
-# Articles between past 90 days and future 90 days in MHC will be
-# published to the target Google Calendar.  90 is hard-coded in
-# lib/mhc/calendar.rb for now. Other articles out of the range in
-# Google Calendar will be DELETED.
-#
 # Before the first try, I recommend you to make a new calendar on your
 # Google Calendar dedicated to MHC.  and backup your local spool of
 # MHC.
@@ -140,3 +158,8 @@ CALENDARS:
 - <<: *google_default
   NAME: google_family
   URL: "https://calendar.google.com/calendar/dav/***@group.calendar.google.com/events/"
+
+# Displayname: Spool calendar to which Android adds articles
+- <<: *google_default
+  NAME: google_inbox
+  URL: https://calendar.google.com/calendar/dav/**************************@group.calendar.google.com/events/
