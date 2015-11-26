@@ -17,7 +17,7 @@
 
 
 ;;; Constants:
-(defconst mhc-version "mhc 1.1.0") ;; MHC_VERSION
+(defconst mhc-version "mhc 1.1.1") ;; MHC_VERSION
 
 
 ;;; Configration Variables:
