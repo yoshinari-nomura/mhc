@@ -1,6 +1,6 @@
-(defvar mhc-process nil)
+(require 'mhc-vars)
 
-(add-to-list 'process-coding-system-alist '("^mhc$" . utf-8))
+(defvar mhc-process nil)
 
 (defun mhc-process-send-command (command)
   (unless (and (processp mhc-process)
@@ -24,11 +24,16 @@
     (if (and (processp mhc-process)
              (eq (process-status mhc-process) 'run))
         (kill-process mhc-process))
-    (setq mhc-process (start-process
-                       "mhc"
-                       (get-buffer-create " *mhc-scan-process*")
-                       "mhc"
-                       "server"))
+    (setq mhc-process
+	  (apply 'start-process
+		 (delq nil `("mhc"
+			     ,(get-buffer-create " *mhc-scan-process*")
+			     ,mhc-ruby-program-name
+			     ,mhc-program-name
+			     "server"))))
+    (set-process-coding-system mhc-process
+			       mhc-default-coding-system
+			       mhc-default-coding-system)
     (set-process-query-on-exit-flag mhc-process nil)
     mhc-process))
 
