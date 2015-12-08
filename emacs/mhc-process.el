@@ -31,9 +31,7 @@
 			     ,mhc-ruby-program-name
 			     ,mhc-program-name
 			     "server"))))
-    (set-process-coding-system mhc-process
-			       mhc-default-coding-system
-			       mhc-default-coding-system)
+    (set-process-coding-system mhc-process 'utf-8 'utf-8)
     (set-process-query-on-exit-flag mhc-process nil)
     mhc-process))
 
