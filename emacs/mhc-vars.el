@@ -13,7 +13,8 @@
 
 ;;; Code:
 (require 'mhc-compat)
-(require 'mhc-process)
+
+(autoload 'mhc-process-send-command "mhc-process")
 
 
 ;;; Constants:
@@ -24,6 +25,18 @@
 (defgroup mhc nil
   "Various sorts of MH Calender."
   :group 'mail)
+
+(defcustom mhc-program-name "mhc"
+  "Program name of MHC."
+  :group 'mhc
+  :type 'string)
+
+(defcustom mhc-ruby-program-name (when (eq system-type 'windows-nt) "ruby")
+  "When non-nil, specify ruby program name.
+Nil means MHC script is called directly."
+  :group 'mhc
+  :type '(choice (const :tag "Call script directly" nil)
+		 string))
 
 (defcustom mhc-start-day-of-week 0
   "*Day of the week as the start of the week."
