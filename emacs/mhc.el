@@ -871,11 +871,11 @@ the default action of this command is changed to the latter."
                      ("x-sc-time"  . ,time-list)
                      ("x-sc-day" . ,date-list)))))
 
-(defun mhc-reuse-copy ()
+(defun mhc-reuse-copy (&optional filename)
   "Copy current schedule to template."
   (interactive)
-  (let ((file (mhc-summary-filename))
-        (record (mhc-summary-record)))
+  (let* ((file (or filename (mhc-summary-filename)))
+         (record (mhc-parse-file file)))
     (if (and (stringp file) (file-exists-p file))
         (with-temp-buffer
           (mhc-insert-file-contents-as-coding-system
