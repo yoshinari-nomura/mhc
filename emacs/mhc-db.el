@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: utf-8 -*-
+;;; mhc-db.el --- Database Interface to MHC.
 
 ;; Author:  Yoshinari Nomura <nom@quickhack.net>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -29,6 +29,22 @@
            (mhc-date-dd e)
            (if category  (format " --category=%s" category) "")
            (if search  (format " --search='%s'" search) ""))))
+
+(defun mhc-db-scan-flat (begin-date end-date &optional nosort category search)
+  "Scan MHC database from BEGIN-DATE to END-DATE.
+Unlike `mhc-db-scan`, returned value is not grouped by date.
+For example:
+ ((date . mhc-schedule) (date . mhc-schedule) ...)
+If optional NOSORT is non-nil, returned value is not sort.
+If optional CATEGORY is non-nil, returned value is clipped by category.
+If optional SEARCH is non-nil returned value is clipped by search string."
+  (let ((dayinfo-list (mhc-db-scan b e nosort category search)))
+    (apply 'append
+           (mapcar (lambda (dayinfo)
+                     (let ((date (mhc-day-date dayinfo))
+                           (schedules (mhc-day-schedules dayinfo)))
+                       (mapcar (lambda (sch) (cons date sch)) schedules)))
+                   dayinfo-list))))
 
 (defun mhc-db-search (&rest query)
   (let ((b (mhc-date-new 1970 1 1))
