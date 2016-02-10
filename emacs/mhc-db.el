@@ -30,7 +30,7 @@
            (if category  (format " --category=%s" category) "")
            (if search  (format " --search='%s'" search) ""))))
 
-(defun mhc-db-scan-flat (begin-date end-date &optional nosort category search)
+(defun mhc-db-scan-flat (b e &optional nosort category search)
   "Scan MHC database from BEGIN-DATE to END-DATE.
 Unlike `mhc-db-scan`, returned value is not grouped by date.
 For example:
