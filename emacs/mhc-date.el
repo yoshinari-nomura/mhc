@@ -646,4 +646,4 @@ If WKST is not specified, 0 (Sunday) is used."
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;;; mhc-date.el ends here.
+;;; mhc-date.el ends here

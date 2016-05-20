@@ -190,8 +190,8 @@
    Field names using by MHC.
 
    X-SC-Category:
-   Space-seperated Keywords. You can set default category to scan.
-   You can also indicate keywords by typing '\\[mhc-rescan-month]', '\\[mhc-goto-this-month]', '\\[mhc-goto-month]', '\\[mhc-goto-date]' with C-u.
+   Space-seperated Keywords.  You can set default category to scan.
+   You can also indicate keywords by typing '\\[mhc-rescan-month]', '\\[mhc-goto-this-month]', '\\[mhc-goto-month]', '\\[mhc-goto-date]' with \\[universal-argument].
 "
   (interactive "P")
   (make-local-variable 'mhc-mode)

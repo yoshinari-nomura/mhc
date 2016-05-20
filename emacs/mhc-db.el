@@ -18,19 +18,23 @@
 (require 'mhc-process)
 (require 'mhc-schedule)
 
-(defun mhc-db-scan (b e &optional nosort category search)
+(defun mhc-db-scan (begin-date end-date &optional nosort category search)
+  "Scan MHC database from BEGIN-DATE to END-DATE.
+If optional NOSORT is non-nil, returned value is not sort.
+If optional CATEGORY is non-nil, returned value is clipped by category.
+If optional SEARCH is non-nil returned value is clipped by search string."
   (mhc-process-send-command
    (format "scan --format=emacs %04d%02d%02d-%04d%02d%02d%s%s"
-           (mhc-date-yy b)
-           (mhc-date-mm b)
-           (mhc-date-dd b)
-           (mhc-date-yy e)
-           (mhc-date-mm e)
-           (mhc-date-dd e)
+           (mhc-date-yy begin-date)
+           (mhc-date-mm begin-date)
+           (mhc-date-dd begin-date)
+           (mhc-date-yy end-date)
+           (mhc-date-mm end-date)
+           (mhc-date-dd end-date)
            (if category  (format " --category=%s" category) "")
            (if search  (format " --search='%s'" search) ""))))
 
-(defun mhc-db-scan-flat (b e &optional nosort category search)
+(defun mhc-db-scan-flat (begin-date end-date &optional nosort category search)
   "Scan MHC database from BEGIN-DATE to END-DATE.
 Unlike `mhc-db-scan`, returned value is not grouped by date.
 For example:
@@ -38,7 +42,7 @@ For example:
 If optional NOSORT is non-nil, returned value is not sort.
 If optional CATEGORY is non-nil, returned value is clipped by category.
 If optional SEARCH is non-nil returned value is clipped by search string."
-  (let ((dayinfo-list (mhc-db-scan b e nosort category search)))
+  (let ((dayinfo-list (mhc-db-scan begin-date end-date nosort category search)))
     (apply 'append
            (mapcar (lambda (dayinfo)
                      (let ((date (mhc-day-date dayinfo))
@@ -136,8 +140,6 @@ If optional SEARCH is non-nil returned value is clipped by search string."
         (mhc-record-set-name record (mhc-record-name original-record))
         (mhc-db-add-record-from-buffer record (current-buffer))))))
 
-
-
 (provide 'mhc-db)
 
 ;;; Copyright Notice:
@@ -171,4 +173,4 @@ If optional SEARCH is non-nil returned value is clipped by search string."
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;;; mhc-db.el ends here.
+;;; mhc-db.el ends here

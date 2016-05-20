@@ -782,4 +782,4 @@ If BANNER is set, it is printed on the horizontal line."
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 ;; OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;;; mhc-summary.el ends here.
+;;; mhc-summary.el ends here
