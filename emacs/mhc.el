@@ -808,15 +808,35 @@ the default action of this command is changed to the latter."
     (mhc-window-pop)))
 
 (defun mhc-import-from-region (beg end)
-  "Import a schedule from region BEG END."
+  "Create new schedule draft from region BEG END."
   (interactive "r")
-  (save-restriction
-    (narrow-to-region beg end)
-    (let ((str (buffer-substring beg end)))
-      (mhc-import)
-      (goto-char (point-max))
-      (insert str)
-      (goto-char (point-min)))))
+  (mhc-import-from-string (buffer-substring beg end)))
+
+(defun mhc-import-from-clipboard ()
+  "Create new schedule draft from clipboard text."
+  (interactive)
+  (mhc-import-from-string (current-kill 0)))
+
+(defun mhc-import-from-string (string)
+  "Create new schedule draft from STRING."
+  (with-temp-buffer
+    (yank 1)
+    (goto-char (point-min))
+    (insert "X-SC-Subject: \n"
+            "X-SC-Location: \n"
+            "X-SC-Day: \n"
+            "X-SC-Time: \n"
+            "X-SC-Category: \n"
+            "X-SC-Priority: \n"
+            "X-SC-Recurrence-Tag: \n"
+            "X-SC-Cond: \n"
+            "X-SC-Duration: \n"
+            "X-SC-Alarm: \n"
+            "X-SC-Record-Id: \n"
+            "X-SC-Sequence: 0\n"
+            "\n"
+            string)
+    (mhc-import)))
 
 (defun mhc-delete ()
   "Delete the current schedule."
