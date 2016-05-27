@@ -11,6 +11,10 @@ module Mhc
       @config = Mhc::Config.create_from_file(config) if config.is_a?(String)
     end
 
+    def datastore
+      Mhc::DataStore.new(@config.general.repository)
+    end
+
     def calendar(calendar_name)
       calendar = @config.calendars[calendar_name]
       raise Mhc::ConfigurationError, "calendar '#{calendar_name}' not found" unless calendar
@@ -23,7 +27,7 @@ module Mhc
       when "lastnote"
         db = Mhc::LastNote::Client.new(calendar.name)
       when "mhc"
-        db = Mhc::Calendar.new(Mhc::DataStore.new(@config.general.repository), calendar.modifiers, &calendar.filter)
+        db = Mhc::Calendar.new(self.datastore, calendar.modifiers, &calendar.filter)
       end
       return db
     end
