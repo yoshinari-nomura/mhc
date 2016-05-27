@@ -19,9 +19,13 @@ module Mhc
       occurrences(date_range, &scope_block).map(&:event).uniq
     end
 
+    def tasks(&scope_block)
+      @datastore.entries(category: "todo")
+    end
+
     def occurrences(date_range, &scope_block)
       ocs = []
-      @datastore.entries(date_range).each do |event|
+      @datastore.entries(range: date_range).each do |event|
         event = decorate_event(event)
         event.occurrences(range:date_range).each do |oc|
           ocs << oc if in_scope?(oc, &scope_block)

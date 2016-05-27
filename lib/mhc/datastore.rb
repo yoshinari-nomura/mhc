@@ -11,9 +11,9 @@ module Mhc
       @cache   = Cache.new(File.expand_path("status/cache/events.pstore", @basedir))
     end
 
-    def entries(date_range = nil)
-      if date_range
-        int_range = date_range.min.absolute_from_epoch .. date_range.max.absolute_from_epoch
+    def entries(range: nil, category: nil, recurrence: nil)
+      if range
+        int_range = range.min.absolute_from_epoch .. range.max.absolute_from_epoch
       end
 
       Enumerator.new do |yielder|
@@ -23,13 +23,18 @@ module Mhc
 
           Dir.chdir(dir) do
             Dir.foreach(".") do |ent|
-              parse_mhcc(ent).each {|ev| yielder << ev} if /\.mhcc$/ =~ ent
+              parse_mhcc(ent).each {|ev|
+                next if category   && !ev.in_category?(category)
+                next if recurrence && !ev.in_recurrence?(recurrence)
+                yielder << ev
+              } if /\.mhcc$/ =~ ent
               next unless /\.mhc$/ =~ ent
               uid = $`
               cache_entry = @cache.lookup(uid, ent)
-              if !date_range || cache_entry.involved?(int_range)
-                yielder << Event.parse_file(File.expand_path(ent))
-              end
+              next if range      && !cache_entry.in_range?(int_range)
+              next if category   && !cache_entry.in_category?(category)
+              next if recurrence && !cache_entry.in_recurrence?(recurrence)
+              yielder << Event.parse_file(File.expand_path(ent))
             end
           end
         end
@@ -78,6 +83,13 @@ module Mhc
       end
     end
 
+    # dump cache entry for debug usage
+    def each_cache_entry
+      @cache.each do |uid, ent|
+        yield uid, ent
+      end
+    end
+
     ################################################################
     private
 
@@ -108,6 +120,14 @@ module Mhc
       def initialize(cache_filename)
         @pstore = PStore.new(cache_filename)
         load
+      end
+
+      # dump cache entry for debug usage
+      def each
+        load unless @db
+        @db.each do |uid, ent|
+          yield uid, ent
+        end
       end
 
       def lookup(uid, filename)
@@ -147,16 +167,32 @@ module Mhc
     end # class Cache
 
     class CacheEntry
-      attr_reader :mtime, :range
+      attr_reader :mtime, :uid, :subject, :location, :categories, :recurrence, :mission, :range
 
       def initialize(filename)
-        @mtime, event = File.mtime(filename).to_i, Event.parse_file(filename)
-        @range = event.range.min.absolute_from_epoch ..
-                 event.range.max.absolute_from_epoch
+        @mtime = File.mtime(filename).to_i
+
+        event = Event.parse_file(filename)
+        @uid            = event.uid.to_s
+        @subject        = event.subject.to_s
+        @location       = event.location.to_s
+        @categories     = event.categories.map {|c| c.to_s.downcase}
+        @recurrence     = event.recurrence_tag.to_s
+        @mission        = event.mission_tag.to_s
+        @range          = event.range.min.absolute_from_epoch ..
+                          event.range.max.absolute_from_epoch
       end
 
-      def involved?(range)
+      def in_category?(category)
+        @categories.member?(category.downcase)
+      end
+
+      def in_range?(range)
         range.min <= @range.max && @range.min <= range.max
+      end
+
+      def in_recurrence?(recurrence)
+        @recurrence && @recurrence.downcase == recurrence.downcase
       end
 
     end # class CacheEntry
