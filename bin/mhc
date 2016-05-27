@@ -113,6 +113,29 @@ class MhcCLI < Thor
     Mhc::Command::Cache.new(calendar)
   end
 
+  # Command: todo
+  desc "todo", "List Todo entries in MHC calendar"
+
+  named_option :repository
+  method_option :show_all, :desc => "Include all finished tasks."
+
+  def todo
+    calendar.tasks.each do |task|
+      if task.recurring?
+        # Yearly: today - 90days .. today + 365d - 90days ?
+        # Weekly: today - 7days .. today + 7days
+        search_range = Mhc::PropertyValue::Date.parse_range("today+365d")
+        # search_range = nil
+      else
+        search_range = nil
+      end
+      next if task.in_category?("done") && !options[:show_all]
+      occurrence = task.occurrences(range: search_range).first
+      deadline = occurrence.dtstart
+      puts format("%s %s", deadline.strftime("%Y/%m/%d %a"), task.subject)
+    end
+  end # todo
+
   ################################################################
   # Command: completions
   ################################################################
