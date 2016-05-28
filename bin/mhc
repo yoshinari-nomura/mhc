@@ -110,7 +110,7 @@ class MhcCLI < Thor
   named_option :repository
 
   def cache
-    Mhc::Command::Cache.new(calendar)
+    Mhc::Command::Cache.new(builder.datastore)
   end
 
   # Command: todo
