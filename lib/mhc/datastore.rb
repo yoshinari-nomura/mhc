@@ -117,6 +117,8 @@ module Mhc
     class Cache
       require 'pstore'
 
+      VERSION = "1"
+
       def initialize(cache_filename)
         @pstore = PStore.new(cache_filename)
         load
@@ -142,6 +144,7 @@ module Mhc
         return self unless @dirty
         @pstore.transaction do
           @pstore["root"] = @db
+          @pstore["version"] = VERSION
         end
         @dirty = false
       end
@@ -159,7 +162,7 @@ module Mhc
 
       def load
         @pstore.transaction do
-          @db = @pstore["root"] || {}
+          @db = (@pstore["version"] == VERSION) && @pstore["root"] || {}
         end
         @dirty = false
       end
