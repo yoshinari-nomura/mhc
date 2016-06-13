@@ -208,7 +208,7 @@ class MhcCLI < Thor
   def scan(range)
     begin
       Mhc::Command::Scan.new(calendar, range, **symbolize_keys(options))
-    rescue Mhc::PropertyValue::ParseError, Mhc::FormatterNameError, Mhc::Query::ParseError => e
+    rescue Mhc::PropertyValue::ParseError, Mhc::Formatter::NameError, Mhc::Query::ParseError => e
       STDERR.print "Error: " + e.message + "\n"
     end
     return self
