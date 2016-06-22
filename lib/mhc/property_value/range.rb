@@ -25,7 +25,7 @@ module Mhc
         last = first if last.nil? # single "A" means "A-A"
 
         @first = @item_class.parse(first) unless first.to_s == ""
-        @last  = @item_class.parse(last)  unless last.to_s  == ""
+        @last  = @item_class.parse(last, @first)  unless last.to_s  == ""
         return self.class.new(@item_class, @prefix, @first, @last)
       end
 

@@ -8,12 +8,25 @@ module Mhc
 
       DAYS_OF_MONTH = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-      def self.parse(string)
-        if /^(\d{4})(\d{2})(\d{2})$/ =~ string
-          # don't use super(string) because it's slow.
-          new($1.to_i, $2.to_i, $3.to_i)
-        else
-          return nil # raise ParseError
+      def self.parse(string, default = nil)
+        begin
+          # YYYYMMDD/HH:MM => DateTime
+          if /^(\d{4})(\d{2})(\d{2})\/(\d{2}):(\d{2})$/ =~ string
+            DateTime.new($1.to_i, $2.to_i, $3.to_i, $4.to_i, $5.to_i)
+
+          # YYYYMMDD => Date
+          elsif /^(\d{4})(\d{2})(\d{2})$/ =~ string
+            Date.new($1.to_i, $2.to_i, $3.to_i)
+
+          # YYYYMMDD/hh:mm-HH:MM => DateTime taking YYYYMMDD, HH:MM
+          elsif /^(\d+):(\d+)$/ =~ string && default
+            DateTime.new(default.year, default.month, default.day, $1.to_i, $2.to_i)
+
+          else
+            fail ParseError
+          end
+        rescue
+          raise ParseError, "invalid date string '#{string}'"
         end
       end
 
@@ -80,12 +93,8 @@ module Mhc
         end
       end
 
-      def parse(string)
-        if /^\d{8}$/ =~ string
-          self.class.parse(string)
-        else
-          return nil # raise ParseError
-        end
+      def parse(string, default = nil)
+        self.class.parse(string, default)
       end
 
       def add_time(time = nil)

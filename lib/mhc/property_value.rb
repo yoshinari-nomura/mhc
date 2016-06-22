@@ -21,6 +21,7 @@ module Mhc
     dir = File.dirname(__FILE__) + "/property_value"
 
     autoload :Date,                "#{dir}/date.rb"
+    autoload :DateTime,            "#{dir}/date_time.rb"
     autoload :Integer,             "#{dir}/integer.rb"
     autoload :List,                "#{dir}/list.rb"
     autoload :Period,              "#{dir}/period.rb"
