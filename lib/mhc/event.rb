@@ -40,6 +40,10 @@ module Mhc
       return new.parse_file(path, lazy)
     end
 
+    def self.validate(string)
+      return new.validate(string)
+    end
+
     def parse_file(path, lazy = true)
       STDOUT.puts "parsing #{File.expand_path(path)}" if $MHC_DEBUG
 
@@ -325,6 +329,22 @@ module Mhc
       Mhc::Converter::Icalendar.new.to_ics_string(self)
     end
 
+    def validate(string)
+      header, _ = string.scrub.split(/\n\n/, 2)
+      errors = parse_header(header)
+      errors << ["subject", "empty"] if subject.empty?
+      errors << ["{Day,Cond}", "empty"] if dates.empty? && recurrence_condition.empty?
+      errors << ["record-Id", "invalid"] if record_id.empty?
+      # errors << ["sequence", "invalid"] if sequence.empty?
+
+      exit 0 if errors.empty?
+
+      errors.each do |key, err|
+        STDERR.puts "#{err} X-SC-#{key.capitalize}"
+      end
+      exit 1
+    end
+
     ################################################################
     private
 
@@ -351,32 +371,38 @@ module Mhc
       string.scan(/^x-sc-([^:]++):[ \t]*([^\n]*(?:\n[ \t]+[^\n]*)*)/i) do |key, val|
         hash[key.downcase] = val.gsub("\n", " ").strip
       end
-      parse_xsc_header(hash)
-      return self
+      return parse_xsc_header(hash)
     end
 
     def parse_xsc_header(hash)
+      errors = []
       hash.each do |key, val|
-        case key
-        when "day"       ; self.dates      = val ; self.exceptions = val
-        when "date"      ; self.obsolete_dates = val
-        when "subject"   ; self.subject    = val
-        when "location"  ; self.location   = val
-        when "time"      ; self.time_range = val
-        when "duration"  ; self.duration   = val
-        when "category"  ; self.categories = val
-        when "mission-tag"  ; self.mission_tag = val
-        when "recurrence-tag"  ; self.recurrence_tag = val
-        when "cond"      ; self.recurrence_condition  = val
-        when "alarm"     ; self.alarm      = val
-        when "record-id" ; self.record_id  = val
-        when "sequence"  ; self.sequence   = val
-        else
-          # raise NotImplementedError, "X-SC-#{key.capitalize}"
-          # STDERR.print "Obsolete: X-SC-#{key.capitalize}\n"
+        next if val.empty?
+        begin
+          case key
+          when "day"            ; self.dates                = val
+                                ; self.exceptions           = val
+          when "date"           ; self.obsolete_dates       = val
+          when "subject"        ; self.subject              = val
+          when "location"       ; self.location             = val
+          when "time"           ; self.time_range           = val
+          when "duration"       ; self.duration             = val
+          when "category"       ; self.categories           = val
+          when "mission-tag"    ; self.mission_tag          = val
+          when "recurrence-tag" ; self.recurrence_tag       = val
+          when "cond"           ; self.recurrence_condition = val
+          when "alarm"          ; self.alarm                = val
+          when "record-id"      ; self.record_id            = val
+          when "sequence"       ; self.sequence             = val
+          else
+            raise Mhc::PropertyValue::ParseError,
+                  "invalid X-SC-#{key.capitalize} header"
+          end
+        rescue Mhc::PropertyValue::ParseError => e
+          errors << [key, e]
         end
       end
-      return self
+      return errors
     end
 
     ## return: X-SC-* headers as a hash and

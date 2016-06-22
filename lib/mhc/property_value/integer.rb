@@ -2,7 +2,11 @@ module Mhc
   module PropertyValue
     class Integer < Base
       def parse(string)
-        @value = string.to_i if /^\d+$/ =~ string
+        if /^\d+$/ =~ string
+          @value = string.to_i
+        else
+          raise ParseError, "invalid integer format '#{string}'"
+        end
         return self
       end
 

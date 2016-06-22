@@ -260,6 +260,18 @@ class MhcCLI < Thor
   end
 
   ################################################################
+  # Command: validate
+  ################################################################
+  desc "validate FILE", "Validate event FILE"
+
+  def validate(file)
+    valid = exit_on_error do
+      Mhc::Event.validate(File.open(file).read)
+    end
+    return 0 if valid
+  end
+
+  ################################################################
   # add some hooks to Thor
 
   no_commands do

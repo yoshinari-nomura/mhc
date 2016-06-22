@@ -7,11 +7,18 @@ module Mhc
     class Time < Base
       include Comparable
 
-      def parse(string)
+      def parse(string, default = nil)
+        # default is dummy for matching interface
         if /^(\d+):(\d+)$/ =~ string
           @sec = ($1.to_i) * 3600 + ($2.to_i) * 60
+        else
+          raise ParseError, "invalid time format '#{string}'"
         end
         return self
+      end
+
+      def self.parse(string, default = nil)
+        new.parse(string, default)
       end
 
       def days;    (@sec        ) / 86400 ;end

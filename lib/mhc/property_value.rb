@@ -15,6 +15,11 @@ module Mhc
         return @value.to_s
       end
 
+      def empty?
+        return true if @value.nil? || (@value.respond_to?(:empty?) && @value.empty?)
+        return false
+      end
+
       alias_method :to_s, :to_mhc_string
     end
 
