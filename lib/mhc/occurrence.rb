@@ -16,7 +16,6 @@ module Mhc
     :record_id,
     :uid,
     :subject,
-    :time_range,
     :recurrence_tag,
     :mission_tag,
     :allday?,
@@ -37,14 +36,32 @@ module Mhc
     end
 
     def date
-      @start_date
+      if @start_date.respond_to?(:hour)
+        Mhc::PropertyValue::Date.new(@start_date.year, @start_date.month, @start_date.day)
+      else
+        @start_date
+      end
+    end
+
+    # FIXME: TimeRange class should be implemented
+    def time_range
+      range = Mhc::PropertyValue::Range.new(Mhc::PropertyValue::Time)
+      if dtstart.respond_to?(:hour)
+        range.parse("#{dtstart.hour}:#{dtstart.min}-#{dtend.hour}:#{dtend.min}")
+      else
+        return range # allday
+      end
     end
 
     def dtstart
       if allday?
         @start_date
       else
-        time_range.first.to_datetime(@start_date)
+        if @start_date.respond_to?(:hour)
+          @start_date
+        else
+          @event.time_range.first.to_datetime(@start_date)
+        end
       end
     end
 
@@ -52,7 +69,11 @@ module Mhc
       if allday?
         @end_date + 1
       else
-        time_range.last.to_datetime(@end_date)
+        if @end_date.respond_to?(:hour)
+          @end_date
+        else
+          @event.time_range.last.to_datetime(@end_date)
+        end
       end
     end
 
