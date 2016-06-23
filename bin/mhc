@@ -281,8 +281,8 @@ class MhcCLI < Thor
         print ".\n"
       end
     end
-    exit 0 if errors.empty?
-    exit 1
+    return 0 if errors.empty?
+    return 1
   end
 
   ################################################################
@@ -361,4 +361,5 @@ class MhcCLI < Thor
   end
 end
 
-command = MhcCLI.start(ARGV)
+result = MhcCLI.start(ARGV)
+exit result
