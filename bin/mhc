@@ -265,7 +265,14 @@ class MhcCLI < Thor
   desc "validate FILE", "Validate event FILE"
 
   def validate(file)
-    errors = Mhc::Event.validate(File.open(file).read)
+    full_path = File.expand_path(file)
+
+    unless File.exist?(full_path)
+      STDERR.puts "ERROR: No such file #{file}."
+      return 1
+    end
+
+    errors = Mhc::Event.validate(File.open(full_path).read)
 
     exit_on_error do
       errors.each do |err, key|
