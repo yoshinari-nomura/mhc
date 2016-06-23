@@ -36,7 +36,7 @@ module Mhc
       end
 
       def elisp_string(string)
-        '"' + string.to_s.toutf8.gsub(/[\"\\]/, '\\\\\&') + '"'
+        '"' + string.to_s.toutf8.gsub(/[\"\\]/, '\\\\\&').gsub("\n", "\\n") + '"'
       end
 
     end # class Emacs

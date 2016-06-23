@@ -44,8 +44,9 @@ module Mhc
 
       def to_emacs_string(str)
         # 1. quote " and \
-        # 2. surround by "
-        '"' + str.to_s.toutf8.gsub(/[\"\\]/, '\\\\\&') + '"'
+        # 2. LF => \n
+        # 3. surround by "
+        '"' + str.to_s.toutf8.gsub(/[\"\\]/, '\\\\\&').gsub("\n", "\\n") + '"'
       end
 
       def to_emacs_plist(hash)
