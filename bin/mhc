@@ -362,4 +362,9 @@ class MhcCLI < Thor
 end
 
 result = MhcCLI.start(ARGV)
-exit result
+
+if result.is_a?(Numeric)
+  exit result
+else
+  exit 0
+end
