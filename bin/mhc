@@ -265,10 +265,17 @@ class MhcCLI < Thor
   desc "validate FILE", "Validate event FILE"
 
   def validate(file)
-    valid = exit_on_error do
-      Mhc::Event.validate(File.open(file).read)
+    errors = Mhc::Event.validate(File.open(file).read)
+
+    exit_on_error do
+      errors.each do |err, key|
+        print "#{err.to_s.capitalize}"
+        print " in X-SC-#{key.capitalize}" if key
+        print ".\n"
+      end
     end
-    return 0 if valid
+    exit 0 if errors.empty?
+    exit 1
   end
 
   ################################################################

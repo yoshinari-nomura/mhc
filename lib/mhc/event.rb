@@ -332,17 +332,12 @@ module Mhc
     def validate(string)
       header, _ = string.scrub.split(/\n\n/, 2)
       errors = parse_header(header)
-      errors << ["subject", "empty"] if subject.empty?
-      errors << ["{Day,Cond}", "empty"] if dates.empty? && recurrence_condition.empty?
-      errors << ["record-Id", "invalid"] if record_id.empty?
-      # errors << ["sequence", "invalid"] if sequence.empty?
 
-      exit 0 if errors.empty?
+      errors << ["no subject"] if subject.empty?
+      errors << ["no record-id"] if record_id.empty?
+      errors << ["no effective date specified"] if dates.empty? && recurrence_condition.empty?
 
-      errors.each do |key, err|
-        STDERR.puts "#{err} X-SC-#{key.capitalize}"
-      end
-      exit 1
+      return errors
     end
 
     ################################################################
@@ -399,7 +394,7 @@ module Mhc
                   "invalid X-SC-#{key.capitalize} header"
           end
         rescue Mhc::PropertyValue::ParseError => e
-          errors << [key, e]
+          errors << [e, key]
         end
       end
       return errors
