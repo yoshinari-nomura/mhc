@@ -12,7 +12,7 @@ module Mhc
         if /^(\d+):(\d+)$/ =~ string
           @sec = ($1.to_i) * 3600 + ($2.to_i) * 60
         else
-          raise ParseError, "invalid time format '#{string}'"
+          raise ParseError, "invalid time format \"#{string}\""
         end
         return self
       end

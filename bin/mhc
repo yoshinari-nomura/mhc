@@ -264,24 +264,32 @@ class MhcCLI < Thor
   ################################################################
   desc "validate FILE", "Validate event FILE"
 
+  named_option :format
+
   def validate(file)
     full_path = File.expand_path(file)
 
     unless File.exist?(full_path)
-      STDERR.puts "ERROR: No such file #{file}."
+      puts Mhc::Converter::Emacs.new.to_emacs("No such file #{file}.")
       return 1
     end
 
     errors = Mhc::Event.validate(File.open(full_path).read)
 
+    string = ""
     exit_on_error do
       errors.each do |err, key|
-        print "#{err.to_s.capitalize}"
-        print " in X-SC-#{key.capitalize}" if key
-        print ".\n"
+        string += "#{err.to_s.capitalize}"
+        string += " in X-SC-#{key.capitalize}" if key
+        string += ".\n"
       end
     end
-    return 0 if errors.empty?
+    if errors.empty?
+      puts Mhc::Converter::Emacs.new.to_emacs("OK")
+      return 0
+    end
+
+    puts Mhc::Converter::Emacs.new.to_emacs(string)
     return 1
   end
 

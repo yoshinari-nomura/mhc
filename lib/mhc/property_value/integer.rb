@@ -5,7 +5,7 @@ module Mhc
         if /^\d+$/ =~ string
           @value = string.to_i
         else
-          raise ParseError, "invalid integer format '#{string}'"
+          raise ParseError, "invalid integer format \"#{string}\""
         end
         return self
       end

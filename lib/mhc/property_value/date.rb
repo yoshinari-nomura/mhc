@@ -26,7 +26,7 @@ module Mhc
             fail ParseError
           end
         rescue
-          raise ParseError, "invalid date string '#{string}'"
+          raise ParseError, "invalid date string \"#{string}\""
         end
       end
 
@@ -51,7 +51,7 @@ module Mhc
           return self.today.first_day_of_month.next_month
 
         else
-          raise ParseError, "invalid date string '#{date_string}'"
+          raise ParseError, "invalid date string \"#{date_string}\""
         end
       end
 
@@ -78,7 +78,7 @@ module Mhc
           date = parse_relative($1)
           return date..date
         else
-          raise ParseError, "invalid date range string '#{range_string}'"
+          raise ParseError, "invalid date range string \"#{range_string}\""
         end
       end
 
