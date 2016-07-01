@@ -71,7 +71,7 @@ module Mhc
           first_date = date_or_range
           last_date  = date_or_range
         end
-        if last_date < @date_range.first or @date_range.last < first_date
+        if last_date.to_date < @date_range.first or @date_range.last < first_date.to_date
           next
         end
         next if @exceptions.include?(first_date)

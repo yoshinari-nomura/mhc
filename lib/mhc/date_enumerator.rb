@@ -257,8 +257,8 @@ module Mhc
       def each
         head, tail = range
         @range_list.each do |date_range|
-          break if date_range.first > tail
-          next  if date_range.last  < head
+          break if date_range.first.to_date > tail
+          next  if date_range.last.to_date  < head
           yield date_range
         end
       end
