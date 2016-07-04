@@ -63,6 +63,25 @@
           (memq (following-char) '(?  ?\t)))))
 
 
+(defun mhc-header-distill-header (header &optional regexp)
+  "Remove all headers except X-SC-* and HEADER.
+If REGEXP is non-nil, HEADER is a regular expression."
+  (save-excursion
+    (let ((case-fold-search t)
+          (header-top)
+          (header-name)
+          (all-regexp "^[^:]+:")
+          (use-regexp (if regexp header (concat "^" (regexp-quote header) ":")))
+          (xsc-regexp (concat "^\\(" (mhc-regexp-opt (mhc-header-list)) "\\)")))
+      (goto-char (point-min))
+      (while (re-search-forward all-regexp nil t)
+        (setq header-top (match-beginning 0)
+              header-name (match-string 0))
+        (mhc-header-goto-end)
+        (unless (or (string-match use-regexp header-name)
+                    (string-match xsc-regexp header-name))
+          (delete-region header-top (point)))))))
+
 (defun mhc-header-delete-header (header &optional regexp) "\
 Remove HEADER in the narrowed buffer.
 If REGEXP, HEADER is a regular expression."

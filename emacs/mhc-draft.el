@@ -17,14 +17,10 @@
 
 (defconst mhc-draft-buffer-name "*mhc draft*")
 
-(defcustom mhc-draft-unuse-hdr-list
-  '(">From " "From " "Delivered-To:" "Delivery-date:" "Envelope-to:"
-    "Errors-To:" "Gnus-Warning:" "Lines:" "Posted:" "Precedence:" "Received:"
-    "Replied:" "Return-Path:" "Sender:" "User-Agent:" "X-Bogosity:"
-    "X-Dispatcher:" "X-Filter:" "X-Gnus-Mail-Source:" "X-Mailer:" "X-Received:"
-    "X-Sender:" "X-Seqno:" "X-Spam-Flag:" "X-Spam-Probability:" "X-UIDL:"
-    "Xref:")
-  "*These headers are removed when article is imported."
+(defcustom mhc-draft-import-header-list
+  '("Subject:" "From:" "To:" "Cc:" "Date:" "Message-Id:"
+    "X-GM-THRID:" "X-GM-MSGID:" "X-GM-LABELS:")
+  "*These headers are used when article is imported."
   :group 'mhc
   :type '(repeat string))
 
@@ -199,7 +195,7 @@ If optional argument NO-CONFIRM is non-nil, kill without confirmation."
 (defun mhc-draft-delete-garbage-headers ()
   (mhc-header-narrowing
     (mhc-header-delete-header
-     (concat "^\\(" (mhc-regexp-opt mhc-draft-unuse-hdr-list) "\\)")
+     (concat "^\\(" (mhc-regexp-opt mhc-draft-import-header-list) "\\)")
      'regexp)))
 
 (defun mhc-draft-setup-headers (&optional headers-values)

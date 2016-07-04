@@ -629,9 +629,9 @@ Returns t if the importation was succeeded."
           (mhc-header-narrowing
             (setq msgp (or (mhc-header-get-value "from")
                            (mhc-header-get-value "x-sc-subject")))
-            (mhc-header-delete-header
+            (mhc-header-distill-header
              (concat "^\\("
-                     (mhc-regexp-opt mhc-draft-unuse-hdr-list)
+                     (mhc-regexp-opt mhc-draft-import-header-list)
                      "\\)")
              'regexp))
           (mhc-highlight-message)
