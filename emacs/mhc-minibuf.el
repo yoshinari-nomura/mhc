@@ -189,7 +189,7 @@
         (if (not (pos-visible-in-window-p b))
             (recenter))
         (if (not non-minibuf)
-            (pop-to-buffer (window-buffer (minibuffer-window))))
+            (select-window (minibuffer-window)))
         ;; in minibuffer
         (if non-minibuf
             ()
