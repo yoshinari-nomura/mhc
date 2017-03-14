@@ -5,7 +5,7 @@ require "kconv"
 ## Monkey patch to the original RiCal https://github.com/rubyredrick/ri_cal
 ## delived from:
 ##   git clone https://github.com/yoshinari-nomura/ri_cal.git
-##   git diff 369a4ee..dc740e7
+##   git diff 369a4ee..cdb1f75
 ##
 module RiCal
   class Component #:nodoc:
@@ -47,6 +47,8 @@ module RiCal
           result = {"VALUE" => "DATE"}.merge(params)
         when DateTime
           result = {"VALUE" => "DATE-TIME"}.merge(params)
+        when Period
+          result = {"VALUE" => "PERIOD"}.merge(params)
         end
 
         if has_local_timezone?
