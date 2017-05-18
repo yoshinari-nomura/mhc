@@ -165,7 +165,7 @@ module Mhc
     end
 
     def dates=(string)
-      string = string.split.select {|s| /^!/ !~ s}.join(" ")
+      string = string.gsub(","," ").split.select {|s| /^!/ !~ s}.join(" ")
       return @dates = dates.parse(string)
     end
 
