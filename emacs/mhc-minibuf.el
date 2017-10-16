@@ -254,12 +254,17 @@
                  (mhc-date-format default
                                   "%04d/%02d/%02d" yy mm dd))
                 ((listp default)
-                 (mapconcat
-                  (lambda (date)
-                    (mhc-date-format date
-                                     "%04d/%02d/%02d" yy mm dd))
-                  default
-                  " "))
+                 (let ((sep " ") (datelist default))
+                   (if (null (cdr (last default)))
+                       ()
+                     (setq sep "-")
+                     (setq datelist (list (car default) (cdr default))))
+                   (mapconcat
+                    (lambda (date)
+                      (mhc-date-format date
+                                       "%04d/%02d/%02d" yy mm dd))
+                    datelist
+                    sep)))
                 (t
                  nil)))
              (current-buffer)

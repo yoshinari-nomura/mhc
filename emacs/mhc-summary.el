@@ -663,17 +663,33 @@ If BANNER is set, it is printed on the horizontal line."
       (set-buffer buffer))
   mhc-summary-buffer-current-date-month)
 
-(defun mhc-summary-current-date ()
+(defun mhc-summary-current-date (&optional p)
   (when (mhc-summary-buffer-p)
-    (let ((dayinfo (get-text-property (point) 'mhc-dayinfo)))
+    (let* ((pos (or p (point)))
+           (dayinfo (get-text-property pos 'mhc-dayinfo)))
       (or (and dayinfo (mhc-day-date dayinfo))
           (save-excursion
             (end-of-line)
-            (while (and (not (bobp))
+            (while (and (>= pos (point-min))
                         (null dayinfo))
-              (or (setq dayinfo (get-text-property (point) 'mhc-dayinfo))
-                  (forward-char -1)))
+              (or (setq dayinfo (get-text-property pos 'mhc-dayinfo))
+                  (setq pos (- pos 1))))
             (and dayinfo (mhc-day-date dayinfo)))))))
+
+(defun mhc-summary-region-date ()
+  (when (region-active-p)
+    (let* ((p (region-beginning))
+           dayinfo
+           (datelist ()))
+      (progn
+        (while (<= p (region-end))
+          (and (setq dayinfo (mhc-summary-current-date p))
+               (setq datelist (cons dayinfo datelist)))
+          (setq p (next-single-property-change p 'mhc-dayinfo)))
+        (setq datelist (reverse (delete-dups datelist)))
+        (if (< 1 (length datelist))
+             (cons (car datelist) (car (last datelist)))
+          (car datelist))))))
 
 (defvar mhc-summary-buffer-current-date-month nil
   "Indicate summary buffer's month. It is also used by mhc-summary-buffer-p")
