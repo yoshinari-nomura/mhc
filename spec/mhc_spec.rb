@@ -125,6 +125,20 @@ describe Mhc::Event do
   end
 
 
+  it "should emit an error on parsing invalid time format." do
+    str = <<-EOF.strip_heredoc
+      X-SC-Subject: Invalid Date format
+      X-SC-Location: Room1
+      X-SC-Day: 19960930
+      X-SC-Duration: 19960930-
+      X-SC-Time: 19:30-2030
+      X-SC-Record-Id: 54A339AD-F7FD-4E56-9B70-2D09F840E94D
+      X-SC-Sequence: 0
+    EOF
+    errors = Mhc::Event.validate(str)
+    expect(errors.length).to eq 1
+    expect(errors.first.first.message).to match /invalid time format/
+  end
 
   it "should occur weekly on Monday and Thursday from 2014-04-01 to 2014-04-30 with exception of 2014-04-10 (Thu)" do
     ev = Mhc::Event.parse <<-EOF.strip_heredoc
@@ -202,6 +216,53 @@ describe Mhc::Event do
     EOF
     expect(ev.occurrences.take(30).map{|o| "#{o.date} #{o.time_range} #{o.subject}"}).to eq \
       ["20140203 10:00-12:00 TEST", "20140509 10:00-12:00 TEST", "20140831 10:00-12:00 TEST"]
+  end
+
+  it "should produce a list of occurrences, and one occurrence has different Time" do
+    ev = Mhc::Event.parse <<-EOF.strip_heredoc
+      X-SC-Subject: X-Project
+      X-SC-Location: 101
+      X-SC-Day: 20160601 20160602/16:00-18:00 20160616 20160617 20160623 20160624
+      X-SC-Time: 09:00-11:00
+      X-SC-Category: Conference
+      X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
+    EOF
+    expect(ev.occurrences.take(30).map{|o| "#{o.dtstart.strftime("%Y%m%d/%H:%M")}-#{o.dtend.strftime("%Y%m%d/%H:%M")} #{o.subject}"}).to eq \
+      ["20160601/09:00-20160601/11:00 X-Project",
+       "20160602/16:00-20160602/18:00 X-Project",
+       "20160616/09:00-20160616/11:00 X-Project",
+       "20160617/09:00-20160617/11:00 X-Project",
+       "20160623/09:00-20160623/11:00 X-Project",
+       "20160624/09:00-20160624/11:00 X-Project"]
+  end
+
+  it "should produce a list of occurrences, and one occurrence has different Time crossing days" do
+    ev = Mhc::Event.parse <<-EOF.strip_heredoc
+      X-SC-Subject: TEST
+      X-SC-Time: 10:00-12:00
+      X-SC-Day: 20150203/10:30-20150205/12:30 20150509 20150831
+      X-SC-Record-Id: FEDA4C97-21C2-46AA-A395-075856FBD5C3
+    EOF
+
+    expect(ev.occurrences.take(30).map{|o| "#{o.dtstart.strftime("%Y%m%d/%H:%M")}-#{o.dtend.strftime("%Y%m%d/%H:%M")} #{o.subject}"}).to eq \
+      ["20150203/10:30-20150205/12:30 TEST",
+       "20150509/10:00-20150509/12:00 TEST",
+       "20150831/10:00-20150831/12:00 TEST"]
+
+    expect(ev.to_ics).to eq <<-'EOF'.strip_heredoc
+      BEGIN:VEVENT
+      RDATE;VALUE=PERIOD:20150509T100000Z/20150509T120000Z,20150831T100000Z/20150831T120000Z
+      CREATED;VALUE=DATE-TIME:20140101T000000Z
+      DTEND;VALUE=DATE-TIME:20150205T123000Z
+      DTSTART;VALUE=DATE-TIME:20150203T103000Z
+      DTSTAMP;VALUE=DATE-TIME:20140101T000000Z
+      LAST-MODIFIED;VALUE=DATE-TIME:20140101T000000Z
+      UID:FEDA4C97-21C2-46AA-A395-075856FBD5C3
+      DESCRIPTION:
+      SUMMARY:TEST
+      SEQUENCE:0
+      END:VEVENT
+    EOF
   end
 
   it "should return true when #allday? is called if X-SC-Time: is blank" do
@@ -380,6 +441,28 @@ describe Mhc::Event do
       X-SC-Subject: CS1
       X-SC-Time: 12:00-10:10
       X-SC-Day: 20140508-20140509
+      X-SC-Record-Id: 69CFD0DF-4058-425B-8C2B-40D81E6A2392
+    EOF
+    expect(ev.to_ics).to eq <<-'EOF'.strip_heredoc
+      BEGIN:VEVENT
+      CREATED;VALUE=DATE-TIME:20140101T000000Z
+      DTEND;VALUE=DATE-TIME:20140509T101000Z
+      DTSTART;VALUE=DATE-TIME:20140508T120000Z
+      DTSTAMP;VALUE=DATE-TIME:20140101T000000Z
+      LAST-MODIFIED;VALUE=DATE-TIME:20140101T000000Z
+      UID:69CFD0DF-4058-425B-8C2B-40D81E6A2392
+      DESCRIPTION:
+      SUMMARY:CS1
+      SEQUENCE:0
+      END:VEVENT
+    EOF
+  end
+
+  it "should return icalendar VEVENT over 24h event" do
+    ev = Mhc::Event.parse <<-EOF.strip_heredoc
+      X-SC-Subject: CS1
+      X-SC-Time: 12:00-13:00
+      X-SC-Day: 20140508/12:00-20140509/10:10
       X-SC-Record-Id: 69CFD0DF-4058-425B-8C2B-40D81E6A2392
     EOF
     expect(ev.to_ics).to eq <<-'EOF'.strip_heredoc
