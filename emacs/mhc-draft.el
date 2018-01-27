@@ -213,22 +213,40 @@ HEADERS-VALUES is a list of cons-cell like: ((header-name . value) ...)."
              (mhc-header-put-value xsc ""))))
        xsc-headers))))
 
+(defun mhc-draft-record-id ()
+  "Get X-SC-Record-Id header value in draft buffer."
+  (mhc-header-narrowing
+    (mhc-header-get-value "x-sc-record-id")))
+
+(defun mhc-draft-validate-buffer (&optional buffer)
+  "Validate mhc draft BUFFER.
+If BUFFER is omitted, current buffer will be validated."
+  (interactive)
+  (let ((validation (mhc-process-send-command-with-buffer
+                     "validate --format=emacs"
+                     (or buffer (current-buffer)))))
+    (if (and (stringp validation)
+             (string-match "^OK" validation))
+        (message "Validation passed.")
+      ;; \\' means end of string (not end of each line)
+      (error "ERROR: %s" (replace-regexp-in-string "[.\r\n]+\\'" "" validation)))))
+
 (defun mhc-draft-finish ()
   "Add current draft as a schedule."
   (interactive)
-  (let ((record
-         (mhc-parse-buffer (mhc-record-new mhc-draft-buffer-file-name)
-                           'strict)))
-    (mhc-calendar-input-exit)
-    (if (mhc-db-add-record-from-buffer record (current-buffer)
-                                       (not (called-interactively-p 'interactive)))
-        (progn
-          (kill-buffer (current-buffer))
-          (mhc-window-pop)
-          (or (and (mhc-summary-buffer-p)
-                   (mhc-rescan-month mhc-default-hide-private-schedules))
-              (and (mhc-calendar-p) (mhc-calendar-rescan)))
-          (run-hooks 'mhc-draft-finish-hook)))))
+  (mhc-draft-validate-buffer)
+  (mhc-calendar-input-exit)
+  (if (mhc-db-add-record-from-buffer
+       (current-buffer)
+       (not (called-interactively-p 'interactive)))
+      (progn
+        (kill-buffer (current-buffer))
+        (mhc-window-pop)
+        (or (and (mhc-summary-buffer-p)
+                 (mhc-rescan-month mhc-default-hide-private-schedules))
+            (and (mhc-calendar-p) (mhc-calendar-rescan)))
+        (run-hooks 'mhc-draft-finish-hook)
+        (message "Successfully registered."))))
 
 (provide 'mhc-draft)
 

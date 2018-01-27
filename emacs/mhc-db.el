@@ -80,32 +80,33 @@ If optional SEARCH is non-nil returned value is clipped by search string."
                  nosort
                  category)))
 
-(defun mhc-db-add-record-from-buffer (record buffer &optional force-refile)
-  (let* ((slot (mhc-logic-record-to-slot record))
-         (directory (and slot
-                         (file-name-as-directory
-                          (expand-file-name
-                           "spool" (mhc-config-base-directory)))))
-         (old-record))
-    (unless slot (error "Cannot get schedule slot"))
-    (if (mhc-record-name record)
-        ;; Modifying existing record
-        (setq old-record record)
-      ;; Creating new record
-      (mhc-record-set-name record (mhc-misc-get-new-path directory record)))
-    (if (or force-refile
-            (y-or-n-p (format
-                       "Refile %s to %s "
-                       (or (mhc-record-name old-record) "it")
-                       (mhc-record-name record))))
-        (progn
-          (mhc-record-write-buffer record buffer old-record)
-          (if (and old-record
-                   (not (eq record old-record)))
-              (let* ((dir (file-name-directory
-                           (directory-file-name
-                            (mhc-record-name old-record)))))
-                (mhc-misc-touch-directory dir)))
+(defun mhc-db-record-path-from-buffer (buffer)
+  "Return file path in MHC spool bound to BUFFER.
+File path is taken from X-SC-Record-Id field."
+  (with-current-buffer buffer
+    (let ((spool-directory (file-name-as-directory
+                            (expand-file-name
+                             "spool" (mhc-config-base-directory))))
+          (record-id (mhc-draft-record-id)))
+      (expand-file-name (concat record-id ".mhc") spool-directory))))
+
+(defun mhc-db-add-record-from-buffer (buffer &optional allow-overwrite)
+  "Add current mhc-draft BUFFER to MHC db.
+If optional ALLOW-OVERWRITE is non-nil, do not ask overwrite."
+  (let* ((path (mhc-db-record-path-from-buffer buffer))
+         (directory (file-name-directory path))
+         (overwriting (file-exists-p path)))
+    (if (or (not overwriting)
+            allow-overwrite
+            (y-or-n-p (format "Overwrite existing %s? " path)))
+        (with-current-buffer buffer
+          (mhc-draft-increment-sequence)
+          (mhc-draft-translate)
+          (mhc-file-make-directory directory)
+          (mhc-write-region-as-coding-system
+           mhc-default-coding-system
+           (point-min) (point-max) path nil 'nomsg)
+          (set-buffer-modified-p nil)
           (mhc-misc-touch-directory directory)
           t))))
 

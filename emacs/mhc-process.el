@@ -17,6 +17,21 @@
         (accept-process-output mhc-process 0.5)))
     (read (buffer-substring (point-min) (1- (point-max))))))
 
+(defun mhc-process-send-command-with-buffer (command buffer)
+  "Send COMMAND to mhc process with BUFFER via temporal file."
+  (let ((temp-file (make-temp-file "mhc")))
+    (unwind-protect
+        (with-current-buffer buffer
+          (mhc-write-region-as-coding-system
+           mhc-default-coding-system
+           (point-min)
+           (point-max)
+           temp-file
+           nil 'nomsg)
+          (mhc-process-send-command
+           (format "%s %s" command temp-file)))
+      (delete-file temp-file))))
+
 (defun mhc-start-process ()
   (interactive)
   (let ((process-connection-type nil)) ;; use PIPE not tty
