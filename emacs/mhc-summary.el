@@ -171,6 +171,8 @@ which are replaced by the given information:
         'face mhc-tmp-day-face)
     (?/ (if mhc-tmp-first "/" " ")
         'face mhc-tmp-day-face)
+    (?- (if mhc-tmp-first "-" " ")
+        'face mhc-tmp-day-face)
     (?S " " 'face mhc-tmp-day-face)
     (?M (mhc-summary/line-month-string)
         'face mhc-tmp-day-face)
