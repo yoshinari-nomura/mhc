@@ -371,10 +371,15 @@ If HIDE-PRIVATE, priavate schedules are suppressed."
     (if mhc-default-hide-private-schedules
         (not current-prefix-arg)
       current-prefix-arg)))
-  (mhc-scan-month date
-                  'mhc-mua
-                  mhc-default-category-predicate-sexp
-                  hide-private))
+  (let ((name (if (and (mhc-summary-buffer-p)
+                       (not (string-match
+                             "^[0-9][0-9][0-9][0-9]-[0-9][0-9]$" (buffer-name))))
+                  (buffer-name))))
+    (mhc-scan-month date
+                    'mhc-mua
+                    mhc-default-category-predicate-sexp
+                    hide-private
+                    name)))
 
 (defvar mhc-goto-date-func 'mhc-goto-date-calendar)
                                         ; or mhc-goto-date-summary
@@ -524,21 +529,22 @@ SCOPE is one of:
    ((eq scope 'wide)
     (mhc-date-ww-last (mhc-date++ edge-date) mhc-start-day-of-week)))))
 
-(defun mhc-scan-month (date mailer category-predicate secret)
+(defun mhc-scan-month (date mailer category-predicate secret &optional name)
   "Make summary buffer for a month indicated by DATE.
 DATE can be any date of the target month.
 If MAILER is 'direct, insert scanned result into current buffer.
 CATEGORY-PREDICATE must be a function that can take one mhc-schedule
 argument and return a boolean value indicates opacity of the article.
 If SECRET is non-nil, hide articles those categories are
-listed in ``mhc-category-as-private''."
+listed in ``mhc-category-as-private''.
+If optional NAME is non-nil, created smmary buffer has the name."
   (let* ((from (mhc-date-mm-first date))
          (to (mhc-date-mm-last date))
          (today (mhc-date-now))
          ;; need three months for mini-calendar
          (dayinfo-list (mhc-db-scan (mhc-date-mm-- from) (mhc-date-mm++ to))))
     (unless (eq 'direct mailer)
-      (mhc-summary-generate-buffer date)
+      (mhc-summary-generate-buffer (or name date))
       (setq mhc-summary-buffer-current-date-month
             (mhc-date-mm-first date)))
     (when mhc-use-wide-scope
