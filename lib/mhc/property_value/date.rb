@@ -12,7 +12,7 @@ module Mhc
         begin
           # YYYYMMDD/HH:MM => DateTime
           if /^(\d{4})(\d{2})(\d{2})\/(\d{2}):(\d{2})$/ =~ string
-            DateTime.new($1.to_i, $2.to_i, $3.to_i, $4.to_i, $5.to_i, 0, DateTime.now.zone)
+            DateTime.new($1.to_i, $2.to_i, $3.to_i, $4.to_i, $5.to_i, 0)
 
           # YYYYMMDD => Date
           elsif /^(\d{4})(\d{2})(\d{2})$/ =~ string
@@ -20,7 +20,7 @@ module Mhc
 
           # YYYYMMDD/hh:mm-HH:MM => DateTime taking YYYYMMDD, HH:MM
           elsif /^(\d+):(\d+)$/ =~ string && default
-            DateTime.new(default.year, default.month, default.day, $1.to_i, $2.to_i, 0, DateTime.now.zone)
+            DateTime.new(default.year, default.month, default.day, $1.to_i, $2.to_i, 0)
 
           else
             fail ParseError

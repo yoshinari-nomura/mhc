@@ -500,7 +500,7 @@ If BANNER is set, it is printed on the horizontal line."
 (defun mhc-summary/line-subject-string ()
   (if mhc-tmp-private
       (and mhc-tmp-schedule mhc-summary-string-secret)
-    (or (mhc-schedule-subject mhc-tmp-schedule) "")))
+    (mhc-schedule-subject-as-string mhc-tmp-schedule)))
 
 
 (defun mhc-summary/line-location-string ()
@@ -661,7 +661,7 @@ If BANNER is set, it is printed on the horizontal line."
 (defun mhc-summary-buffer-p (&optional buffer)
   (if buffer
       (set-buffer buffer))
-  mhc-summary-buffer-current-date-month)
+  (eq major-mode 'mhc-summary-mode))
 
 (defun mhc-summary-current-date (&optional p)
   (when (mhc-summary-buffer-p)
