@@ -4,7 +4,7 @@ module Mhc
 
       UNIT2MIN = {'minute' => 1, 'hour' => 60, 'day' => 60*24}
       UNITS    = UNIT2MIN.keys
-      REGEXP   = /(\d+)\s*(#{UNITS.join("|")})s?/
+      REGEXP   = /(\d+)\s*(#{UNITS.join("|")})s?$/
 
       def self.parse(string)
         return new.parse(string)
@@ -13,6 +13,8 @@ module Mhc
       def parse(string)
         if REGEXP =~ string
           @minutes = (UNIT2MIN[$2] * $1.to_i)
+        else
+          raise ParseError, "invalid period string \"#{string}\""
         end
         return self
       end
