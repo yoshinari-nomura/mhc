@@ -142,7 +142,10 @@
 
 
 (defun mhc-schedule-subject-as-string (schedule)
-  (or (mhc-schedule-subject schedule) "(none)"))
+  (let ((subject (mhc-schedule-subject schedule)))
+    (if (eq (length subject) 0)
+        "(no subject)"
+      subject)))
 
 
 (defun mhc-schedule-categories-as-string (schedule)

@@ -501,10 +501,10 @@ If BANNER is set, it is printed on the horizontal line."
 
 
 (defun mhc-summary/line-subject-string ()
-  (if mhc-tmp-private
-      (and mhc-tmp-schedule mhc-summary-string-secret)
-    (mhc-schedule-subject-as-string mhc-tmp-schedule)))
-
+  (if mhc-tmp-schedule
+      (if mhc-tmp-private
+          mhc-summary-string-secret
+        (mhc-schedule-subject-as-string mhc-tmp-schedule))))
 
 (defun mhc-summary/line-location-string ()
   (let ((location (mhc-schedule-location mhc-tmp-schedule)))

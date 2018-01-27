@@ -17,12 +17,15 @@ module Mhc
       end
 
       def format_item(context, date, item)
+        subject = item.subject.to_s
+        subject = "(no subject)" if subject == ""
+
         # [ RECORD CONDITION SUBJECT LOCATION (TIMEB . TIMEE) ALARM
         # CATEGORIES PRIORITY REGION RECURRENCE-TAG]
         format("[(%s . [%s nil nil]) nil %s %s (%s . %s) %s (%s) nil nil %s]",
                elisp_string(item.path.to_s),
                elisp_string(item.uid.to_s),
-               elisp_string(item.subject),
+               elisp_string(subject),
                elisp_string(item.location),
                (item.time_range.first ? (item.time_range.first.to_i / 60) : "nil"),
                (item.time_range.last  ? (item.time_range.last.to_i  / 60) : "nil"),
