@@ -68,7 +68,7 @@ refer to mhc-calendar-hnf-face-alist-internal.")
      (1 font-lock-type-face)
      (2 font-lock-comment-face)
      (3 font-lock-builtin-face))
-    ("\\(X-SC-\\(Subject\\|Location\\|Day\\|Time\\|Category\\|Priority\\|Recurrence-Tag\\|Mission-Tag:\\|Cond\\|Duration\\|Alarm\\|Record-Id\\|Sequence\\):\\)"
+    ("\\(X-SC-\\(Subject\\|Location\\|Day\\|Time\\|Category\\|Priority\\|Recurrence-Tag\\|Mission-Tag\\|Cond\\|Duration\\|Alarm\\|Record-Id\\|Sequence\\):\\)"
      (1 font-lock-keyword-face))
     ("\\(\\[End of message\\]\\)"
      (1 mhc-message-face-eof-marker))
