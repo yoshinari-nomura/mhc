@@ -274,7 +274,7 @@ class MhcCLI < Thor
       return 1
     end
 
-    errors = Mhc::Event.validate(File.open(full_path).read)
+    errors = Mhc::Event.validate(File.open(full_path) {|f| f.read})
 
     string = ""
     exit_on_error do
