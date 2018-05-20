@@ -363,7 +363,7 @@ module Mhc
 
     def parse_header(string)
       hash = {}
-      string.scan(/^x-sc-([^:]++):[ \t]*([^\n]*(?:\n[ \t]+[^\n]*)*)/i) do |key, val|
+      string.scrub.scan(/^x-sc-([^:]++):[ \t]*([^\n]*(?:\n[ \t]+[^\n]*)*)/i) do |key, val|
         hash[key.downcase] = val.gsub("\n", " ").strip
       end
       return parse_xsc_header(hash)
