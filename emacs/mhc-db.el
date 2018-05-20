@@ -139,7 +139,7 @@ If optional ALLOW-OVERWRITE is non-nil, do not ask overwrite."
                                        (mhc-schedule-condition schedule))))
                         " "))))
         (mhc-record-set-name record (mhc-record-name original-record))
-        (mhc-db-add-record-from-buffer record (current-buffer))))))
+        (mhc-db-add-record-from-buffer (current-buffer) t)))))
 
 (provide 'mhc-db)
 
