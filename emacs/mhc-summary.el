@@ -289,15 +289,15 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
           (mhc-header-delete-header
            "^\\(Content-.*\\|Mime-Version\\|User-Agent\\):" 'regexp))
         (mhc-header-delete-empty-header
-         "^X-SC-.*:" 'regexp)
-        (mhc-message-mode)
-        (mhc-message-set-file-name file))
+         "^X-SC-.*:" 'regexp))
       ;; (setq view-exit-action 'mhc-calendar-view-exit-action)
       (set-visited-file-name nil)
       ;; (rename-buffer (file-name-nondirectory file) 'unique)
       ;; (run-hooks 'mhc-calendar-view-file-hook)
       (set-buffer-modified-p nil)
       (setq buffer-read-only t)
+      (mhc-message-mode)
+      (mhc-message-set-file-name file)
       )))
 
 
