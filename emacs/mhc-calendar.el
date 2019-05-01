@@ -1071,11 +1071,13 @@ The keys that are defined for mhc-calendar-mode are:
   (format "%4d" yy))
 
 (defun mhc-calendar/inserter-nengo ()
-  (if (> yy 1987)
-      (format "平成%2d年" (- yy 1988))
-    (if (> yy 1924)
-        (format "昭和%2d年" (- yy 1925))
-      "昔々")))
+  (if (or (> yy 2019) (and (= yy 2019) (> mm 4)))
+      (format "令和%2d年" (- yy 2018))
+    (if (> yy 1987)
+        (format "平成%2d年" (- yy 1988))
+      (if (> yy 1924)
+          (format "昭和%2d年" (- yy 1925))
+        "昔々"))))
 
 (defun mhc-calendar/inserter-mm ()
   (format "%d" mm))
