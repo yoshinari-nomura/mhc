@@ -51,6 +51,7 @@ module Mhc
       :exdates,
       :etag,
       :recurring?,
+      :holiday?,
       :allday?
 
       def self.find_subclass(snake_name)
