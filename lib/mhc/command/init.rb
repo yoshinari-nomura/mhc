@@ -1,3 +1,5 @@
+require "fileutils"
+
 module Mhc
   module Command
     class Init
