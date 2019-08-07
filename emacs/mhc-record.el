@@ -54,7 +54,7 @@
 
 (defun mhc-record-create-id ()
   "Return unique ID string."
-  (org-id-new))
+  (upcase (org-id-new)))
 
 (defun mhc-record-new (name &optional id schedules sexp)
   "Constructer of MHC-RECORD structure."
