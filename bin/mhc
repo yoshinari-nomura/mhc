@@ -132,7 +132,20 @@ class MhcCLI < Thor
       next if task.in_category?("done") && !options[:show_all]
       occurrence = task.occurrences(range: search_range).first
       deadline = occurrence.dtstart
-      puts format("%s %s", deadline.strftime("%Y/%m/%d %a"), task.subject)
+      deadline_string = ""
+      remaining = (deadline - Mhc::PropertyValue::Date.today).to_i
+      if remaining == 0
+        deadline_string = " (due this date)"
+      elsif remaining > 0
+        deadline_string = format(" (%d days to go)", remaining)
+      else
+        deadline_string = format(" (%d days overdue)", -remaining)
+      end
+      location_string = " [#{task.location}]" if !task.location.empty?
+      puts format("%s %-11s %s%s%s",
+                  deadline.strftime("%Y/%m/%d %a"),
+                  occurrence.time_range.to_mhc_string,
+                  task.subject, location_string, deadline_string)
     end
   end # todo
 
