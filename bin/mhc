@@ -120,6 +120,7 @@ class MhcCLI < Thor
   method_option :show_all, :desc => "Include all finished tasks."
 
   def todo
+    todos = []
     calendar.tasks.each do |task|
       if task.recurring?
         # Yearly: today - 90days .. today + 365d - 90days ?
@@ -130,8 +131,10 @@ class MhcCLI < Thor
         search_range = nil
       end
       next if task.in_category?("done") && !options[:show_all]
-      occurrence = task.occurrences(range: search_range).first
-      deadline = occurrence.dtstart
+      todos << task.occurrences(range: search_range).first
+    end
+    todos.each.sort{|a, b| a.dtstart <=> b.dtstart}.each do |t|
+      deadline = t.dtstart
       deadline_string = ""
       remaining = (deadline - Mhc::PropertyValue::Date.today).to_i
       if remaining == 0
@@ -141,11 +144,11 @@ class MhcCLI < Thor
       else
         deadline_string = format(" (%d days overdue)", -remaining)
       end
-      location_string = " [#{task.location}]" if !task.location.empty?
+      location_string = " [#{t.location}]" if !t.location.empty?
       puts format("%s %-11s %s%s%s",
                   deadline.strftime("%Y/%m/%d %a"),
-                  occurrence.time_range.to_mhc_string,
-                  task.subject, location_string, deadline_string)
+                  t.time_range.to_mhc_string,
+                  t.subject, location_string, deadline_string)
     end
   end # todo
 
