@@ -26,7 +26,7 @@ module Mhc
              D:propstat/D:prop/caldav:calendar-data
           ).map{|e| xmldoc.elements[e].text rescue nil}
 
-        info.href = URI.unescape(href)
+        info.href = URI.decode_www_form_component(href)
         info.uid = File.basename(info.href, ".ics")
         info.status = status
         info.content_type = content_type
