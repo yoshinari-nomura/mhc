@@ -356,7 +356,8 @@ message and cdr keeps a visible message."
                 (or (null (setq dayinfo
                                 (get-text-property (point) 'mhc-dayinfo)))
                     (not (eq (mhc-day-date dayinfo) date))))
-      (goto-char (next-single-property-change (point) 'mhc-dayinfo)))))
+      (goto-char (or (next-single-property-change (point) 'mhc-dayinfo)
+                     (point-min))))))
 
 (defun mhc-summary-record (&optional mailer)
   "Return record on current line."
