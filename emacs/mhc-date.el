@@ -411,17 +411,10 @@
   `(/ (1- (mhc-date-dd ,date)) 7))
 
 (defsubst mhc-date-cw (date)
-  (mhc-date-let date
-    (let* ((yday (mhc-date/day-number yy mm dd))
-           (days (mhc-date/iso-week-days yday ww))
-           (d))
-      (if (< days 0)
-          (setq days (mhc-date/iso-week-days
-                      (+ yday 365 (if (mhc-date/leap-year-p (1- yy)) 1 0)) ww))
-        (setq d (mhc-date/iso-week-days
-                 (- yday 365 (if (mhc-date/leap-year-p yy) 1 0)) ww))
-        (if (<= 0 d) (setq days d)))
-      (1+ (/ days 7)))))
+  (string-to-number
+   (format-time-string
+    (if (= mhc-start-day-of-week 1) "%V" "%U")
+    (mhc-date-to-second date))))
 
 ;;
 ;; compare.
