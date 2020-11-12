@@ -95,7 +95,7 @@ module Mhc
         when "COMMAND"
           possible_commands
         when "RANGE"
-          "(today tomorrow thismonth nextmonth)"
+          "(all today tomorrow thismonth nextmonth)"
         when /^NUM/
           "_guard '[0-9]#' 'Number'"
         else
