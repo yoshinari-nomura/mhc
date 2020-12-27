@@ -325,10 +325,11 @@
         ret))))
 
 (defun mhc-expr-compile (string)
-  (byte-compile
-   `(lambda (schedule)
-      ,(mhc-expr-parse string)
-      )))
+  (let ((lexical-binding nil))
+    (byte-compile
+     `(lambda (schedule)
+	,(mhc-expr-parse string)
+	))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
