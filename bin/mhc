@@ -131,7 +131,8 @@ class MhcCLI < Thor
         search_range = nil
       end
       next if task.in_category?("done") && !options[:show_all]
-      todos << task.occurrences(range: search_range).first
+      task_first = task.occurrences(range: search_range).first
+      todos << task_first if task_first
     end
     todos.each.sort{|a, b| a.dtstart <=> b.dtstart}.each do |t|
       deadline = t.dtstart
