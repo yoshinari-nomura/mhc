@@ -52,7 +52,11 @@ module Mhc
       end
 
       def self.create_from_yaml_string(yaml_string, filename = nil)
-        hash = YAML.load(yaml_string, filename) || {}
+        hash = if YAML.respond_to?(:unsafe_load)
+                 YAML.unsafe_load(yaml_string, filename: filename)
+               else
+                 YAML.load(yaml_string, filename)
+               end || {}
         return new(hash)
       end
 
