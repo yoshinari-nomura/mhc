@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "thor",        ">= 1.2.0"
+  spec.add_runtime_dependency "rexml",       ">= 3.2.4"
   spec.add_runtime_dependency "ri_cal",      ">= 0.8.8"
   spec.add_runtime_dependency "tzinfo",      ">= 1.2.2"
   spec.add_runtime_dependency "tzinfo-data", ">= 1.2015.4"
