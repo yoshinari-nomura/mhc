@@ -326,6 +326,7 @@
         (setq load-path
               (cons "~/src/mhc/emacs" load-path))
         (autoload 'mhc "mhc" "Message Harmonized Calendar system." t)
+        (autoload 'mhc-import "mhc" "Import a schedule." t)
 
         ;; M-x mhc
       #+END_SRC

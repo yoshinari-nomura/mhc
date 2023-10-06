@@ -19,7 +19,8 @@
 ;;
 ;;  (setq load-path
 ;;        (cons "~/src/mhc/emacs" load-path))
-;;  (autoload 'mhc "mhc")
+;;  (autoload 'mhc "mhc" nil t)
+;;  (autoload 'mhc-import "mhc" nil t)
 ;;
 ;; and M-x mhc
 
@@ -797,6 +798,7 @@ Returns t if the importation was succeeded."
   :group 'mhc
   :type 'boolean)
 
+;;;###autoload
 (defun mhc-import (&optional get-original)
   "Import a schedule from the current article.
 The default action of this command is to import a schedule from the
