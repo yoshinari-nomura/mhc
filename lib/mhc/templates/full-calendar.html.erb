@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Calendar</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css" />
+
+    <style media="screen" type="text/css">
+      .container {
+          // max-width: 100%;
+        width: auto;
+      }
+
+      .ui-draggable {
+        cursor: grab;
+      }
+
+      a {
+        cursor: pointer;
+      }
+
+      .fc-sun {
+        color:#gray;
+        background-color: #fff0f0;
+      }
+
+      .fc-sat {
+        color:#gray;
+        background-color: #f0f0ff;
+      }
+
+
+
+      #calendar .mhc-allday {
+        background-color: lightblue;
+        border-color: lightblue;
+        color: black;
+      }
+
+      #calendar .mhc-time-range {
+        background-color: #f7f7ff;
+        border-color: #f7f7ff;
+        color: black;
+      }
+
+      #calendar .mhc-time-range:hover {
+        background-color: aliceblue;
+        border-color: lavender;
+        color: black;
+      }
+
+      #calendar .mhc-category-holiday {
+        background-color: orangered;
+        border-color: orangered;
+        color: white;
+      }
+
+      #calendar .mhc-category-birthday {
+        background-color: #ffffe8;
+        border-color: #ffffe8;
+        color: black;
+      }
+
+
+
+
+      #side-calendar .mhc-category-birthday {
+        display: none;
+      }
+
+
+
+
+      #stuck-events .fc-list-heading {
+        display: none;
+      }
+
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
+
+  </head>
+  <body>
+<!--
+    <div class="navmenu navmenu-default navmenu-fixed-left offcanvas">
+      <a class="navmenu-brand" href="#">brand</a>
+      <ul class="nav navmenu-nav">
+        <li><a href="#">Menu text 1</a></li>
+        <li><a href="#">Menu text 2</a></li>
+        <li><a href="#">Menu text 3</a></li>
+      </ul>
+    </div>
+    <div class="navbar navbar-default navbar-fixed-top">
+      <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu" data-canvas="body">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+-->
+
+    <div class="container">
+      <div class="row">
+
+        <div class="col-xs-3">
+          <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#side-calendar">Calendar</a></li>
+            <li><a data-toggle="tab" href="#stuck-events">Stuck Events</a></li>
+          </ul>
+          <div class="tab-content">
+              <div id="side-calendar" class="tab-pane fade in active"></div>
+              <div id="stuck-events"  class="tab-pane fade"></div>
+          </div>
+        </div><!-- col-xs-3 -->
+
+        <div class="col-xs-9" id="calendar"></div> <!-- col-xs-9 -->
+      </div><!-- row -->
+    </div><!-- /.container -->
+
+    <script>
+        function create_uuid() {
+          var d = +new Date();
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+            .replace(/[xy]/g, function(c) {
+              var r = (d + Math.random() * 16) % 16 | 0;
+              return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16).toUpperCase();
+            });
+        }
+
+        function max_height_for(element) {
+          var top = $(element).position().top;
+          return $(window).height() - top - 7;
+        }
+
+        function adjust_height(element) {
+          var height = max_height_for(element);
+          $(element).fullCalendar('option', 'height', height);
+        }
+
+        var json_event_array = [<%= mhc.json_event_array %>];
+
+        $(document).ready(function() {
+
+          $('#side-calendar').fullCalendar({
+            defaultView: 'listMonth',
+            header: {
+              left: '',
+              center: 'title',
+              right: ''
+            },
+            height: max_height_for('#side-calendar'),
+            editable: true,
+            eventResourceEditable: true,
+            eventLimit: true,
+            selectable: true,
+            droppable: true,
+            timezone: '<%= mhc.tzid %>',
+            timeFormat: "HH:mm",
+            displayEventEnd: false,
+            allDayText: "",
+            month: 'HH:mm',
+            week: 'HH:mm',
+            day: 'HH:mm',
+            // eventSources: [<%= $stuck_recurrences_json %>],
+            eventSources: json_event_array,
+            XeventDragStart: function(calEvent, jsEvent, ui, view) {
+              alert('Drag Event: ' + calEvent.title);
+              alert('Event ID: ' + calEvent.id);
+              alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+              alert('View: ' + view.name);
+              // change the border color just for fun
+              $(this).css('border-color', 'red');
+            },
+            viewRender: function(view, element) {
+              $('tr.fc-list-item').each(function() {
+                var duration;
+                var seg = $(this).data('fc-seg');
+                var myevent = seg.footprint.getEventLegacy();
+                if (myevent.end) {
+                  var minutes = moment.duration(myevent.end.diff(myevent.start)).asMinutes();
+                  var days  = Math.floor(minutes/(24*60));
+                  minutes -= days * 24 * 60;
+                  var hours = Math.floor(minutes/60);
+                  minutes -= hours * 60;
+                  duration = days + "." + hours + ":" + minutes;
+                } else {
+                  duration = "0.00:00";
+                }
+                if (myevent.title == "母の日") {
+                  // alert('My Event: ' + myevent.title);
+                  // alert('Duration: ' + duration);
+                }
+                var uuid = create_uuid();
+                // alert('Seg: ' + seg);
+                $(this).data('event', {
+                  title: myevent.title,
+                  allDay: myevent.allDay,
+                  start: myevent.start.format("HH:mm"),
+                  duration: duration,
+                  stick: true,
+                  className: myevent.className
+                });
+              });
+
+              $('tr.fc-list-item').draggable({
+                appendTo: "#calendar",
+                cursorAt: {top: 5, left: 5},
+                iframeFix: true,
+                refreshPositions: true,
+                scroll: false,
+                cursor: "move",
+                revert: true,       // will cause the event to go back to its
+                revertDuration: 0,  //  original position after the drag
+                helper: "clone",
+                zIndex: 100,
+                opacity: 0.35,
+
+                start: function(event, ui) {
+                }
+              });
+              if(view.name == 'listMonth') {
+                adjust_height('#side-calendar');
+              }
+            },
+            windowResize: function(view) {
+              if(view.name == 'listMonth') {
+                adjust_height('#side-calendar');
+              }
+            }
+          });
+
+          $('#stuck-events').fullCalendar({
+            defaultView: 'listall',
+            Xheader: {
+              left: '',
+              center: '',
+              right: ''
+            },
+            header: false,
+            views: {
+              listall: {
+                type: 'list',
+                duration: { days: 3650},
+                dayCount: 30
+              }
+            },
+            height: max_height_for('#side-calendar'), // XXX
+            editable: true,
+            eventResourceEditable: true,
+            eventLimit: true,
+            selectable: true,
+            droppable: true,
+            timezone: '<%= mhc.tzid %>',
+            timeFormat: " ",
+            allDayText: "",
+            month: 'HH:mm',
+            week: 'HH:mm',
+            day: 'HH:mm',
+            eventSources: [<%= $stuck_recurrences_json %>],
+            XeventDragStart: function(calEvent, jsEvent, ui, view) {
+              alert('Drag Event: ' + calEvent.title);
+              alert('Event ID: ' + calEvent.id);
+              alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+              alert('View: ' + view.name);
+              // change the border color just for fun
+              $(this).css('border-color', 'red');
+            },
+            viewRender: function(view, element) {
+              $('tr.fc-list-item').each(function() {
+                var duration;
+                var seg = $(this).data('fc-seg');
+                var myevent = seg.footprint.getEventLegacy();
+                if (myevent.end) {
+                  var minutes = moment.duration(myevent.end.diff(myevent.start)).asMinutes();
+                  var days  = Math.floor(minutes/(24*60));
+                  minutes -= days * 24 * 60;
+                  var hours = Math.floor(minutes/60);
+                  minutes -= hours * 60;
+                  duration = days + "." + hours + ":" + minutes;
+                } else {
+                  duration = "0.00:00";
+                }
+                if (myevent.title == "母の日") {
+                  // alert('My Event: ' + myevent.title);
+                  // alert('Duration: ' + duration);
+                }
+                var uuid = create_uuid();
+                // alert('Seg: ' + seg);
+                $(this).data('event', {
+                  title: myevent.title,
+                  allDay: myevent.allDay,
+                  start: myevent.start.format("HH:mm"),
+                  duration: duration,
+                  stick: true,
+                  className: myevent.className
+                });
+              });
+
+              $('tr.fc-list-item').draggable({
+                appendTo: "#calendar",
+                cursorAt: {top: 5, left: 5},
+                iframeFix: true,
+                refreshPositions: true,
+                scroll: false,
+                cursor: "move",
+                revert: true,       // will cause the event to go back to its
+                revertDuration: 0,  //  original position after the drag
+                helper: "clone",
+                zIndex: 100,
+                opacity: 0.35,
+
+                start: function(event, ui) {
+                }
+              });
+              if(view.name == 'listMonth') {
+                adjust_height('#stuck-events');
+              }
+            },
+            windowResize: function(view) {
+              if(view.name == 'listMonth') {
+                adjust_height('#stuck-events');
+              }
+            }
+          });
+
+          $('#calendar').fullCalendar({
+            header: {
+              left: 'prev,next today',
+              center: 'title',
+              right: 'month,agendaWeek,agendaDay'
+            },
+            firstDay: 1,
+            height: max_height_for('#calendar'),
+            editable: true,
+            eventResourceEditable: true,
+            eventLimit: true,
+            selectable: true,
+            droppable: true,
+
+            // drop: Event ではない draggable からドロップされたとき．
+            // draggable が event として認識できないようなときでも発火する
+            drop: function(date) {
+              // alert("Dropped on " + date.format());
+            },
+
+            // eventReceive: Event ではない draggable からドロップされたとき
+            // draggable が event として認識可能な property を持っている場合だけ発火する
+            eventReceive: function(event) {
+              event.id = create_uuid(); // XXX! これがうまくいかない
+              $('#calendar').fullCalendar('updateEvent', event);
+              // alert("Drop event from ourter world! ID: " + event.id);
+            },
+
+            // eventDrop:  既に登録されている event を変更したとき
+            eventDrop: function(event, delta, revertFunc, jsEvent, ui, view) {
+              // alert("eventDrop:" + event.title);
+              // alert("eventDrop:" + event.id);
+            },
+
+            //  return (this.eventInstance || this.eventDef).toLegacy()
+            eventClick: function(calEvent, jsEvent, view) {
+              var yesno = prompt('Do you delete ' + calEvent.title + '?');
+              // alert('Event ID: ' + calEvent.id);
+              if (yesno == "yes"){
+                $('#calendar').fullCalendar('removeEvents', [calEvent.id]);
+              }
+              // alert('This Event: ' + $(this).getEventLegacy().title);
+              //alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+              //alert('View: ' + view.name);
+              // change the border color just for fun
+              // $(this).css('border-color', 'red');
+            },
+
+            timezone: '<%= mhc.tzid %>',
+            timeFormat: "HH:mm",
+            allDayText: "",
+            month: 'HH:mm',
+            week: 'HH:mm',
+            day: 'HH:mm',
+            eventSources: json_event_array,
+            // eventSources: [<%= mhc.json_event_array %>],
+            viewRender: function(view, element) {
+              if(view.name == 'month') {
+                adjust_height('#calendar');
+                adjust_height('#stuck-events');
+              }
+              var currentDate = $('#calendar').fullCalendar('getDate');
+              // alert("The current date of the calendar is " + currentDate.format());
+              $('#side-calendar').fullCalendar('gotoDate', currentDate.subtract(1, 'y'));
+              $('#stuck-events').fullCalendar('gotoDate', currentDate.subtract(5, 'y'));
+            },
+            windowResize: function(view) {
+              if(view.name == 'month') {
+                adjust_height('#calendar');
+                adjust_height('#stuck-events');
+              }
+            }
+          }) // $('#calendar')
+
+          $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+             var target = $(e.target).attr("href") // activated tab
+             adjust_height(target);
+          });
+
+        });
+    </script>
+  </body>
+</html>

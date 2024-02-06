@@ -21,6 +21,8 @@ module Mhc
         Howm.new(date_range: date_range, options:options)
       when :json
         Json.new(date_range: date_range, options:options)
+      when :html
+        Html.new(date_range: date_range, options:options)
       else
         raise Formatter::NameError.new("Unknown format: #{formatter} (#{formatter.class})")
       end
@@ -37,6 +39,7 @@ module Mhc
     autoload :OrgTable,           "#{dir}/org_table.rb"
     autoload :SymbolicExpression, "#{dir}/symbolic_expression.rb"
     autoload :Text,               "#{dir}/text.rb"
+    autoload :Html,               "#{dir}/html.rb"
 
   end # class Formatter
 end # module Mhc

@@ -23,6 +23,22 @@ module Mhc
       @datastore.entries(category: "todo")
     end
 
+    def recurrences(rec, &scope_block)
+      @datastore.entries(recurrence: rec)
+    end
+
+    def recurrence_tags
+      hash = {}
+      @datastore.entries.each do |ev|
+        tag = ev.recurrence_tag.to_s
+        next if tag == ""
+        next if hash[tag]
+
+        yield tag
+        hash[tag] = ev
+      end
+    end
+
     def occurrences(date_range, &scope_block)
       ocs = []
       @datastore.entries(range: date_range).each do |event|
