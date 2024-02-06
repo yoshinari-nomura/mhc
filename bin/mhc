@@ -256,6 +256,55 @@ class MhcCLI < Thor
   end
 
   ################################################################
+  # Command: stuck_recurrences
+  ################################################################
+  desc "stuck_recurrences", "List stuck recurrences in MHC calendar"
+
+  named_option :repository
+  named_option :verbose
+  named_option :format
+
+  # * stuck_recurrences
+  #
+  #  For all "living recurrences", if no next event has been set in
+  #  the "future", show the information on the last time.
+  #
+  #   + "living recurrences" ::
+  #     + There is a last-time evnet within a year and a half.
+  #   + "future" :: ten years from now.
+  #
+  def stuck_recurrences(format = options[:format])
+    today = Mhc::PropertyValue::Date.today
+
+    # Seek -1.5y to +10y
+    search_range = (today - ((365 *  5).to_i)) ..
+                   (today + ((365 * 10).to_i))
+
+    recurrences = {}
+
+    # Get all recurrences in search_range
+    calendar.occurrences(search_range).each do |oc|
+      rtag = oc.recurrence_tag.to_s
+      next if rtag.empty?
+      recurrences[rtag] ||= []
+      recurrences[rtag] << oc
+    end
+
+    formatter = Mhc::Formatter.build(formatter: format || :text, date_range: search_range)
+
+    recurrences.each do |rtag, recurrence|
+      if options[:verbose]
+        rec_put_debug(recurrence)
+      else
+        formatter << recurrence.last if rec_stuck?(recurrence)
+      end
+    end
+    str = formatter.to_s
+    return str if format == :json || options[:verbose]
+    puts str
+  end # stuck_recurrences
+
+  ################################################################
   # Command: scan
   ################################################################
   desc "scan RANGE", "Scan events in date RANGE"
@@ -392,6 +441,80 @@ class MhcCLI < Thor
   # private
 
   private
+
+  def rec_put_debug(recurrence)
+    ol = recurrence.last
+
+    today = Mhc::PropertyValue::Date.today
+    last_occurrence = recurrence.last
+    last_occurrence_date = last_occurrence.dtstart.to_date
+    # Ignore living recurrences
+    return false if last_occurrence_date > today
+
+    status = if rec_stuck?(recurrence) then " TODO" else "" end
+    print "*#{status} #{ol.recurrence_tag}#{status} "
+
+    print format("%s %s",
+                 ol.dtstart.strftime("%Y-%m-%d %a"),
+                 ol.subject)
+
+    print format(" (length: %d, max: %d, min: %d, avr: %d)\n",
+                 recurrence.length,
+                 *rec_stat(recurrence))
+
+    pr = recurrence.first
+    recurrence.each do |oc|
+      puts format("  %s %s (%d)",
+                  oc.dtstart.strftime("%Y-%m-%d %a"),
+                  oc.subject,
+                  (oc.dtstart.to_date - pr.dtstart.to_date).to_i
+                 )
+      pr = oc
+    end
+  end
+
+  # Judge if a recurrence is stuck or not. recurrence is a set of occurrences.
+  def rec_stuck?(recurrence, today = Mhc::PropertyValue::Date.today)
+    last_occurrence = recurrence.last
+    last_occurrence_date = last_occurrence.dtstart.to_date
+    max_interval, _min_interval, avr_interval = rec_stat(recurrence)
+
+    # Not stuck if scheduled in the future dates
+    return false if last_occurrence_date > today
+
+    # Stuck if last event occurred within 90 days, but average
+    # interval is less than 60 days.
+    if (today - last_occurrence_date).to_i < 90 && avr_interval < 60
+      return true
+    end
+
+    # Not stuck if the number of days between the last event and today
+    # does not reach 80% of the maximum interval.
+    return false if (today - last_occurrence_date).to_i < max_interval * 4 / 5
+
+    # Not stuck if the number of days between the last event and today
+    # is more than 30 days or 1.5 years beyond the maximum interval.
+    # It would be no more recurring.
+    return false if (today - last_occurrence_date).to_i > [max_interval + 30, 365*1.5].min
+
+    # Otherwise, stuck
+    return true
+  end
+
+  # Return statistics on recurrences: max/min/average interval.
+  def rec_stat(recurrence)
+    # Calcurate all intervals of the recurrence
+    intervals = recurrence.each_cons(2).map{|ocs|
+      (ocs[1].dtstart.to_date - ocs[0].dtstart.to_date).to_i
+    }.reject{|interval| interval < 1}
+
+    # Assume annual event if the recurrence is one-shot.
+    intervals = [365] if intervals.empty?
+
+    return [intervals.max,
+            intervals.min,
+            intervals.reduce(0, :+) / intervals.length]
+  end
 
   def exit_on_error(&block)
     begin
