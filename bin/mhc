@@ -114,7 +114,9 @@ class MhcCLI < Thor
     Mhc::Command::Cache.new(builder.datastore)
   end
 
+  ################################################################
   # Command: todo
+  ################################################################
   desc "todo", "List Todo entries in MHC calendar"
 
   named_option :repository
