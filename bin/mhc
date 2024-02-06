@@ -170,6 +170,38 @@ class MhcCLI < Thor
   end
 
   ################################################################
+  # Command: compose
+  ################################################################
+  desc "compose", "Create new draft and open it in your editor"
+
+  long_desc <<-LONGDESC
+    Create a new draft and open it in your editor.
+    To select your favorite editor,
+    set environment variable MHC_EDITOR or EDITOR.
+  LONGDESC
+
+  def compose
+    require 'securerandom'
+    ev = Mhc::Event.new
+    ev.record_id = SecureRandom.uuid.upcase
+    path = builder.datastore.create(ev, true)
+    puts "Create draft #{path}"
+    editor = ENV["MHC_EDITOR"] || ENV["EDITOR"] || "vi"
+    system(editor, path)
+
+    while add(path) != 0
+      if ask("Retry?") =~ /^[Yy]/
+        system(editor, path)
+      else
+        puts "Abort..."
+        exit(1)
+      end
+    end
+    puts "Successfully registered."
+    exit(0)
+  end
+
+  ################################################################
   # Command: config
   ################################################################
   desc "configuration", "Show current configuration in various formats."
@@ -178,6 +210,40 @@ class MhcCLI < Thor
 
   def configuration(name = nil)
     puts Mhc::Converter::Emacs.new.to_emacs(config.get_value(name))
+  end
+
+  ################################################################
+  # Command: add
+  ################################################################
+  desc "add FILE", "Add event FILE to repository"
+
+  named_option :repository
+
+  def add(file)
+    full_path = File.expand_path(file)
+
+    unless File.exist?(full_path)
+      puts Mhc::Converter::Emacs.new.to_emacs("No such file #{file}.")
+      return 1
+    end
+
+    event_string = File.open(full_path).read
+    errors = Mhc::Event.validate(event_string)
+
+    if errors.empty?
+      ev = Mhc::Event.parse(event_string)
+      calendar.add(ev)
+      return 0
+    else
+      string = ""
+      errors.each do |err, key|
+        string += "#{err.to_s.capitalize}"
+        string += " in X-SC-#{key.capitalize}" if key
+        string += ".\n"
+      end
+      puts string
+      return 1
+    end
   end
 
   ################################################################

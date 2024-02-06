@@ -34,6 +34,10 @@ module Mhc
       return ocs.sort
     end
 
+    def add(event)
+      @datastore.update(event)
+    end
+
     ################################################################
     ## for sync manager
 

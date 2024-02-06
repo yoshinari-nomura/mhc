@@ -52,22 +52,25 @@ module Mhc
       return Event.parse_file(path)
     end
 
-    def create(event)
+    def create(event, draft = false)
       if find_by_uid(event.uid)
         raise "Already exist uid:#{uid} in #{@basedir}"
       end
+      path = uid_to_path(event.uid, draft)
       File.open(path, "w") do |f|
         f.write(event.dump)
       end
+      return path.to_s
     end
 
-    def update(event)
-      unless path = uid_to_path(event.uid)
+    def update(event, draft = false)
+      unless path = uid_to_path(event.uid, draft)
         raise "Not found uid:#{uid} in #{@basedir}"
       end
       File.open(path, "w") do |f|
         f.write(event.dump)
       end
+      return path.to_s
     end
 
     def delete(uid_or_event)
@@ -105,7 +108,8 @@ module Mhc
       return Dir.glob(glob).first
     end
 
-    def uid_to_path(uid)
+    def uid_to_path(uid, draft = false)
+      return @basedir + ('draft/' + uid + '.mhc') if draft
       return @basedir + ('spool/' + uid + '.mhc')
     end
 
