@@ -131,15 +131,86 @@ module Mhc
         end
       end
 
+      # https://github.com/rubyredrick/ri_cal
+      def value_part(unit, diff) # :nodoc:
+        (diff == 0) ? nil : "#{diff}#{unit}"
+      end
+
+      # https://github.com/rubyredrick/ri_cal
+      def from_datetimes(start, finish, sign = '')  # :nodoc:
+        if start > finish
+          from_datetimes(finish, start, '-')
+        else
+          diff = finish - start
+          days_diff = diff.to_i
+          hours = (diff - days_diff) * 24
+          hour_diff = hours.to_i
+          minutes = (hours - hour_diff) * 60
+          min_diff = minutes.to_i
+          seconds = (minutes - min_diff) * 60
+          sec_diff = seconds.to_i
+
+          day_part = value_part('D',days_diff)
+          hour_part = value_part('H', hour_diff)
+          min_part = value_part('M', min_diff)
+          sec_part = value_part('S', sec_diff)
+          t_part = (hour_diff.abs + min_diff.abs + sec_diff.abs) == 0 ? "" : "T"
+          "P#{day_part}#{t_part}#{hour_part}#{min_part}#{sec_part}"
+        end
+      end
+
+      # Convert ~X-SC-Days:~ to RFC5545 3.8.2 ~RDATE~
+      #
+      # RDATE allows three types of format: PERIOD, DATE, DATE-TIME.
+      # + DATE :: 20140301
+      # + DATE-TIME :: 20140301T123000
+      # + PERIOD :: 20140301T123000/20140301T143000 or 20140301T123000/PT2H
+      #
+      # NOTE: *Google calenadr does not accept PERIOD*
+      #   That's why we cannot make X-SC-Day: have different duration-period for each occurrence.
+      #
       def rdates(event)
         return nil if event.dates.empty?
-        ocs = Mhc::OccurrenceEnumerator.new(event, event.dates, empty_dates, empty_condition, empty_duration).map {|oc| oc.dtstart}
+        # Get all RDATE candidates from X-SC-Date
+        ocs = Mhc::OccurrenceEnumerator.new(event, event.dates, empty_dates, empty_condition, empty_duration).map do |oc|
+          if oc.dtstart.respond_to?(:hour)
+            # duration = from_datetimes(oc.dtstart, oc.dtend)
+
+            # 20140301T123000/20140301T143000
+            dtstart  = IcalendarImporter.tz_convert(oc.dtstart, dst_tzid: 'UTC').strftime("%Y%m%dT%H%M00Z")
+            dtend    = IcalendarImporter.tz_convert(oc.dtend, dst_tzid: 'UTC').strftime("%Y%m%dT%H%M00Z")
+
+            dtstart + "/" + dtend
+            # dtstart + "/" + duration
+          else
+            oc.dtstart
+          end
+        end
+
+        # Check if all in X-SC-Date should be converted into RDATE,
+        # because the first occurrence of X-SC-Date might be dedicated
+        # to DTSTART in some particular case.
+        #
         if event.recurring?
+          # Use all values of X-SC-Date as RDATE, because DTSTART
+          # should be calculated from recurrence-rule (X-SC-Cond and
+          # X-SC-Duration).
           ocs
         else
-          ocs = ocs[1..-1]
-          return nil if ocs.empty?
+          # This is Workaround for avoiding the serious bug in Android.
+          # Android badly ignores DTSTART-DTEND if RDATE is set.
+          # As a result, the first occurence is vanished.
+          # So, I set the first occurence twice; in RDATE and DTSTART.
+          return nil if ocs[1..-1].empty?
           return ocs
+
+          # This is what I wanted to do:
+          # Remove the first occurence of X-SC-Date, because the first
+          # value should be dedicated to DTSTART.
+          #
+          # ocs = ocs[1..-1]
+          # return nil if ocs.empty?
+          # return ocs
         end
       end
 
