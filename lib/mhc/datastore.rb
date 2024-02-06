@@ -25,7 +25,7 @@ module Mhc
             Dir.foreach(".") do |ent|
               parse_mhcc(ent).each {|ev|
                 next if category   && !ev.in_category?(category)
-                next if recurrence && !ev.in_recurrence?(recurrence)
+                next if recurrence && !(ev.recurrence_tag.to_s == recurrence)
                 yielder << ev
               } if /\.mhcc$/ =~ ent
               next unless /\.mhc$/ =~ ent

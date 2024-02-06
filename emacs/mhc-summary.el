@@ -294,9 +294,10 @@ If optional argument FOR-DRAFT is non-nil, Hilight message as draft message."
       (set-visited-file-name nil)
       ;; (rename-buffer (file-name-nondirectory file) 'unique)
       ;; (run-hooks 'mhc-calendar-view-file-hook)
+      (let ((buffer-read-only nil))
+        (mhc-message-mode))
       (set-buffer-modified-p nil)
       (setq buffer-read-only t)
-      (mhc-message-mode)
       (mhc-message-set-file-name file)
       )))
 
