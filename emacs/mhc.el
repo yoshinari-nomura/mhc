@@ -915,6 +915,27 @@ the default action of this command is changed to the latter."
           (message "%s is copied." (mhc-record-subject-as-string record)))
       (message "No file here."))))
 
+(defun mhc-reuse-past-event ()
+  "Select past schedule and copy to template."
+  (interactive)
+  (let* ((completion-ignore-case t)
+         (read-file-name-completion-ignore-case t)
+         (read-buffer-completion-ignore-case t)
+         (case-fold-search t)
+         (collection
+          (mhc-db-make-completion-list
+           (mhc-db-past-occurrences)))
+         (completion-table
+          (lambda (string pred action)
+            (if (eq action 'metadata)
+                '(metadata (display-sort-function . identity)
+                           (cycle-sort-function . identity))
+              (complete-with-action action collection string pred))))
+         (key (completing-read "Select occurrence: " completion-table nil t))
+         (sch (cdr (cdr (assoc key collection)))))
+    (mhc-reuse-copy
+     (mhc-record-name (mhc-schedule-record sch)))))
+
 (defun mhc-modify ()
   "Modify the current schedule."
   (interactive)

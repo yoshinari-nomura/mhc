@@ -65,6 +65,31 @@ Unlike `mhc-db-scan`, returned value is not grouped by date."
         (e (mhc-date-yy+ (mhc-date-now) 10)))
     (mhc-db-scan b e nil nil (mhc-db/query-to-search-string query))))
 
+(defun mhc-db-past-occurrences (&optional days)
+  (let ((now (mhc-date-now)))
+    (nreverse
+     (mhc-db-scan-flat (mhc-date- now (or days 732)) now))))
+
+(defun mhc-db-make-completion-list (occurrences)
+  (delq nil
+        (mapcar
+         (lambda (occurrence)
+           (let ((sch (cdr occurrence)))
+             (if  (not (string= (mhc-record-name (mhc-schedule-record sch)) ""))
+                 (cons (mhc-db-real-to-display occurrence) occurrence))))
+         occurrences)))
+
+(defun mhc-db-real-to-display (occurrence)
+  (let* ((date (car occurrence))
+         (sch (cdr occurrence))
+         (location (mhc-schedule-location sch)))
+    (concat
+     (mhc-date-format date "%04d/%02d/%02d" yy mm dd)
+     (format " %11s " (mhc-schedule-time-as-string sch))
+     (mhc-schedule-subject sch)
+     (if (and location (not (string= location "")))
+         (format " [%s]" location)))))
+
 (defun mhc-db/quote-string (string)
   (format "\"%s\"" string))
 
