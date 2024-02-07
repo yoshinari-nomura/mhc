@@ -127,6 +127,7 @@
        | =M= | Open pointed article to edit                   |
        | =D= | Delete pointed article                         |
        | =C= | Copy article temporally as a reusable template |
+       | =R= | Copy article like =C= using completing-read    |
        | =Y= | Same as =E= but use the template stored by =C= |
 
     3) Draft Buffer
@@ -149,6 +150,7 @@
      X-SC-Time: 18:00-21:00
      X-SC-Category: Private Party
      X-SC-Cond:
+     X-SC-Recurrence-Tag: HomeParty
      X-SC-Duration:
      X-SC-Record-Id: C34D89F5-27FA-4243-AC6C-168D8D243D9A
      X-SC-Sequence: 0
@@ -240,6 +242,40 @@
       Every Wednesday in July 2015 with the exception
       of 2015-07-15 (Wed) and inclusion of 2015-08-01 (Sat).
     #+END_EXAMPLE
+
+** Headers for Grouping
+*** X-SC-Category
+    =X-SC-Category:= is a space separated list of category
+    It is useful for selective display both in CLI:
+    : mhc scan today --category=Private
+    and Emacs UI:
+    : M-x mhc-set-default-category
+    : Default Category: Private && !Party
+
+    Also useful sync with Google Calendar. See [[https://github.com/yoshinari-nomura/mhc/blob/master/samples/DOT.mhc-config.yml][mhc-config.yml]] for
+    details.
+
+*** X-SC-Recurrence-Tag
+    =X-SC-Recurrence-Tag:= is a tag for bundling multiple event articles as one recurring group.
+
+    MHC allows flexible description of repeating events using
+    =X-SC-Cond:=, =X-SC-Duration:=, or =X-SC-Day:=. However, we know
+    this is not sufficient.
+
+    For example, in my experience, some monthly meetings do not have
+    distinct recurring patterns such like "Third Wednesday of each
+    month." Instead, the next date is fixed by coordination during the meeting.
+
+    In such cases, it is difficult to mark these events as a series of related events.
+    That's why we need =X-SC-Recurrence-Tag:=
+
+    Using =X-SC-Recurrence-Tag:=, MHC suggests what event should be arranged.
+    : mhc stuck_recurrences
+    will tell you to make the next appointment.
+
+    For example, if you have "X-SC-Recurrence-Tag: Dentist" in your
+    articles of past dentist events, mhc will point out that you
+    forgot to make your next dentist appointment.
 
 * INFORMATION FOR DEVELOPERS
 ** INSTALL for developers:
