@@ -211,7 +211,7 @@ module Mhc
     end # class Top
 
     def self.create_from_file(file_name)
-      unless File.exists?(File.expand_path(file_name))
+      unless File.exist?(File.expand_path(file_name))
         raise Mhc::ConfigurationError, "config file '#{file_name}' not found"
       end
       begin

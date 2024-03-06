@@ -62,7 +62,7 @@ module Mhc
         require "erb"
         template = ERB.new(File.open(template_path).read, nil, "-")
 
-        if File.exists?(dest_path)
+        if File.exist?(dest_path)
           say_status "exist", "Ignore #{dest_path}", :yellow
           return
         end
@@ -98,7 +98,7 @@ module Mhc
         require "digest/md5"
 
         # Debian
-        if File.exists?("/etc/timezone")
+        if File.exist?("/etc/timezone")
           return File.open("/etc/timezone").read.chomp
         end
 
@@ -109,13 +109,13 @@ module Mhc
         end
 
         # Red Had / CentOS
-        if File.exists?("/etc/sysconfig/clock") &&
+        if File.exist?("/etc/sysconfig/clock") &&
             /ZONE=["']?([^"']+)/ =~ File.open("/etc/sysconfig/clock").read.chomp
           return $1
         end
 
         # generic including FreeBSD
-        if File.exists?("/etc/localtime")
+        if File.exist?("/etc/localtime")
           localtime = Digest::MD5.file("/etc/localtime")
           candidates = Dir.chdir("/usr/share/zoneinfo") do
             Dir.glob("**/*").select do |fn|

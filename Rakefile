@@ -20,7 +20,7 @@ task :build => :check_version
 task :check_version do
   for file in %w(mhc.el mhc-vars.el Cask)
     path = File.expand_path("../emacs/#{file}", __FILE__)
-    raise "File not found #{path}" unless File.exists?(path)
+    raise "File not found #{path}" unless File.exist?(path)
 
     content = File.open(path).read
     unless (/^;; Version: (\d+\.\d+\.\d+)$/ =~ content ||
