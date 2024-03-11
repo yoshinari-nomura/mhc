@@ -52,7 +52,7 @@ module Mhc
     end
 
     def unlink(key)
-      if File.exists?(path = make_path(key))
+      if File.exist?(path = make_path(key))
         File.unlink(path)
       end
     end
