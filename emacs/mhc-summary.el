@@ -104,6 +104,18 @@
   :group 'mhc
   :type 'hook)
 
+(defcustom mhc-todo-string-done
+  (if (eq mhc-summary-language 'japanese) "■" "[X]")
+      "*String which indicates done TODO."
+      :group 'mhc
+      :type 'string)
+
+(defcustom mhc-todo-string-not-done
+  (if (eq mhc-summary-language 'japanese) "□" "[ ]")
+      "*String which indicates not-done TODO."
+      :group 'mhc
+      :type 'string)
+
 (defcustom mhc-summary-line-format
   (if (eq mhc-summary-language 'japanese)
       "%Y%年%M%月%D%日%(%曜%) %b%e %c%i%s %p%l"
@@ -124,6 +136,7 @@ which are replaced by the given information:
 %p The priority of the schedule.
 %l The location of the schedule.
 %r Indicator for recurrence-tag (See also `mhc-summary-string-recurrence').
+%t The indicator for TODO.
 
 %/ A slash character if first line of the day.
 %( A left parenthesis character if first line of the day.
@@ -221,6 +234,13 @@ which are replaced by the given information:
         (if mhc-tmp-private (mhc-face-category-to-face "Private")
           (mhc-face-category-to-face
            (car (mhc-schedule-categories mhc-tmp-schedule)))))
+    (?t (cond
+         ((mhc-schedule-in-category-p mhc-tmp-schedule "done") mhc-todo-string-done)
+         ((mhc-schedule-in-category-p mhc-tmp-schedule "todo") mhc-todo-string-not-done))
+        'face
+        (cond
+         ((mhc-schedule-in-category-p mhc-tmp-schedule "done") 'mhc-summary-face-done)
+         ((mhc-schedule-in-category-p mhc-tmp-schedule "todo") 'mhc-summary-face-todo)))
     (?l (mhc-summary/line-location-string)
         'face 'mhc-summary-face-location)
     (?\( (if mhc-tmp-first "(" " ")

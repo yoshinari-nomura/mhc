@@ -101,6 +101,8 @@ refer to mhc-calendar-hnf-face-alist-internal.")
     (mhc-summary-face-conflict  . (nil "white"       "purple"))
     (mhc-summary-face-recurrence . (nil "black"      "green"))
     (mhc-summary-face-secret    . (nil "gray"        nil))
+    (mhc-summary-face-todo      . (nil "red "        nil))
+    (mhc-summary-face-done      . (nil nil           nil))
     ;;
     (mhc-minibuf-face-candidate . (nil nil           "yellow"))
     ;;
