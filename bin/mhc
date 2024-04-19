@@ -60,6 +60,7 @@ class MhcCLI < Thor
   ################################################################
   # global options
 
+  class_option :help,    :desc => "Show help", :type => :boolean
   class_option :debug,   :desc => "Set debug flag", :type => :boolean
   class_option :profile, :desc => "Set profiler flag", :type => :boolean
   class_option :config,  :desc => "Set config path (default: #{DEFAULT_CONFIG_PATH})", :banner => "FILE"
@@ -437,6 +438,10 @@ class MhcCLI < Thor
   no_commands do
     def invoke_command(command, *args)
       setup_global_options unless command.name == "init"
+      if options[:help]
+        help(command.name)
+        exit 0
+      end
       result = super
       teardown
       result
