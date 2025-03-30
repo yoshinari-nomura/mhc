@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "pstore"
   spec.add_runtime_dependency "thor",        ">= 1.2.0"
   spec.add_runtime_dependency "rexml",       ">= 3.2.4"
   spec.add_runtime_dependency "ri_cal",      ">= 0.8.8"
