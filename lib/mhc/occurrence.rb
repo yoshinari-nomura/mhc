@@ -60,7 +60,8 @@ module Mhc
         if @start_date.respond_to?(:hour)
           @start_date
         else
-          @event.time_range.first.to_datetime(@start_date)
+          # if range is open, use end time as start time
+          @event.time_range.first&.to_datetime(@start_date) || dtend
         end
       end
     end
@@ -72,7 +73,8 @@ module Mhc
         if @end_date.respond_to?(:hour)
           @end_date
         else
-          @event.time_range.last.to_datetime(@end_date)
+          # if range is open, use start time as end time
+          @event.time_range.last&.to_datetime(@end_date) || dtstart
         end
       end
     end
