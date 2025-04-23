@@ -51,7 +51,7 @@
       Check [[https://github.com/yoshinari-nomura/mhc/blob/master/samples/DOT.mhc-config.yml][mhc-config.yml]] for details.
 
 * SYSTEM REQUIREMENTS
-  + Ruby 2.1 or newer
+  + Ruby 2.6 or newer
   + Emacs 24 or newer
 
 * INSTALL AND SETUP

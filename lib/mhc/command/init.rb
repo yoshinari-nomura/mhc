@@ -60,7 +60,7 @@ module Mhc
 
       def expand_template(template_path, dest_path)
         require "erb"
-        template = ERB.new(File.open(template_path).read, nil, "-")
+        template = ERB.new(File.open(template_path).read, trim_mode: "-")
 
         if File.exist?(dest_path)
           say_status "exist", "Ignore #{dest_path}", :yellow

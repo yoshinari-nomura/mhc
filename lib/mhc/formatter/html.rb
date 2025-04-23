@@ -17,7 +17,7 @@ module Mhc
       def format_header(context)
         require "erb"
         template_path = File.expand_path("full-calendar.html.erb", TEMPLATE_DIR)
-        @template = ERB.new(File.open(template_path).read, nil, "-")
+        @template = ERB.new(File.open(template_path).read, trim_mode: "-")
         return ""
       end
 
