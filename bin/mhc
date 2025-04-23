@@ -260,6 +260,19 @@ class MhcCLI < Thor
   end
 
   ################################################################
+  # Command: recurrences
+  ################################################################
+  desc "recurrences", "List recurrence names"
+
+  named_option :repository, :format
+
+  def recurrences(format = options[:format])
+    calendar.recurrence_tags do |tag|
+      puts tag
+    end
+  end
+
+  ################################################################
   # Command: stuck_recurrences
   ################################################################
   desc "stuck_recurrences", "List stuck recurrences in MHC calendar"

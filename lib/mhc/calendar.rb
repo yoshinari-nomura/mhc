@@ -31,11 +31,15 @@ module Mhc
       hash = {}
       @datastore.entries.each do |ev|
         tag = ev.recurrence_tag.to_s
-        next if tag == ""
-        next if hash[tag]
+        hash[tag] = ev unless tag == ""
+      end
 
-        yield tag
-        hash[tag] = ev
+      tags = hash.keys.sort
+
+      if block_given?
+        tags.each {|tag| yield tag}
+      else
+        return tags
       end
     end
 
