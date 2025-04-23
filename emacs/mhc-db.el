@@ -97,7 +97,7 @@ Unlike `mhc-db-scan`, returned value is not grouped by date."
   (format "%s" keyword))
 
 (defun mhc-db/query-to-search-string (query)
-  (let ((keywords '(:subject :body :category :recurrence_tag)) string)
+  (let ((keywords '(:subject :body :category :recurrence_tag :location)) string)
     (mapconcat 'identity
                (delq nil
                      (mapcar

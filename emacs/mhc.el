@@ -574,7 +574,9 @@ If optional NAME is non-nil, created smmary buffer has the name."
   "Search events by STRING.
 If SUBJECT-ONLY is non-nil, it will search only on X-SC-Subject:"
   (interactive "sSearch: \nP")
-  (let* ((match (mhc-db-search :subject string :body (unless subject-only string))))
+  (let* ((match (mhc-db-search :subject string
+                               :body (unless subject-only string)
+                               :location (unless subject-only string))))
     (if (null match)
         (message "No match")
       (mhc-scan match))))
