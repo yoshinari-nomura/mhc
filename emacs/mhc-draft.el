@@ -11,7 +11,8 @@
 
 ;;; Code:
 
-(require 'mhc-summary)
+(require 'mhc-calendar)
+(require 'mhc-header)
 
 ;; Global Variable:
 

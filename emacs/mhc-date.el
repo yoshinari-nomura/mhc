@@ -38,6 +38,10 @@
 (defmacro mhc-time-MM (time)
   `(% ,time 60))
 
+(defmacro mhc-date/substring-to-int (str pos)
+  `(string-to-number
+    (substring ,str (match-beginning ,pos) (match-end ,pos))))
+
 ;; All constructors emit error signal if args are illegal.
 ;; In case called with noerror is t, return nil quietly.
 
@@ -199,10 +203,6 @@
 
 (defsubst mhc-date/iso-week-days (yday wday)
   (- yday -3 (% (- yday wday -382) 7)))
-
-(defmacro mhc-date/substring-to-int (str pos)
-  `(string-to-number
-    (substring ,str (match-beginning ,pos) (match-end ,pos))))
 
 ;; according to our current time zone,
 ;; convert timezone string into offset minutes

@@ -35,6 +35,11 @@
 
 
 ;;; Codes:
+
+(require 'mhc-logic)
+(require 'mhc-compat)
+(require 'mhc-record)
+
 (defun mhc-schedule-new
   (record &optional condition subject location time alarm categories priority region recurrence-tag sequence)
   "Constructor of MHC-SCHEDULE structure."

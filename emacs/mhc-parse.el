@@ -18,6 +18,7 @@
 (require 'mhc-record)
 (require 'mhc-header)
 (require 'mhc-misc)
+(require 'mhc-schedule)
 
 (defvar mhc-parse/strict nil)
 

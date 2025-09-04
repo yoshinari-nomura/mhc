@@ -48,6 +48,8 @@
 (require 'mhc-face)
 (require 'mhc-calendar)
 (require 'mhc-draft)
+(require 'mhc-header)
+(require 'mhc-compat)
 
 (cond
  ((eval-when-compile  (and (not (featurep 'xemacs))

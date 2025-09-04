@@ -30,6 +30,8 @@
 
 ;;; Code:
 
+(require 'mhc-date)
+
 ;; Function and macros to manipulate MHC-DAY structure:
 
 (defun mhc-day-new (date &optional year month day-of-month day-of-week holiday schedules)

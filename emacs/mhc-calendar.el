@@ -18,6 +18,7 @@
 (require 'mhc-vars)
 (require 'mhc-face)
 (require 'mhc-e21)
+(require 'mhc-header)
 
 (defcustom mhc-calendar-language 'english
   "*Language of the calendar."

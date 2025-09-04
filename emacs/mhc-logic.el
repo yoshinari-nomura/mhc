@@ -38,7 +38,10 @@
 
 ;;; Definition:
 (require 'mhc-date)
+(require 'mhc-compat)
 (require 'bytecomp)
+(require 'mhc-day)
+(require 'mhc-record)
 
 ;;----------------------------------------------------------------------
 ;;              MHC-LOGIC 構造体

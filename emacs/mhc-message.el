@@ -19,6 +19,8 @@
 
 ;;; Code:
 
+(require 'mhc-face)
+
 (defcustom mhc-message-mode-hook nil
   "*Hook run in mhc message mode buffers."
   :group 'mhc

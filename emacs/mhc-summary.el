@@ -31,11 +31,14 @@
 
 ;;; Code:
 
+(require 'mhc-face)
 (require 'mhc-vars)
 (require 'mhc-day)
 (require 'mhc-compat)
 (require 'mhc-schedule)
 (require 'bytecomp)
+(require 'mhc-record)
+(require 'mhc-header)
 
 ;;; Global Variables:
 

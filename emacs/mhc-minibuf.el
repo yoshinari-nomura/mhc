@@ -13,6 +13,11 @@
 ;;; Code:
 ;;;
 
+(require 'mhc-calendar)
+(require 'mhc-guess)
+(require 'mhc-misc)
+(require 'mhc-date)
+
 (defvar mhc-minibuf-candidate-to-s-func nil)
 (defvar mhc-minibuf-candidate-alist     nil)
 (defvar mhc-minibuf-candidate-offset    0)

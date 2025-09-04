@@ -17,6 +17,8 @@
 (require 'mhc-day)
 (require 'mhc-process)
 (require 'mhc-schedule)
+(require 'mhc-record)
+(require 'mhc-date)
 
 (defun mhc-db-scan (begin-date end-date &optional nosort category search)
   "Scan MHC database from BEGIN-DATE to END-DATE.

@@ -27,10 +27,7 @@
 
 ;;; Code:
 
-(require 'mhc-summary)
 (require 'mhc-file)
-(require 'mhc-draft)
-(require 'mhc-logic)
 
 (eval-when-compile
   (mhc-file-setup))
